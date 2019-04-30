@@ -11,14 +11,14 @@ What ISS detects:
 * If an app was run in emulator 👽
 * Common reverse engineering tools running on the device 🔭
 
-## Setup TODO!!!!!
+## Setup
 There are 3 ways you can start using IOSSecuritySuite
 
 ### Add source
 Add *IOSSecuritySuite.swift* to your project
 
 ### Setup with CocoaPods
-`pod install iossecuritysuite`
+`pod 'IOSSecuritySuite'`
 
 ### Setup with Carthage
 Coming soon
