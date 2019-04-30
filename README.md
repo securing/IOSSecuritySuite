@@ -78,9 +78,9 @@ Before using this and other platform security checkers you have to understand th
 Yes, please! If you have a better idea or you just want to improve this project, please text me on [Twitter](https://twitter.com/_r3ggi) or [Linkedin](https://www.linkedin.com/in/wojciech-regula/). Pull requests are more than welcome!
 
 ## TODO
-[ ] File integrity checks
+* [ ] File integrity checks
 
-[ ] Deny debugger
+* [ ] Deny debugger
 
 ## License
 See the LICENSE file.
