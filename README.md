@@ -18,10 +18,10 @@ There are 3 ways you can start using IOSSecuritySuite
 Add *IOSSecuritySuite.swift* to your project
 
 ### Setup with CocoaPods
-`pod install iossecuritysuite` TODO
+`pod install iossecuritysuite`
 
 ### Setup with Carthage
-TODO
+Coming soon
 
 ## How to use
 
