@@ -15,13 +15,13 @@ What ISS detects:
 There are 3 ways you can start using IOSSecuritySuite
 
 ### Add source
-Add *IOSSecuritySuite.swift* to your project
+Add `IOSSecuritySuite/*.swift` files to your project
 
 ### Setup with CocoaPods
 `pod 'IOSSecuritySuite'`
 
 ### Setup with Carthage
-Coming soon
+`github "securing/IOSSecuritySuite"`
 
 ## How to use
 
