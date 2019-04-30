@@ -69,7 +69,7 @@ let amIReverseEngineered = IOSSecuritySuite.amIReverseEngineered() ? true : fals
 ## Security considerations
 Before using this and other platform security checkers you have to understand that:
 
-* Including this tool in your project is not the only thing you should do in order to improve your app security! You can read a general mobile security whitepaper [here](https://www.securing.biz/en/secure-mobile-applications-key-issues/index.html).
+* Including this tool in your project is not the only thing you should do in order to improve your app security! You can read a general mobile security whitepaper [here](https://www.securing.biz/en/mobile-application-security-best-practices/index.html).
 * Detecting if a device is jailbroken is done locally on the device. It means that every jailbreak detector may be bypassed (even this)! 
 * Swift code is considered to be harder to manipulate dynamically than Objective-C. Since this library was written in pure Swift, the IOSSecuritySuite methods shouldn't be exposed to Objective-C runtime (which makes it more difficult to bypass ✅). You have to know that attacker is still able to MSHookFunction/MSFindSymbol Swift symbols and dynamically change Swift code execution flow.
 * It's also a good idea to obfuscate the whole project code including this library. See [Swiftshield](https://github.com/rockbruno/swiftshield)
