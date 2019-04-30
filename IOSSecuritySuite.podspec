@@ -7,8 +7,9 @@ Pod::Spec.new do |s|
   s.author       = "Wojciech Reguła"
   s.social_media_url = "https://twitter.com/_r3ggi"
   s.platform     = :ios, "10.0"
-  s.ios.frameworks = 'UIKit', 'Foundation', 'MachO', 'Darwin'
+  s.ios.frameworks = 'UIKit', 'Foundation'
   s.source       = { :git => "https://github.com/securing/IOSSecuritySuite.git", :tag => "#{s.version}" }
   s.source_files  = "IOSSecuritySuite/*.swift"
   s.swift_version = '4.2'
+  s.requires_arc = true
 end
