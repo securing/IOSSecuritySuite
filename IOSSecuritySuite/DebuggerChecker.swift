@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class DebuggerChecker {
+class DebuggerChecker {
     
     static func amIDebugged() -> Bool {
         return self.checkDebugger()

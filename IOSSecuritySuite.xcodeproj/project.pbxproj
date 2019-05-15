@@ -51,6 +51,7 @@
 		70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JailbreakChecker.swift; sourceTree = "<group>"; };
 		70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorChecker.swift; sourceTree = "<group>"; };
 		70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSecuritySuite.swift; sourceTree = "<group>"; };
+		70DDFD5A2284AA9600D95EE7 /* FrameworkClientApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FrameworkClientApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +76,7 @@
 		706B0E28226F445D0059AEA9 /* FrameworkClientApp */ = {
 			isa = PBXGroup;
 			children = (
+				70DDFD5A2284AA9600D95EE7 /* FrameworkClientApp.entitlements */,
 				706B0E29226F445D0059AEA9 /* AppDelegate.swift */,
 				706B0E2B226F445D0059AEA9 /* ViewController.swift */,
 				706B0E2D226F445D0059AEA9 /* Main.storyboard */,
@@ -188,6 +190,11 @@
 				TargetAttributes = {
 					706B0E26226F445D0059AEA9 = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.Multipath = {
+								enabled = 0;
+							};
+						};
 					};
 					70B0BBBB226F3A4D000CFB39 = {
 						CreatedOnToolsVersion = 10.1;
@@ -304,7 +311,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Q4GTM2NEQD;
+				DEVELOPMENT_TEAM = 4HTEC659ZR;
 				INFOPLIST_FILE = FrameworkClientApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -323,7 +330,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Q4GTM2NEQD;
+				DEVELOPMENT_TEAM = 4HTEC659ZR;
 				INFOPLIST_FILE = FrameworkClientApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
