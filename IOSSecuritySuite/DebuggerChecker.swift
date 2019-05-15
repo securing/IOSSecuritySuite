@@ -22,7 +22,7 @@ class DebuggerChecker {
         var size = MemoryLayout<kinfo_proc>.stride
         let sysctlRet = sysctl(&mib, UInt32(mib.count), &kinfo, &size, nil, 0)
 
-        if sysctlRet == 0 {
+        if sysctlRet != 0 {
             print("Error occured when calling sysctl(). The debugger check may be not reliable")
         }
         
