@@ -162,7 +162,6 @@ class JailbreakChecker {
         typealias ForkType = @convention(c) () -> pid_t
         let fork = unsafeBitCast(forkPtr, to: ForkType.self)
         let forkResult = fork()
-        pointerToFork?.deallocate()
         
         if forkResult >= 0 {
             if forkResult > 0 {
