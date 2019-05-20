@@ -71,6 +71,7 @@ class JailbreakChecker {
     private static func checkExistenceOfSuspiciousFiles() -> (passed: Bool, failMessage: String) {
         
         let paths = [
+            "/usr/sbin/frida-server", // frida
             "/etc/apt/sources.list.d/electra.list", // electra
             "/etc/apt/sources.list.d/sileo.sources", // electra
             "/.bootstrapped_electra", // electra
