@@ -8,6 +8,9 @@
 
 import Foundation
 
+// NOTE: By declaring class as open you allow the class to be subclassed within other modules. I assume we don't want that?
+// Also let's be strict and unify this - if you declare methods as public, the class should be public as well.
+// 👏 for nice documentation
 open class IOSSecuritySuite {
     
     /**

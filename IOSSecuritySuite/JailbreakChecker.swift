@@ -17,6 +17,11 @@ class JailbreakChecker {
         return !self.performChecks().passed
     }
     
+    // NOTE: IMO it would be better to wrap a result in e.g. some enum (instead of returning a tuple)
+    // enum Result {
+    //      case notJailbroken
+    //      case jailbroken(String) -> when you can provide a message what's been detected when it comes to JB
+    // }
     static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
         let performChecks = self.performChecks()
         return (!performChecks.passed, performChecks.failMessage)
@@ -37,6 +42,13 @@ class JailbreakChecker {
         var passed = true
         var failMessage = ""
         
+        // NOTE: you could leverage of `allSatisfy` method from Swift's standard library to check if each element in a collection satisfies a condition
+        // NOTE: when constructing a fail message you could use `filter` (to filter out only failed elements) and `joined` to gather all messages into one string - it would be more Swifty and more readable
+        // this will look something like this
+        // let failMessage = checklist
+        // .filter { !$0.passed }
+        // .joined(separator: ", ")
+        
         for check in checklist {
             passed = passed && check.passed
             if !failMessage.isEmpty && !check.passed {
@@ -48,24 +60,62 @@ class JailbreakChecker {
         return (passed, failMessage)
     }
     
+    private enum TestResult {
+        case passed
+        case failed(String)
+        
+        var isPassed: Bool {
+            if case .passed = self {
+                return true
+            } else {
+                return false
+            }
+        }
+        
+        var failedMessage: String? {
+            switch self {
+            case .passed:
+                return nil
+            case .failed(let message):
+                return message
+            }
+        }
+    }
+    
+    private struct TestCase {
+        let scheme: String
+        let messageInCaseOfFailure: String
+    }
+    
     private static func checkURLSchemes() -> (passed: Bool, failMessage: String) {
         
-        let unc0verUrlScheme = URL(string: "undecimus://")
-        if UIApplication.shared.canOpenURL(unc0verUrlScheme!) {
-            return(false, "unc0ver jailbreak app URL scheme detected")
+        // NOTE: My proposal of solving this method
+        let testCases = [
+            TestCase(scheme: "undecimus://", messageInCaseOfFailure: "unc0ver jailbreak app URL scheme detected"),
+            TestCase(scheme: "cydia://package/com.example.package", messageInCaseOfFailure: "Cydia URL scheme detected"),
+            TestCase(scheme: "sileo://", messageInCaseOfFailure: "Sileo URL scheme detected")
+        ]
+        
+        let testResults = testCases.map { testCase -> TestResult in
+            let url = URL(string: testCase.scheme)!
+            
+            guard UIApplication.shared.canOpenURL(url) else {
+                return .failed(testCase.messageInCaseOfFailure)
+            }
+            
+            return .passed
         }
         
-        let cydiaUrlScheme = URL(string: "cydia://package/com.example.package")
-        if UIApplication.shared.canOpenURL(cydiaUrlScheme!) {
-            return(false, "Cydia URL scheme detected")
-        }
+        let areAllTestsPassed = testResults.allSatisfy { $0.isPassed }
         
-        let sileoUrlScheme = URL(string: "sileo://")
-        if UIApplication.shared.canOpenURL(sileoUrlScheme!) {
-            return(false, "Sileo URL scheme detected")
+        if areAllTestsPassed {
+            return TestResult.passed
+        } else {
+            let failMessage = testResults
+                .compactMap { $0.failedMessage }
+                .joined(separator: ", ")
+            return TestResult.failed(failMessage)
         }
-        
-        return (true, "")
     }
     
     private static func checkExistenceOfSuspiciousFiles() -> (passed: Bool, failMessage: String) {

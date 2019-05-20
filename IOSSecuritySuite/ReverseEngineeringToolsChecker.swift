@@ -45,6 +45,12 @@ class ReverseEngineeringToolsChecker {
             "/usr/sbin/frida-server"
         ]
         
+        // NOTE: you could e.g. wrap this into one-liner
+        // return paths.first { FileManager.default.fileExists(atPath: $0) } != nil
+        // for me it would be more readable as it could be read : "Return first path to satisfy the condition, if such path exists something is suspicious :)
+        //
+        // You could probably think of a solution to check all the paths and provide a user some readable feedback what paths have been actually detected - but I assume this could be in the next framework release.
+        
         for path in paths {
             if FileManager.default.fileExists(atPath: path) {
                 return true
@@ -68,6 +74,7 @@ class ReverseEngineeringToolsChecker {
         
         for port in ports {
             
+            // NOTE: you could wrap this into some private method as it's a part which is not quickly readable (a part which touches some low level APIs)
             var serverAddress = sockaddr_in()
             serverAddress.sin_family = sa_family_t(AF_INET)
             serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1")
@@ -80,6 +87,9 @@ class ReverseEngineeringToolsChecker {
                 }
             }
             
+            // NOTE: I see some repetitions here everywhere in the code
+            // Basically you take a Collection (Array) and check if at least one of the elements satisfy some condition.
+            // You could possibly write some extension on `Collection` protocol with a method named e.g. `atLeastOneSatisfy`, you could actually get inspired by `allSatisfy` method which is in the Swift's stdlib
             if result != -1 {
                 return true // Port is opened
             }

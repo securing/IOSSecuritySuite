@@ -11,6 +11,7 @@ import IOSSecuritySuite
 
 class ViewController: UIViewController {
 
+    // NOTE: Some cleanup - generally when you do not use some methods, you can remove them so a reader is not distracted by something which literally does nothing
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -30,6 +31,8 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
         
         print("TEST: \(message)")
+        
+        // NOTE (Cleanup) yoo do not have to use `self` keyword when e.g. not inside a closure
         self.present(alert, animated: false)
     }
 }
