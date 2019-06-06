@@ -14,14 +14,26 @@ What ISS detects:
 ## Setup
 There are 3 ways you can start using IOSSecuritySuite
 
-### Add source
+### 1. Add source
 Add `IOSSecuritySuite/*.swift` files to your project
 
-### Setup with CocoaPods
+### 2. Setup with CocoaPods
 `pod 'IOSSecuritySuite'`
 
-### Setup with Carthage
+### 3. Setup with Carthage
 `github "securing/IOSSecuritySuite"`
+
+### Update Info.plist
+After adding ISS to your project, you will also need to update your main Info.plist. There is a check in jailbreak detection module that uses ```canOpenURL(_:)``` method and [requires](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) specyfing URLs that will be queried.
+
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+	<string>cydia</string>
+	<string>undecimus</string>
+	<string>sileo</string>
+</array>
+```  
 
 ## How to use
 
@@ -76,6 +88,11 @@ Before using this and other platform security checkers you have to understand th
 
 ## Contribution ❤️
 Yes, please! If you have a better idea or you just want to improve this project, please text me on [Twitter](https://twitter.com/_r3ggi) or [Linkedin](https://www.linkedin.com/in/wojciech-regula/). Pull requests are more than welcome!
+
+### Special thanks: 👏🏻
+
+* @kubajakowski for pointing out the problem with ```canOpenURL(_:)``` method
+* @olbartek for code review and pull request 
 
 ## TODO
 * [ ] File integrity checks
