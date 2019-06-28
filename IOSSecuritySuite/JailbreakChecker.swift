@@ -50,19 +50,16 @@ internal class JailbreakChecker {
     
     private static func checkURLSchemes() -> (passed: Bool, failMessage: String) {
         
-        let unc0verUrlScheme = URL(string: "undecimus://")
-        if UIApplication.shared.canOpenURL(unc0verUrlScheme!) {
-            return(false, "unc0ver jailbreak app URL scheme detected")
-        }
+        let urlSchemes = [
+            "undecimus://",
+            "cydia://",
+            "sileo://"
+        ]
         
-        let cydiaUrlScheme = URL(string: "cydia://package/com.example.package")
-        if UIApplication.shared.canOpenURL(cydiaUrlScheme!) {
-            return(false, "Cydia URL scheme detected")
-        }
-        
-        let sileoUrlScheme = URL(string: "sileo://")
-        if UIApplication.shared.canOpenURL(sileoUrlScheme!) {
-            return(false, "Sileo URL scheme detected")
+        for urlScheme in urlSchemes {
+            if UIApplication.shared.canOpenURL(URL(string: urlScheme)!) {
+                return(false, "\(urlScheme) URL scheme detected")
+            }
         }
         
         return (true, "")
