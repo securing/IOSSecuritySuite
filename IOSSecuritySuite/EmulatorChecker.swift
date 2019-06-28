@@ -8,18 +8,16 @@
 
 import Foundation
 
-class EmulatorChecker {
+internal class EmulatorChecker {
     
     static func amIRunInEmulator() -> Bool {
-        return (self.checkCompile() || self.checkRuntime())
+        
+        return checkCompile() || checkRuntime()
     }
     
     private static func checkRuntime() -> Bool {
         
-        if ProcessInfo().environment["SIMULATOR_DEVICE_NAME"] != nil {
-            return true
-        }
-        return false
+        return ProcessInfo().environment["SIMULATOR_DEVICE_NAME"] != nil
     }
     
     private static func checkCompile() -> Bool {

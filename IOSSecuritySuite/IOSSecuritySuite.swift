@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class IOSSecuritySuite {
+public class IOSSecuritySuite {
     
     /**
      This type method is used to determine the true/false jailbreak status

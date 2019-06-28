@@ -8,14 +8,10 @@
 
 import Foundation
 
-class DebuggerChecker {
-    
-    static func amIDebugged() -> Bool {
-        return self.checkDebugger()
-    }
+internal class DebuggerChecker {
 
     // https://developer.apple.com/library/archive/qa/qa1361/_index.html
-    private static func checkDebugger() -> Bool {
+    static func amIDebugged() -> Bool {
         
         var kinfo = kinfo_proc()
         var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]

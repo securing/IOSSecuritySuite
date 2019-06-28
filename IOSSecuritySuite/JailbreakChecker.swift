@@ -11,27 +11,27 @@ import UIKit
 import Darwin // fork
 import MachO // dyld
 
-class JailbreakChecker {
+internal class JailbreakChecker {
     
     static func amIJailbroken() -> Bool {
-        return !self.performChecks().passed
+        return !performChecks().passed
     }
     
     static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
-        let performChecks = self.performChecks()
-        return (!performChecks.passed, performChecks.failMessage)
+        let performChecksReturn = performChecks()
+        return (!performChecksReturn.passed, performChecksReturn.failMessage)
     }
     
     private static func performChecks() -> (passed: Bool, failMessage: String) {
         
         let checklist = [
-            self.checkURLSchemes(),
-            self.checkExistenceOfSuspiciousFiles(),
-            self.checkSuspiciousFilesCanBeOpened(),
-            self.checkRestrictedDirectoriesWriteable(),
-            self.checkFork(),
-            self.checkSymbolicLinks(),
-            self.checkDYLD()
+            checkURLSchemes(),
+            checkExistenceOfSuspiciousFiles(),
+            checkSuspiciousFilesCanBeOpened(),
+            checkRestrictedDirectoriesWriteable(),
+            checkFork(),
+            checkSymbolicLinks(),
+            checkDYLD()
         ]
         
         var passed = true

@@ -9,12 +9,7 @@
 import UIKit
 import IOSSecuritySuite
 
-class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-    }
+internal class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
     
@@ -30,6 +25,6 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
         
         print("TEST: \(message)")
-        self.present(alert, animated: false)
+        present(alert, animated: false)
     }
 }
