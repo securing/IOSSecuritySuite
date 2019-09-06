@@ -68,6 +68,11 @@ The failMessage is a String containing comma separated indicators as shown on th
 let amIDebugged = IOSSecuritySuite.amIDebugged() ? true : false
 ```
 
+### Deny debugger at all
+```Swift
+IOSSecuritySuite.denyDebugger()
+```
+
 ### Emulator detector module
 ```Swift
 let runInEmulator = IOSSecuritySuite.amIRunInEmulator() ? true : false
@@ -97,7 +102,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 ## TODO
 * [ ] File integrity checks
 
-* [ ] Deny debugger
+* [x] Deny debugger
 
 ## License
 See the LICENSE file.

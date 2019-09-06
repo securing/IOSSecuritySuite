@@ -25,4 +25,20 @@ internal class DebuggerChecker {
         return (kinfo.kp_proc.p_flag & P_TRACED) != 0
     }
     
+    static func denyDebugger() {
+        
+        // bind ptrace()
+        let pointerToPtrace = UnsafeMutableRawPointer(bitPattern: -2)
+        let ptracePtr = dlsym(pointerToPtrace, "ptrace")
+        typealias PtraceType = @convention(c) (CInt, pid_t, CInt, CInt) -> CInt
+        let ptrace = unsafeBitCast(ptracePtr, to: PtraceType.self)
+        
+        // PT_DENY_ATTACH == 31
+        let ptraceRet = ptrace(31, 0, 0, 0)
+        
+        if ptraceRet != 0 {
+            print("Error occured when calling ptrace(). Denying debugger may not be reliable")
+        }
+    }
+    
 }

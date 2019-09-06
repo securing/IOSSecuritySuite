@@ -68,6 +68,18 @@ public class IOSSecuritySuite {
     }
     
     /**
+     This type method is used to deny debugger and improve the application resillency
+     
+     Usage example
+     ```
+     IOSSecuritySuite.denyDebugger()
+     ```
+     */
+    public static func denyDebugger() {
+        return DebuggerChecker.denyDebugger()
+    }
+    
+    /**
      This type method is used to determine if there are any popular reverse engineering tools installed on the device
      
      Usage example
@@ -78,4 +90,5 @@ public class IOSSecuritySuite {
     public static func amIReverseEngineered() -> Bool {
         return ReverseEngineeringToolsChecker.amIReverseEngineered()
     }
+    
 }
