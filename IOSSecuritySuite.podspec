@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   s.version      = "1.1"
   s.summary      = "iOS platform security & anti-tampering Swift library"
   s.homepage     = "https://github.com/securing/IOSSecuritySuite"
-  s.license      = "MIT"
+  s.license      = "bsd-2-clause"
   s.author       = "Wojciech Reguła"
   s.social_media_url = "https://twitter.com/_r3ggi"
   s.platform     = :ios, "10.0"
