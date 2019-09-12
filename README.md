@@ -1,5 +1,5 @@
 ![ISS logo](./logo.png)
-### by @_r3ggi
+### by [@_r3ggi](https://twitter.com/_r3ggi)
 
 ## ISS Description
 🌏 iOS Security Suite is an advanced and easy-to-use platform security & anti-tampering library written in pure Swift! If you are developing for iOS and you want to protect your app according to the OWASP [MASVS](https://github.com/OWASP/owasp-masvs) standard, chapter v8, then this library could save you a lot of time. 🚀
