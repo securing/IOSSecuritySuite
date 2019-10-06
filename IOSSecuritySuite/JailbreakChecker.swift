@@ -12,18 +12,18 @@ import Darwin // fork
 import MachO // dyld
 
 internal class JailbreakChecker {
-    
+
     static func amIJailbroken() -> Bool {
         return !performChecks().passed
     }
-    
+
     static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
         let performChecksReturn = performChecks()
         return (!performChecksReturn.passed, performChecksReturn.failMessage)
     }
-    
+
     private static func performChecks() -> (passed: Bool, failMessage: String) {
-        
+
         let checklist = [
             checkURLSchemes(),
             checkExistenceOfSuspiciousFiles(),
@@ -33,10 +33,10 @@ internal class JailbreakChecker {
             checkSymbolicLinks(),
             checkDYLD()
         ]
-        
+
         var passed = true
         var failMessage = ""
-        
+
         for check in checklist {
             passed = passed && check.passed
             if !failMessage.isEmpty && !check.passed {
@@ -44,29 +44,44 @@ internal class JailbreakChecker {
             }
             failMessage += check.failMessage
         }
-        
+
         return (passed, failMessage)
     }
-    
+
+    private static func canOpenUrlFromList(urlSchemes: [String]) -> (passed: Bool, failMessage: String) {
+        for urlScheme in urlSchemes {
+            if let url = URL(string: urlScheme) {
+                if UIApplication.shared.canOpenURL(url) {
+                    return(false, "\(urlScheme) URL scheme detected")
+                }
+            }
+        }
+        return (true, "")
+    }
+
     private static func checkURLSchemes() -> (passed: Bool, failMessage: String) {
-        
+        var flag: (passed: Bool, failMessage: String) = (true, "")
         let urlSchemes = [
             "undecimus://",
             "cydia://",
             "sileo://"
         ]
-        
-        for urlScheme in urlSchemes {
-            if UIApplication.shared.canOpenURL(URL(string: urlScheme)!) {
-                return(false, "\(urlScheme) URL scheme detected")
+
+        if Thread.isMainThread {
+            flag = canOpenUrlFromList(urlSchemes: urlSchemes)
+        } else {
+            let semaphore = DispatchSemaphore(value: 0)
+            DispatchQueue.main.async {
+                flag = Self.canOpenUrlFromList(urlSchemes: urlSchemes)
+                semaphore.signal()
             }
+            semaphore.wait()
         }
-        
-        return (true, "")
+        return flag
     }
-    
+
     private static func checkExistenceOfSuspiciousFiles() -> (passed: Bool, failMessage: String) {
-        
+
         let paths = [
             "/usr/sbin/frida-server", // frida
             "/etc/apt/sources.list.d/electra.list", // electra
@@ -96,18 +111,18 @@ internal class JailbreakChecker {
             "/usr/libexec/ssh-keysign",
             "/Applications/Cydia.app"
         ]
-        
+
         for path in paths {
             if FileManager.default.fileExists(atPath: path) {
                 return (false, "Suspicious file exists: \(path)")
             }
         }
-        
+
         return (true, "")
     }
-    
+
     private static func checkSuspiciousFilesCanBeOpened() -> (passed: Bool, failMessage: String) {
-        
+
         let paths = [
             "/.installed_unc0ver",
             "/.bootstrapped_electra",
@@ -119,26 +134,26 @@ internal class JailbreakChecker {
             "/usr/bin/ssh",
             "/var/log/apt"
         ]
-        
+
         for path in paths {
-            
+
             if FileManager.default.isReadableFile(atPath: path) {
                 return (false, "Suspicious file can be opened: \(path)")
             }
         }
-        
+
         return (true, "")
     }
-    
+
     private static func checkRestrictedDirectoriesWriteable() -> (passed: Bool, failMessage: String) {
-        
+
         let paths = [
             "/",
             "/root/",
             "/private/",
             "/jb/"
         ]
-        
+
         // If library won't be able to write to any restricted directory the return(false, ...) is never reached
         // because of catch{} statement
         for path in paths {
@@ -149,30 +164,30 @@ internal class JailbreakChecker {
                 return (false, "Wrote to restricted path: \(path)")
             } catch {}
         }
-        
+
         return (true, "")
     }
-    
+
     private static func checkFork() -> (passed: Bool, failMessage: String) {
-        
+
         let pointerToFork = UnsafeMutableRawPointer(bitPattern: -2)
         let forkPtr = dlsym(pointerToFork, "fork")
         typealias ForkType = @convention(c) () -> pid_t
         let fork = unsafeBitCast(forkPtr, to: ForkType.self)
         let forkResult = fork()
-        
+
         if forkResult >= 0 {
             if forkResult > 0 {
                 kill(forkResult, SIGTERM)
             }
             return (false, "Fork was able to create a new process (sandbox violation)")
         }
-        
+
         return (true, "")
     }
-    
+
     private static func checkSymbolicLinks() -> (passed: Bool, failMessage: String) {
-        
+
         let paths = [
             "/var/lib/undecimus/apt", // unc0ver
             "/Applications",
@@ -183,7 +198,7 @@ internal class JailbreakChecker {
             "/usr/libexec",
             "/usr/share"
         ]
-        
+
         for path in paths {
             do {
                 let result = try FileManager.default.destinationOfSymbolicLink(atPath: path)
@@ -192,12 +207,12 @@ internal class JailbreakChecker {
                 }
             } catch {}
         }
-        
+
         return (true, "")
     }
-    
+
     private static func checkDYLD() -> (passed: Bool, failMessage: String) {
-        
+
         let suspiciousLibraries = [
             "SubstrateLoader.dylib",
             "SSLKillSwitch2.dylib",
@@ -211,19 +226,19 @@ internal class JailbreakChecker {
             "RocketBootstrap",
             "WeeLoader"
         ]
-        
+
         for libraryIndex in 0..<_dyld_image_count() {
-            
+
             // _dyld_get_image_name returns const char * that needs to be casted to Swift String
             guard let loadedLibrary = String(validatingUTF8: _dyld_get_image_name(libraryIndex)) else { continue }
-            
+
             for suspiciousLibrary in suspiciousLibraries {
-                if loadedLibrary.contains(suspiciousLibrary) {
+                if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
                     return(false, "Suspicious library loaded: \(loadedLibrary)")
                 }
             }
         }
-        
+
         return (true, "")
     }
 }
