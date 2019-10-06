@@ -9,7 +9,7 @@
 import Foundation
 
 public class IOSSecuritySuite {
-    
+
     /**
      This type method is used to determine the true/false jailbreak status
      
@@ -21,7 +21,7 @@ public class IOSSecuritySuite {
     public static func amIJailbroken() -> Bool {
         return JailbreakChecker.amIJailbroken()
     }
-    
+
     /**
      This type method is used to determine the jailbreak status with a message which jailbreak indicator was detected
      
@@ -42,7 +42,7 @@ public class IOSSecuritySuite {
     public static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
         return JailbreakChecker.amIJailbrokenWithFailMessage()
     }
-    
+
     /**
      This type method is used to determine if application is run in emulator
      
@@ -54,7 +54,7 @@ public class IOSSecuritySuite {
     public static func amIRunInEmulator() -> Bool {
         return EmulatorChecker.amIRunInEmulator()
     }
-    
+
     /**
      This type method is used to determine if application is being debugged
      
@@ -66,7 +66,7 @@ public class IOSSecuritySuite {
     public static func amIDebugged() -> Bool {
         return DebuggerChecker.amIDebugged()
     }
-    
+
     /**
      This type method is used to deny debugger and improve the application resillency
      
@@ -78,7 +78,7 @@ public class IOSSecuritySuite {
     public static func denyDebugger() {
         return DebuggerChecker.denyDebugger()
     }
-    
+
     /**
      This type method is used to determine if there are any popular reverse engineering tools installed on the device
      
@@ -90,5 +90,5 @@ public class IOSSecuritySuite {
     public static func amIReverseEngineered() -> Bool {
         return ReverseEngineeringToolsChecker.amIReverseEngineered()
     }
-    
+
 }
