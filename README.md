@@ -98,6 +98,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 
 * [kubajakowski](https://github.com/kubajakowski) for pointing out the problem with ```canOpenURL(_:)``` method
 * [olbartek](https://github.com/olbartek) for code review and pull request 
+* [benbahrenburg](https://github.com/benbahrenburg) for various ISS improvements
 
 ## TODO
 * [ ] File integrity checks
