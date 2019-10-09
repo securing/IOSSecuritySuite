@@ -23,6 +23,7 @@ xcuserdata/
 *.xcscmblueprint
 .swiftlint.yml
 .code
+.DS_Store
 
 ## Obj-C/Swift specific
 *.hmap
