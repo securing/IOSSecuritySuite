@@ -109,7 +109,31 @@ internal class JailbreakChecker {
             "/private/var/Users/",
             "/var/log/apt",
             "/usr/libexec/ssh-keysign",
-            "/Applications/Cydia.app"
+            "/Applications/Cydia.app",
+            "/bin/sh",
+            "/usr/bin/sshd",
+            "/etc/ssh/sshd_config",
+            "/usr/libexec/sftp-server",
+            "/private/var/stash",
+            "/private/var/lib/apt/",
+            "/private/var/lib/cydia",
+            "/private/var/cache/apt/",
+            "/private/var/log/syslog",
+            "/private/var/tmp/cydia.log",
+            "/Applications/Icy.app",
+            "/Applications/MxTube.app",
+            "/Applications/RockApp.app",
+            "/Applications/blackra1n.app",
+            "/Applications/SBSettings.app",
+            "/Applications/FakeCarrier.app",
+            "/Applications/WinterBoard.app",
+            "/Applications/IntelliScreen.app",
+            "/private/var/mobile/Library/SBSettings/Themes",
+            "/Library/MobileSubstrate/CydiaSubstrate.dylib",
+            "/System/Library/LaunchDaemons/com.ikey.bbot.plist",
+            "/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
+            "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist"
         ]
 
         for path in paths {
