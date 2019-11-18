@@ -99,6 +99,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [kubajakowski](https://github.com/kubajakowski) for pointing out the problem with ```canOpenURL(_:)``` method
 * [olbartek](https://github.com/olbartek) for code review and pull request 
 * [benbahrenburg](https://github.com/benbahrenburg) for various ISS improvements
+* [fotiDim](https://github.com/fotiDim) for adding new file paths to check
 
 ## TODO
 * [ ] File integrity checks
