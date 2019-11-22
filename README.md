@@ -12,7 +12,7 @@ What ISS detects:
 * Common reverse engineering tools running on the device 🔭
 
 ## Setup
-There are 3 ways you can start using IOSSecuritySuite
+There are 4 ways you can start using IOSSecuritySuite
 
 ### 1. Add source
 Add `IOSSecuritySuite/*.swift` files to your project
@@ -22,6 +22,8 @@ Add `IOSSecuritySuite/*.swift` files to your project
 
 ### 3. Setup with Carthage
 `github "securing/IOSSecuritySuite"`
+
+### 4. Setup with Swift Package Manager
 
 ### Update Info.plist
 After adding ISS to your project, you will also need to update your main Info.plist. There is a check in jailbreak detection module that uses ```canOpenURL(_:)``` method and [requires](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) specyfing URLs that will be queried.
@@ -100,6 +102,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [olbartek](https://github.com/olbartek) for code review and pull request 
 * [benbahrenburg](https://github.com/benbahrenburg) for various ISS improvements
 * [fotiDim](https://github.com/fotiDim) for adding new file paths to check
+* [gcharita](https://github.com/gcharita) for adding the Swift Package Manager support
 
 ## TODO
 * [ ] File integrity checks
