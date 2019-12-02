@@ -24,6 +24,9 @@ Add `IOSSecuritySuite/*.swift` files to your project
 `github "securing/IOSSecuritySuite"`
 
 ### 4. Setup with Swift Package Manager
+```swift
+.package(url: "https://github.com/securing/IOSSecuritySuite.git", from: "1.4.0")
+```
 
 ### Update Info.plist
 After adding ISS to your project, you will also need to update your main Info.plist. There is a check in jailbreak detection module that uses ```canOpenURL(_:)``` method and [requires](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) specyfing URLs that will be queried.
