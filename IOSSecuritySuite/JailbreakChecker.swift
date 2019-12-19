@@ -14,12 +14,6 @@ import MachO // dyld
 public typealias CheckResult = (passed: Bool, failMessage: String)
 public typealias FailedCheck = (check: JailbreakCheck, failMessage: String)
 
-public struct JailbreakStatus {
-    let passed: Bool
-    let failMessage: String
-    let failedChecks: [FailedCheck]
-}
-
 public enum JailbreakCheck: CaseIterable {
     case urlSchemes
     case existenceOfSuspiciousFiles
@@ -31,6 +25,12 @@ public enum JailbreakCheck: CaseIterable {
 }
 
 internal class JailbreakChecker {
+    struct JailbreakStatus {
+        let passed: Bool
+        let failMessage: String
+        let failedChecks: [FailedCheck]
+    }
+
     static func amIJailbroken() -> Bool {
         return !performChecks().passed
     }
@@ -71,7 +71,7 @@ internal class JailbreakChecker {
 
             passed = passed && result.passed
 
-            if !failMessage.isEmpty && !result.passed {
+            if !result.passed {
                 failMessage += ", "
                 failedChecks.append((check: check, failMessage: failMessage))
             }
