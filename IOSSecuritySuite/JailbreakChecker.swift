@@ -72,8 +72,11 @@ internal class JailbreakChecker {
             passed = passed && result.passed
 
             if !result.passed {
-                failMessage += ", "
-                failedChecks.append((check: check, failMessage: failMessage))
+                failedChecks.append((check: check, failMessage: result.failMessage))
+
+                if !failMessage.isEmpty {
+                    failMessage += ", "
+                }
             }
 
             failMessage += result.failMessage
