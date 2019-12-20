@@ -11,7 +11,6 @@ import UIKit
 import Darwin // fork
 import MachO // dyld
 
-public typealias CheckResult = (passed: Bool, failMessage: String)
 public typealias FailedCheck = (check: JailbreakCheck, failMessage: String)
 
 public enum JailbreakCheck: CaseIterable {
@@ -25,9 +24,11 @@ public enum JailbreakCheck: CaseIterable {
 }
 
 internal class JailbreakChecker {
+    typealias CheckResult = (passed: Bool, failMessage: String)
+
     struct JailbreakStatus {
         let passed: Bool
-        let failMessage: String
+        let failMessage: String // Added for backwards compatibility
         let failedChecks: [FailedCheck]
     }
 

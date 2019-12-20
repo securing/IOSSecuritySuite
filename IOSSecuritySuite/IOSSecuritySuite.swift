@@ -44,15 +44,19 @@ public class IOSSecuritySuite {
     }
 
     /**
-        This type method is used to determine the jailbreak status with a list of failed checks
-    
-    - Returns: Tuple with with the jailbreak status *Bool* labeled *jailbroken* and *[FailedCheck]* labeled *failedChecks*
-     for the list of failed checks
+    This type method is used to determine the jailbreak status with a list of failed checks
 
      Usage example
      ```
-     //TODO: To be added
+     let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+     if jailbreakStatus.jailbroken {
+     print("This device is jailbroken")
+     print("The following checks failed: \(jailbreakStatus.failedChecks)")
+     }
      ```
+
+     - Returns: Tuple with with the jailbreak status *Bool* labeled *jailbroken* and *[FailedCheck]* labeled *failedChecks*
+     for the list of failed checks
      */
     public static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheck]) {
         return JailbreakChecker.amIJailbrokenWithFailedChecks()
