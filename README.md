@@ -72,7 +72,6 @@ The failMessage is a String containing comma separated indicators as shown on th
 
 ```Swift
 let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
-
 if jailbreakStatus.jailbroken {
    if (jailbreakStatus.failedChecks.contains { $0.check == .existenceOfSuspiciousFiles }) && (jailbreakStatus.failedChecks.contains { $0.check == .suspiciousFilesCanBeOpened }) {
          print("This is real jailbroken device")
