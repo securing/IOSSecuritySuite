@@ -190,6 +190,7 @@
 				TargetAttributes = {
 					706B0E26226F445D0059AEA9 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1130;
 						SystemCapabilities = {
 							com.apple.Multipath = {
 								enabled = 0;
@@ -320,7 +321,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = biz.securing.FrameworkClientApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -339,7 +340,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = biz.securing.FrameworkClientApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
