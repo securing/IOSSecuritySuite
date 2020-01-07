@@ -24,7 +24,10 @@ internal class ViewController: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
 
-        print("TEST: \(message)")
+        print("FailMessage: \(message)")
         present(alert, animated: false)
+        
+        let checks = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+        print("The failed checks are: \(checks)")
     }
 }
