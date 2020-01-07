@@ -44,7 +44,7 @@ After adding ISS to your project, you will also need to update your main Info.pl
 
 ### Jailbreak detector module
 
-* This method returns a binary value of True/False if you just want to know if the device is jailbroken or jailed
+* **The simplest method** returns True/False if you just want to know if the device is jailbroken or jailed
 
 ```Swift
 if IOSSecuritySuite.amIJailbroken() {
@@ -54,7 +54,7 @@ if IOSSecuritySuite.amIJailbroken() {
 }
 ```
 
-* Verbose if you also want to know what indicators were identified
+* **Verbose**, if you also want to know what indicators were identified
 
 ```Swift
 let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailMessage()
@@ -67,6 +67,18 @@ if jailbreakStatus.jailbroken {
 ```
 The failMessage is a String containing comma separated indicators as shown on the example below:
 `Cydia URL scheme detected, Suspicious file exists: /Library/MobileSubstrate/MobileSubstrate.dylib, Fork was able to create a new process`
+
+* **Verbose & filterable**, if you also want to for example identify devices that were jailbroken in the past, but now are jailed
+
+```Swift
+let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+
+if jailbreakStatus.jailbroken {
+   if (jailbreakStatus.failedChecks.contains { $0.check == .existenceOfSuspiciousFiles }) && (jailbreakStatus.failedChecks.contains { $0.check == .suspiciousFilesCanBeOpened }) {
+         print("This is real jailbroken device")
+   }
+}
+```
 
 ### Debbuger detector module
 ```Swift
@@ -106,6 +118,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [benbahrenburg](https://github.com/benbahrenburg) for various ISS improvements
 * [fotiDim](https://github.com/fotiDim) for adding new file paths to check
 * [gcharita](https://github.com/gcharita) for adding the Swift Package Manager support
+* [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
 
 ## TODO
 * [ ] File integrity checks
