@@ -11,44 +11,82 @@ import UIKit
 import Darwin // fork
 import MachO // dyld
 
+public typealias FailedCheck = (check: JailbreakCheck, failMessage: String)
+
+public enum JailbreakCheck: CaseIterable {
+    case urlSchemes
+    case existenceOfSuspiciousFiles
+    case suspiciousFilesCanBeOpened
+    case restrictedDirectoriesWriteable
+    case fork
+    case symbolicLinks
+    case dyld
+}
+
 internal class JailbreakChecker {
+    typealias CheckResult = (passed: Bool, failMessage: String)
+
+    struct JailbreakStatus {
+        let passed: Bool
+        let failMessage: String // Added for backwards compatibility
+        let failedChecks: [FailedCheck]
+    }
 
     static func amIJailbroken() -> Bool {
         return !performChecks().passed
     }
 
     static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
-        let performChecksReturn = performChecks()
-        return (!performChecksReturn.passed, performChecksReturn.failMessage)
+        let status = performChecks()
+        return (!status.passed, status.failMessage)
     }
 
-    private static func performChecks() -> (passed: Bool, failMessage: String) {
+    static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheck]) {
+        let status = performChecks()
+        return (!status.passed, status.failedChecks)
+    }
 
-        let checklist = [
-            checkURLSchemes(),
-            checkExistenceOfSuspiciousFiles(),
-            checkSuspiciousFilesCanBeOpened(),
-            checkRestrictedDirectoriesWriteable(),
-            checkFork(),
-            checkSymbolicLinks(),
-            checkDYLD()
-        ]
-
+    private static func performChecks() -> JailbreakStatus {
         var passed = true
         var failMessage = ""
+        var result: CheckResult = (true, "")
+        var failedChecks: [FailedCheck] = []
 
-        for check in checklist {
-            passed = passed && check.passed
-            if !failMessage.isEmpty && !check.passed {
-                failMessage += ", "
+        for check in JailbreakCheck.allCases {
+            switch check {
+            case .urlSchemes:
+                result = checkURLSchemes()
+            case .existenceOfSuspiciousFiles:
+                result = checkExistenceOfSuspiciousFiles()
+            case .suspiciousFilesCanBeOpened:
+                result = checkSuspiciousFilesCanBeOpened()
+            case .restrictedDirectoriesWriteable:
+                result = checkRestrictedDirectoriesWriteable()
+            case .fork:
+                result = checkFork()
+            case .symbolicLinks:
+                result = checkSymbolicLinks()
+            case .dyld:
+                result = checkDYLD()
             }
-            failMessage += check.failMessage
+
+            passed = passed && result.passed
+
+            if !result.passed {
+                failedChecks.append((check: check, failMessage: result.failMessage))
+
+                if !failMessage.isEmpty {
+                    failMessage += ", "
+                }
+            }
+
+            failMessage += result.failMessage
         }
 
-        return (passed, failMessage)
+        return JailbreakStatus(passed: passed, failMessage: failMessage, failedChecks: failedChecks)
     }
 
-    private static func canOpenUrlFromList(urlSchemes: [String]) -> (passed: Bool, failMessage: String) {
+    private static func canOpenUrlFromList(urlSchemes: [String]) -> CheckResult {
         for urlScheme in urlSchemes {
             if let url = URL(string: urlScheme) {
                 if UIApplication.shared.canOpenURL(url) {
@@ -59,7 +97,7 @@ internal class JailbreakChecker {
         return (true, "")
     }
 
-    private static func checkURLSchemes() -> (passed: Bool, failMessage: String) {
+    private static func checkURLSchemes() -> CheckResult {
         var flag: (passed: Bool, failMessage: String) = (true, "")
         let urlSchemes = [
             "undecimus://",
@@ -80,8 +118,7 @@ internal class JailbreakChecker {
         return flag
     }
 
-    private static func checkExistenceOfSuspiciousFiles() -> (passed: Bool, failMessage: String) {
-
+    private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
         let paths = [
             "/usr/sbin/frida-server", // frida
             "/etc/apt/sources.list.d/electra.list", // electra
@@ -145,7 +182,7 @@ internal class JailbreakChecker {
         return (true, "")
     }
 
-    private static func checkSuspiciousFilesCanBeOpened() -> (passed: Bool, failMessage: String) {
+    private static func checkSuspiciousFilesCanBeOpened() -> CheckResult {
 
         let paths = [
             "/.installed_unc0ver",
@@ -169,7 +206,7 @@ internal class JailbreakChecker {
         return (true, "")
     }
 
-    private static func checkRestrictedDirectoriesWriteable() -> (passed: Bool, failMessage: String) {
+    private static func checkRestrictedDirectoriesWriteable() -> CheckResult {
 
         let paths = [
             "/",
@@ -192,7 +229,7 @@ internal class JailbreakChecker {
         return (true, "")
     }
 
-    private static func checkFork() -> (passed: Bool, failMessage: String) {
+    private static func checkFork() -> CheckResult {
 
         let pointerToFork = UnsafeMutableRawPointer(bitPattern: -2)
         let forkPtr = dlsym(pointerToFork, "fork")
@@ -210,7 +247,7 @@ internal class JailbreakChecker {
         return (true, "")
     }
 
-    private static func checkSymbolicLinks() -> (passed: Bool, failMessage: String) {
+    private static func checkSymbolicLinks() -> CheckResult {
 
         let paths = [
             "/var/lib/undecimus/apt", // unc0ver
@@ -235,7 +272,7 @@ internal class JailbreakChecker {
         return (true, "")
     }
 
-    private static func checkDYLD() -> (passed: Bool, failMessage: String) {
+    private static func checkDYLD() -> CheckResult {
 
         let suspiciousLibraries = [
             "SubstrateLoader.dylib",
