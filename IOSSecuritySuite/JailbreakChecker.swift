@@ -110,7 +110,7 @@ internal class JailbreakChecker {
         } else {
             let semaphore = DispatchSemaphore(value: 0)
             DispatchQueue.main.async {
-                flag = Self.canOpenUrlFromList(urlSchemes: urlSchemes)
+                flag = canOpenUrlFromList(urlSchemes: urlSchemes)
                 semaphore.signal()
             }
             semaphore.wait()
