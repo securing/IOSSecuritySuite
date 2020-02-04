@@ -5,13 +5,13 @@ import PackageDescription
 let package = Package(
     name: "IOSSecuritySuite",
     platforms: [
-        .iOS(.v10),
+        .iOS(.v10)
     ],
     products: [
-        .library(name: "IOSSecuritySuite", targets: ["IOSSecuritySuite"]),
+        .library(name: "IOSSecuritySuite", targets: ["IOSSecuritySuite"])
     ],
     targets: [
-        .target(name: "IOSSecuritySuite", path: "./IOSSecuritySuite", exclude: ["IOSSecuritySuite.h", "Info.plist"]),
+        .target(name: "IOSSecuritySuite", path: "./IOSSecuritySuite", exclude: ["IOSSecuritySuite.h", "Info.plist"])
     ],
     swiftLanguageVersions: [.v4_2, .v5]
 )
