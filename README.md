@@ -25,7 +25,7 @@ Add `IOSSecuritySuite/*.swift` files to your project
 
 ### 4. Setup with Swift Package Manager
 ```swift
-.package(url: "https://github.com/securing/IOSSecuritySuite.git", from: "1.4.0")
+.package(url: "https://github.com/securing/IOSSecuritySuite.git", from: "1.5.0")
 ```
 
 ### Update Info.plist
