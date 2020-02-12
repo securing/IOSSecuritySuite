@@ -37,6 +37,7 @@ After adding ISS to your project, you will also need to update your main Info.pl
 	<string>cydia</string>
 	<string>undecimus</string>
 	<string>sileo</string>
+	<string>zbra</string>
 </array>
 ```  
 
