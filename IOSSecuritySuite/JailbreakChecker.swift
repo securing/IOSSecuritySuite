@@ -102,7 +102,8 @@ internal class JailbreakChecker {
         let urlSchemes = [
             "undecimus://",
             "cydia://",
-            "sileo://"
+            "sileo://",
+            "zbra://"
         ]
 
         if Thread.isMainThread {
