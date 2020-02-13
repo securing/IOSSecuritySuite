@@ -37,6 +37,7 @@ After adding ISS to your project, you will also need to update your main Info.pl
 	<string>cydia</string>
 	<string>undecimus</string>
 	<string>sileo</string>
+	<string>zbra</string>
 </array>
 ```  
 
@@ -121,6 +122,8 @@ Yes, please! If you have a better idea or you just want to improve this project,
 
 ## TODO
 * [ ] File integrity checks
+
+* [ ] Research Installer5 and Zebra Package Manager detection ( Cydia Alternatives )
 
 * [x] Deny debugger
 
