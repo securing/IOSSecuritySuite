@@ -29,5 +29,6 @@ internal class ViewController: UIViewController {
         
         let checks = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
         print("The failed checks are: \(checks)")
+        
     }
 }

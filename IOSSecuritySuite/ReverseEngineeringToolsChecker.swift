@@ -25,7 +25,6 @@ internal class ReverseEngineeringToolsChecker {
         ]
 
         for libraryIndex in 0..<_dyld_image_count() {
-
             // _dyld_get_image_name returns const char * that needs to be casted to Swift String
             guard let loadedLibrary = String(validatingUTF8: _dyld_get_image_name(libraryIndex)) else { continue }
 
@@ -37,6 +36,45 @@ internal class ReverseEngineeringToolsChecker {
         }
 
         return false
+    }
+
+    // Optional security check
+    //   Q: Why do i need this?
+    //   A: Cydia Impactor or "Signing Services" change the BundleID for sideloading -> identify resigned/sideloaded/(modified) App
+    //   Optional: supply multiple identifiers, if you have multiple Targets / Flavours
+    //   Source: https://stackoverflow.com/questions/48393545/duplicating-an-iphone-app-by-changing-the-bundle-identifier-with-xcode
+    static func wasBundleIdentifierModified(_ originalBundleIdentifiers: String...) -> Bool {
+        guard let currentBundleIdentifier = Bundle.main.bundleIdentifier else {
+            print("Error occured while accessing bundleIdentifier. This check may not be reliable")
+            return false
+        }
+        return !originalBundleIdentifiers.contains(currentBundleIdentifier)
+    }
+    
+    // Optional security check
+    //   Q: Why do i need this?
+    //   A: Copying an App from Device A to Device B can be detected via "identifierForVendor"
+    //   Source: https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor
+    static func checkAppDeviceBinding() -> Bool {
+        guard let uuidString = UIDevice.current.identifierForVendor?.uuidString else {
+            print("Error occured while accessing identifierForVendor. This check may not be reliable")
+            return false
+        }
+        if let identifier = getUUID() {
+            return identifier != uuidString
+        } else {
+            // First time execution? -> save identifier to Keychain
+            save(uuid: uuidString)
+            return false
+        }
+    }
+    
+    private static func getUUID() -> String? {
+        fatalError("TODO: needs implementation")
+    }
+    
+    private static func save(uuid intoKeychain: String) {
+        fatalError("TODO: needs implementation")
     }
 
     private static func checkExistenceOfSuspiciousFiles() -> Bool {
@@ -105,7 +143,7 @@ internal class ReverseEngineeringToolsChecker {
         let sysctlRet = sysctl(&mib, UInt32(mib.count), &kinfo, &size, nil, 0)
 
         if sysctlRet != 0 {
-            print("Error occured when calling sysctl(). This check may be not reliable")
+            print("Error occured while calling sysctl(). This check may not be reliable")
         }
         
         return (kinfo.kp_proc.p_flag & P_SELECT) != 0

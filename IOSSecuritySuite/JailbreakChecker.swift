@@ -101,9 +101,11 @@ internal class JailbreakChecker {
         var flag: (passed: Bool, failMessage: String) = (true, "")
         let urlSchemes = [
             "undecimus://",
-            "cydia://",
-            "sileo://",
-            "zbra://"
+            "cydia://",    // Cydia
+            "sileo://",    // Sileo
+            "zbra://",     // Zebra
+            "filza://"     // Filza and FilzaEscaped
+            "install://"   // Installer4
         ]
 
         if Thread.isMainThread {
@@ -281,6 +283,7 @@ internal class JailbreakChecker {
             "SSLKillSwitch.dylib",
             "MobileSubstrate.dylib",
             "TweakInject.dylib",
+            "AnemoneCore.dylib" // Current Winterboard alternative Anemone by Coolstar
             "CydiaSubstrate",
             "cynject",
             "CustomWidgetIcons",
