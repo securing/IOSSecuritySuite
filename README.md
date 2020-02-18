@@ -119,6 +119,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [fotiDim](https://github.com/fotiDim) for adding new file paths to check
 * [gcharita](https://github.com/gcharita) for adding the Swift Package Manager support
 * [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
+* [undeaDD](https://github.com/undeaDD) for various ISS improvements
 
 ## TODO
 * [ ] File integrity checks
