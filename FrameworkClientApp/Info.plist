@@ -43,6 +43,7 @@
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>zbra</string>
 		<string>cydia</string>
 		<string>undecimus</string>
 		<string>sileo</string>
