@@ -105,7 +105,7 @@ internal class ReverseEngineeringToolsChecker {
         let sysctlRet = sysctl(&mib, UInt32(mib.count), &kinfo, &size, nil, 0)
 
         if sysctlRet != 0 {
-            print("Error occured when calling sysctl(). This check may be not reliable")
+            print("Error occured when calling sysctl(). This check may not be reliable")
         }
         
         return (kinfo.kp_proc.p_flag & P_SELECT) != 0
