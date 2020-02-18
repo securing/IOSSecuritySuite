@@ -63,7 +63,12 @@ internal class JailbreakChecker {
             case .restrictedDirectoriesWriteable:
                 result = checkRestrictedDirectoriesWriteable()
             case .fork:
-                result = checkFork()
+                if !EmulatorChecker.amIRunInEmulator() {
+                    result = checkFork()
+                } else {
+                    print("App run in the emulator, skipping the fork check.")
+                    result = (true, "")
+                }
             case .symbolicLinks:
                 result = checkSymbolicLinks()
             case .dyld:
@@ -120,7 +125,7 @@ internal class JailbreakChecker {
     }
 
     private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
-        let paths = [
+        var paths = [
             "/usr/sbin/frida-server", // frida
             "/etc/apt/sources.list.d/electra.list", // electra
             "/etc/apt/sources.list.d/sileo.sources", // electra
@@ -139,19 +144,11 @@ internal class JailbreakChecker {
             "/jb/libjailbreak.dylib", // unc0ver
             "/usr/libexec/cydia/firmware.sh",
             "/var/lib/cydia",
-            "/bin/bash",
-            "/usr/sbin/sshd",
             "/etc/apt",
-            "/usr/bin/ssh",
             "/private/var/lib/apt",
             "/private/var/Users/",
             "/var/log/apt",
-            "/usr/libexec/ssh-keysign",
             "/Applications/Cydia.app",
-            "/bin/sh",
-            "/usr/bin/sshd",
-            "/etc/ssh/sshd_config",
-            "/usr/libexec/sftp-server",
             "/private/var/stash",
             "/private/var/lib/apt/",
             "/private/var/lib/cydia",
@@ -173,6 +170,19 @@ internal class JailbreakChecker {
             "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
             "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist"
         ]
+        
+        // These files can give false positive in the emulator
+        if !EmulatorChecker.amIRunInEmulator() {
+            paths += [
+            "/bin/bash",
+            "/usr/sbin/",
+            "/usr/libexec/ssh-keysign",
+            "/bin/sh",
+            "/etc/ssh/sshd_config",
+            "/usr/libexec/sftp-server",
+            "/usr/bin/ssh"
+            ]
+        }
 
         for path in paths {
             if FileManager.default.fileExists(atPath: path) {
@@ -185,17 +195,23 @@ internal class JailbreakChecker {
 
     private static func checkSuspiciousFilesCanBeOpened() -> CheckResult {
 
-        let paths = [
+        var paths = [
             "/.installed_unc0ver",
             "/.bootstrapped_electra",
             "/Applications/Cydia.app",
             "/Library/MobileSubstrate/MobileSubstrate.dylib",
-            "/bin/bash",
-            "/usr/sbin/sshd",
             "/etc/apt",
-            "/usr/bin/ssh",
             "/var/log/apt"
         ]
+        
+        // These files can give false positive in the emulator
+        if !EmulatorChecker.amIRunInEmulator() {
+            paths += [
+            "/bin/bash",
+            "/usr/sbin/sshd",
+            "/usr/bin/ssh"
+            ]
+        }
 
         for path in paths {
 
