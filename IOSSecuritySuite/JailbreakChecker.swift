@@ -175,7 +175,7 @@ internal class JailbreakChecker {
         if !EmulatorChecker.amIRunInEmulator() {
             paths += [
             "/bin/bash",
-            "/usr/sbin/",
+            "/usr/sbin/sshd",
             "/usr/libexec/ssh-keysign",
             "/bin/sh",
             "/etc/ssh/sshd_config",
