@@ -20,6 +20,13 @@
 		70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */; };
 		70B0BBCD226F3A90000CFB39 /* EmulatorChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */; };
 		70B0BBCF226F3AB2000CFB39 /* IOSSecuritySuite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */; };
+		A9AF7FC2245014F000003EC1 /* AntiFishHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AF7FC0245014F000003EC1 /* AntiFishHook.swift */; };
+		A9AF7FC3245014F000003EC1 /* FishHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AF7FC1245014F000003EC1 /* FishHook.swift */; };
+		A9AF7FC82450151400003EC1 /* MSHookFunctionARMCheck.c in Sources */ = {isa = PBXBuildFile; fileRef = A9AF7FC42450151400003EC1 /* MSHookFunctionARMCheck.c */; };
+		A9AF7FC92450151400003EC1 /* AntiMSHookFunctionARM.c in Sources */ = {isa = PBXBuildFile; fileRef = A9AF7FC52450151400003EC1 /* AntiMSHookFunctionARM.c */; };
+		A9AF7FCA2450151400003EC1 /* MSHookFunctionARMCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = A9AF7FC62450151400003EC1 /* MSHookFunctionARMCheck.h */; };
+		A9AF7FCB2450151400003EC1 /* AntiMSHookFunctionARM.h in Headers */ = {isa = PBXBuildFile; fileRef = A9AF7FC72450151400003EC1 /* AntiMSHookFunctionARM.h */; };
+		A9AF7FCD2450151C00003EC1 /* antiObjcHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AF7FCC2450151C00003EC1 /* antiObjcHook.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +59,13 @@
 		70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorChecker.swift; sourceTree = "<group>"; };
 		70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSecuritySuite.swift; sourceTree = "<group>"; };
 		70DDFD5A2284AA9600D95EE7 /* FrameworkClientApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FrameworkClientApp.entitlements; sourceTree = "<group>"; };
+		A9AF7FC0245014F000003EC1 /* AntiFishHook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AntiFishHook.swift; sourceTree = "<group>"; };
+		A9AF7FC1245014F000003EC1 /* FishHook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishHook.swift; sourceTree = "<group>"; };
+		A9AF7FC42450151400003EC1 /* MSHookFunctionARMCheck.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MSHookFunctionARMCheck.c; sourceTree = "<group>"; };
+		A9AF7FC52450151400003EC1 /* AntiMSHookFunctionARM.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AntiMSHookFunctionARM.c; sourceTree = "<group>"; };
+		A9AF7FC62450151400003EC1 /* MSHookFunctionARMCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSHookFunctionARMCheck.h; sourceTree = "<group>"; };
+		A9AF7FC72450151400003EC1 /* AntiMSHookFunctionARM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AntiMSHookFunctionARM.h; sourceTree = "<group>"; };
+		A9AF7FCC2450151C00003EC1 /* antiObjcHook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = antiObjcHook.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +123,7 @@
 		70B0BBBE226F3A4D000CFB39 /* IOSSecuritySuite */ = {
 			isa = PBXGroup;
 			children = (
+				A9AF7FB62450144800003EC1 /* AntiHook */,
 				70B0BBBF226F3A4D000CFB39 /* IOSSecuritySuite.h */,
 				70B0BBC0226F3A4D000CFB39 /* Info.plist */,
 				70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */,
@@ -127,6 +142,44 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A9AF7FB62450144800003EC1 /* AntiHook */ = {
+			isa = PBXGroup;
+			children = (
+				A9AF7FBF245014D400003EC1 /* anti-objchook */,
+				A9AF7FBD2450147E00003EC1 /* anti-fishhook */,
+				A9AF7FBE245014CB00003EC1 /* anti-mshook */,
+			);
+			path = AntiHook;
+			sourceTree = "<group>";
+		};
+		A9AF7FBD2450147E00003EC1 /* anti-fishhook */ = {
+			isa = PBXGroup;
+			children = (
+				A9AF7FC0245014F000003EC1 /* AntiFishHook.swift */,
+				A9AF7FC1245014F000003EC1 /* FishHook.swift */,
+			);
+			path = "anti-fishhook";
+			sourceTree = "<group>";
+		};
+		A9AF7FBE245014CB00003EC1 /* anti-mshook */ = {
+			isa = PBXGroup;
+			children = (
+				A9AF7FC52450151400003EC1 /* AntiMSHookFunctionARM.c */,
+				A9AF7FC72450151400003EC1 /* AntiMSHookFunctionARM.h */,
+				A9AF7FC42450151400003EC1 /* MSHookFunctionARMCheck.c */,
+				A9AF7FC62450151400003EC1 /* MSHookFunctionARMCheck.h */,
+			);
+			path = "anti-mshook";
+			sourceTree = "<group>";
+		};
+		A9AF7FBF245014D400003EC1 /* anti-objchook */ = {
+			isa = PBXGroup;
+			children = (
+				A9AF7FCC2450151C00003EC1 /* antiObjcHook.swift */,
+			);
+			path = "anti-objchook";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -135,6 +188,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				70B0BBC1226F3A4D000CFB39 /* IOSSecuritySuite.h in Headers */,
+				A9AF7FCA2450151400003EC1 /* MSHookFunctionARMCheck.h in Headers */,
+				A9AF7FCB2450151400003EC1 /* AntiMSHookFunctionARM.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,7 +254,7 @@
 					};
 					70B0BBBB226F3A4D000CFB39 = {
 						CreatedOnToolsVersion = 10.1;
-						LastSwiftMigration = 1100;
+						LastSwiftMigration = 1110;
 					};
 				};
 			};
@@ -277,11 +332,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9AF7FC2245014F000003EC1 /* AntiFishHook.swift in Sources */,
 				70B0BBC9226F3A74000CFB39 /* DebuggerChecker.swift in Sources */,
+				A9AF7FC92450151400003EC1 /* AntiMSHookFunctionARM.c in Sources */,
 				70B0BBCD226F3A90000CFB39 /* EmulatorChecker.swift in Sources */,
 				70B0BBCF226F3AB2000CFB39 /* IOSSecuritySuite.swift in Sources */,
 				703F74E222704E0F000635D8 /* ReverseEngineeringToolsChecker.swift in Sources */,
+				A9AF7FCD2450151C00003EC1 /* antiObjcHook.swift in Sources */,
 				70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */,
+				A9AF7FC82450151400003EC1 /* MSHookFunctionARMCheck.c in Sources */,
+				A9AF7FC3245014F000003EC1 /* FishHook.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
