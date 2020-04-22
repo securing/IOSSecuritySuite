@@ -1,5 +1,5 @@
 //
-//  antiObjcHook.swift
+//  AntiObjcHook.swift
 //  IOSSecuritySuite
 //
 //  Created by jintao on 2020/4/22.
@@ -9,9 +9,6 @@
 import Foundation
 import MachO
 
-//  *************************** Runtime Hook检测 *************************
-
-// 动态加载dladdr函数，防止dladdr符号指针被fishhook替换
 public typealias Dladdr = @convention(c) (UnsafeRawPointer, UnsafeMutablePointer<Dl_info>) -> Int
 
 public var hookDladdr: Dladdr {
@@ -23,11 +20,11 @@ public var hookDladdr: Dladdr {
     return unsafeBitCast(sym, to: Dladdr.self)
 }
 
-/// msg_send 检测消息机制的函数是否在其他dyld中(函数是否被交换到其他的注入的dyld中)
+/// 
 ///
 /// - Parameters:
-///   - whiteListDylds: dylds of self app;   eg: ["UIKit", "Alamofire", "Kingfisher", "SwiftyJSONs"]
-///   - detectionClassName: Swift: "Module.className"; OC: "className"
+///   - whiteListDylds: dylds of self app;   eg: ["UIKit", "Alamofire", "Kingfisher", "SwiftyJSONs"...]
+///   - detectionClassName: Swift: "Module.className";    OC: "className"
 ///   - selector: Class's method
 ///   - isClassMethod: is Class method
 /// - Returns: true: exchange; false: not exchange
@@ -48,35 +45,34 @@ public func hookRuntimeDetection(whiteListDylds: [String], className detectionCl
         return false
     }
 
-    // 函数指针imp
+    // imp
     let imp = method_getImplementation(method!)
     var info = Dl_info()
 
     if hookDladdr(UnsafeRawPointer(imp), &info) < 0 {
-        // 未获取到imp信息
         return false
     }
 
-    // imp的dyld的路径
+    // dyld path of imp
     let impDyldPath = String(cString: info.dli_fname)
 
-    // imp是否在系统库中
+    // at Library?
     if impDyldPath.contains("/System/Library/Frameworks") {
         return false
     }
 
-    // imp是否在二进制中
+    // at binary?
     let binaryPath = String(cString: _dyld_get_image_name(0))
     if impDyldPath.contains(binaryPath) {
         return false
     }
 
-    // imp是否在动态库的白名单中
+    // at whiteList?
     if let impFramework = impDyldPath.components(separatedBy: "/").last {
         return !whiteListDylds.contains(impFramework)
     }
 
-    // 如果都不在, 即imp在注入的dyld中
+    // at inserted dyld
     return true
 }
 

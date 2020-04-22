@@ -1,5 +1,5 @@
 //
-//  FishHookProtection.swift
+//  AntiFishHook.swift
 //  IOSSecuritySuite
 //
 //  Created by jintao on 2019/3/25.
