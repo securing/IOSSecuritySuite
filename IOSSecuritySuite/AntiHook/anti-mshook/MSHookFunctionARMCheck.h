@@ -1,6 +1,6 @@
 //
 //  MSHookFunctionARMCheck.h
-//  AntiMSHook
+//  IOSSecuritySuite
 //
 //  Created by jintao on 2019/9/18.
 //  Copyright © 2019 jintao. All rights reserved.
