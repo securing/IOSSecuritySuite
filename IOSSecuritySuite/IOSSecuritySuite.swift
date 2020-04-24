@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MachO
 
 public class IOSSecuritySuite {
 
@@ -109,5 +110,96 @@ public class IOSSecuritySuite {
     public static func amIReverseEngineered() -> Bool {
         return ReverseEngineeringToolsChecker.amIReverseEngineered()
     }
+    
+    /**
+     This type method is used to determine if `function_address` had been `MSHook`
+     
+     Usage example
+     ```
+     void denyDebugger() {
+     }
+     
+     let amIMSHookFunction = amIMSHookFunction(denyDebugger) ? true : false
+     ```
+     */
+    public static func amIMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> Bool {
+        return MSHookFunctionChecker.amIMSHookFunction(function_address)
+    }
+    
+    /**
+    This type method is used to get original `function_address` which had been `MSHook`
+    
+    Usage example
+    ```
+    void denyDebugger() {
+        
+    }
+    
+     
+    if let original_denyDebugger = denyMSHookFunction(denyDebugger) {
+        typealias DenyDebugger = @convention(c) ()->()
+        unsafeBitCast(original_denyDebugger, to: DenyDebugger.self)()
+    } else {
+        denyDebugger()
+    }
+    ```
+    */
+    static func denyMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
+        return MSHookFunctionChecker.denyMSHookFunction(function_address)
+    }
+    
+    /**
+    This type method is used to rebind `symbol` which had been Hook . for example `fishhook`
+     
+    Usage example
+    ```
+    denyFishHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // Foudation's NSlog of Swift
+    NSLog("Hello Symbol Hook")
+     
+    denyFishHook("abort")
+    abort()
+    ```
+     */
+    static func denySymbolHook(_ symbol: String) {
+        FishHookChecker.denyFishHook(symbol)
+    }
+    
+    /**
+    This type method is used to rebind `symbol` which had been Hook  at one of image. for example `fishhook`
+     
+    Usage example
+    ```
+    for i in 0..<_dyld_image_count() {
+        if let imageName = _dyld_get_image_name(i) {
+            let name = String(cString: imageName)
+            if name.contains("IOSSecuritySuite"), let image = _dyld_get_image_header(i) {
+                denySymbolHook("dlsym", at: image, imageSlide: _dyld_get_image_vmaddr_slide(i))
+                break
+            }
+        }
+    }
+    ```
+     */
+    static func denySymbolHook(_ symbol: String, at image: UnsafePointer<mach_header>, imageSlide slide: Int) {
+        FishHookChecker.denyFishHook(symbol, at: image, imageSlide: slide)
+    }
 
+    /**
+    This type method is used to determine if `objc call` had been RuntimeHook
+     
+    Usage example
+    ```
+     class SomeClass {
+        @objc dynamic func someFunction() {
+        }
+     }
+     
+    let dylds = ["IOSSecuritySuite", "", "UIKit"...]
+     
+    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction),      isClassMethod: false) ? true : false
+    ```
+     */
+    static func amIRuntimeHook(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
+        return RuntimeHookChecker.amIRuntimeHook(dyldWhiteList: dyldWhiteList, detectionClass: detectionClass, selector: selector, isClassMethod: isClassMethod)
+    }
 }
