@@ -182,17 +182,56 @@ public extension IOSSecuritySuite {
     
     Usage example
     ```
-    void denyDebugger() {
-        
-    }
+    C:
+        void denyDebugger() {
     
+        }
+    
+        if let original_denyDebugger = denyMSHookFunction(denyDebugger) {
+            typealias DenyDebugger = @convention(c) ()->()
+            unsafeBitCast(original_denyDebugger, to: DenyDebugger.self)()
+        } else {
+            denyDebugger()
+        }
+    
+    Swift:
+     1.
+        typealias functionType = @convention(thin) ()->()
      
-    if let original_denyDebugger = denyMSHookFunction(denyDebugger) {
-        typealias DenyDebugger = @convention(c) ()->()
-        unsafeBitCast(original_denyDebugger, to: DenyDebugger.self)()
-    } else {
-        denyDebugger()
-    }
+        func denyDebugger() {
+        }
+     
+        func getSwiftFunctionAddr(_ function: @escaping functionType) -> UnsafeMutableRawPointer {
+            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+        }
+    
+        let func_addr = getSwiftFunctionAddr(denyDebugger)
+        if let original_denyDebugger = denyMSHookFunction(func_addr) {
+            unsafeBitCast(original_denyDebugger, to: functionType.self)()
+        } else {
+            denyDebugger()
+        }
+     
+     2.
+        class Foo {
+            func poo(_ value: Int) {
+                print(value)
+            }
+        }
+     
+        typealias classFunctionType = @convention(thin) (Foo)->(Int)->()
+     
+        func getSwiftFunctionAddr(_ function: @escaping classFunctionType) -> UnsafeMutableRawPointer {
+            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+        }
+    
+        let func_addr = getSwiftFunctionAddr(Foo.poo)
+        if let original_classFunction = denyMSHookFunction(func_addr) {
+            let foo = Foo()
+            unsafeBitCast(original_classFunction, to: classFunctionType.self)(foo)(996)
+        } else {
+            Foo().poo(996)
+        }
     ```
     */
     static func denyMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
