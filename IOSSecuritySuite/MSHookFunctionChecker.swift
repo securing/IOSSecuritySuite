@@ -4,11 +4,66 @@
 //
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
-//
+//  https://github.com/TannerJin/AntiMSHookFunction
 
 import Foundation
 
-// https://github.com/TannerJin/AntiMSHookFunction
+/*
+Original:
+ 
+    * original function address(just for example)
+        stp x22, x21, [sp, #-0x10]
+        stp x20, x19, [sp, #-0x20]
+        stp x29, x30, [sp, #-0x30]
+        .
+        .
+        .
+ 
+    * vm_regions
+    
+         vm_region_0                         vm_region_n
+        *-----------*                       *-----------*
+        |           |                       |           |
+        |           |  ----->  ...  ----->  |           |
+        |           |  <-----       <-----  |           |
+        *-----------*                       *-----------*
+|
+|
+V
+ 
+After MSHookFunction(mmap):
+ 
+    * original function address
+        ldr x16 #8  (4 bytes for arm64)
+        br x16      (4 bytes for arm64)
+        address     (8 bytes for arm64)  address = hook_function_address
+ *->     .
+ |       .
+ |       .
+ |
+ |   * vm_regions
+ |
+ |       vm_region_0                         vm_region_new                       vm_region_n+1
+ |       *-----------*                       *-----------*                       *-----------*
+ |       |           |                       |           |                       |           |
+ |       |           |  ----->  ...  ----->  |           |  ----->  ... ----->   |           |
+ |       |           |  <-----       <-----  |           |  <-----      <-----   |           |
+ |       *-----------*                       *-----------*                       *-----------*
+ |
+ |
+ |       1. vm_region_new is creaded by MSHookFunction and it's VM_PROT is VM_PROT_READ and VM_PROT_EXECUTE
+ |
+ |       2. at begion of vm_region_new, it store some instructions that can call original function
+ |
+ |       3. at begion of vm_region_new, it likes below instructions
+ |           ...         (>= 16 bytes for arm64)        >=4 hooked instructions
+ |           ldr x16 #8  (4 bytes for arm64)
+ |           br x16      (4 bytes for arm64)
+ *------     address     (8 bytes for arm64)            address = original_function_address + 16
+ 
+ */
+
+#if arch(arm64)
 internal class MSHookFunctionChecker {
     
     static func amIMSHookFunction(_ functionAddr: UnsafeMutableRawPointer) -> Bool {
@@ -88,3 +143,4 @@ internal class MSHookFunctionChecker {
         }
     }
 }
+#endif

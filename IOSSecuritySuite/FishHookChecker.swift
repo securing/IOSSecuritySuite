@@ -4,12 +4,62 @@
 //
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
-//
+//  https://github.com/TannerJin/anti-fishhook
 
 import Foundation
 import MachO
 
-// https://github.com/TannerJin/anti-fishhook
+/*
+Lazy_Symbol_Ptr:
+ 
+    call symbol2
+    |
+    |
+    |   stubs(TEXT)
+    |   *--------------*            stub_symbol:
+    |   | stub_symbol1 |                         ldr x16 ptr   (ptr = pointer of lazy_symbol_ptr)
+    |   |              |                         br x16
+    *---> stub_symbol2 |
+        |   ...        |
+        *--------------*
+ 
+ 
+    lazy_symbol_ptr(DATA)                   stub_helper(TEXT)
+    *--------------*                        *---------------------------*
+    |     ptr1     |                        |    br dyld_stub_binder    |    <-------------------*
+    |     ptr2  ---------*                  |    symbol_binder_code_1   |                        |
+    |     ptr3     |     *------------------->   symbol_binder_code_2   |                        |
+    |     ...      |                        |          ...              |                        |
+    *--------------*                        *---------------------------*                        |
+                                                                                                 |
+                                                   symbol_binder_code:                           |
+                                                                       ldr w16, #8(.byte)        |
+                                                                       b br_dyld_stub_binder  ---*
+                                                                       .byte
+ 
+ 
+    .byte of the symbol is offset which is from begin of lazy_binding_info to begin of symbol_info
+ 
+    lazy_binding_info(LINKEDIT -> DYLD_INFO -> LazyBindingInfo)
+    *-----------------*
+    |  symbol_info_1  |          symbol_info:
+    |  symbol_info_2  |                         bind_opcode_done
+    |  symbol_info_3  |                         bind_opcode_set_segment_and_offset_uleb
+    |  ...            |                         uleb128
+    *-----------------*                         BIND_OPCODE_SET_DYLIB_ORDINAL_IMM
+                                                BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM
+                                            **SymbolName**
+                                                bind_opcode_do_bind
+    
+ 
+ 
+    The `denyFishHook` is look for code of `symbol_binder_code` of the symbol, and then make `lazy_symbol_ptr` of the symbol pointe to it
+ 
+ Non_Lazy_Symbol_Ptr:
+                      wait to do based on export_info and binding_info
+ */
+
+#if arch(arm64)
 internal class FishHookChecker {
     
     @inline(__always)
@@ -19,6 +69,7 @@ internal class FishHookChecker {
                 denyFishHook(symbol, at: image, imageSlide: _dyld_get_image_vmaddr_slide(i))
             }
         }
+        
     }
 
     @inline(__always)
@@ -114,26 +165,31 @@ internal class FishHookChecker {
             }
         }
         
-        // find code vm addr
+        // look for code of symbol_binder_code
         guard stubHelperSection != nil,
             let stubHelperVmAddr = UnsafeMutablePointer<UInt32>(bitPattern: slide+Int(stubHelperSection.pointee.addr)) else {
                 return
             }
         
+        // from begin of stub_helper to symbol_binder_code
         var codeOffset: Int!
-        // 5 instructions: code of dyld_stub_binder
+        
+        // 6 instructions: code of `br dyld_stub_binder`
+        if stubHelperSection.pointee.size/4 <= 5 {
+            return
+        }
         for i in 5..<stubHelperSection.pointee.size/4 {
             /*
-                ldr w16 .long
-                b: stub(dyld_stub_binder)
-                .long: symbol_bindInfo_offset
+                ldr w16, #8 (.byte)
+                b stub(br_dyld_stub_binder)
+                .byte: symbol_bindInfo_offset
              */
             let instruction = stubHelperVmAddr.advanced(by: Int(i)).pointee
             let ldr = (instruction & (7 << 25)) >> 25
-            let r16 = instruction & (31 << 0)
+            let w16 = instruction & (31 << 0)
             
-            // 100 && r16
-            if ldr == 4 && r16 == 16 {
+            // ldr w16, #8
+            if ldr == 4 && w16 == 16 {
                 let bindingInfoOffset = stubHelperVmAddr.advanced(by: Int(i+2)).pointee
                 var p = bindingInfoOffset
                 
@@ -160,7 +216,7 @@ internal class FishHookChecker {
             return
         }
         
-        let pointer = stubHelperVmAddr.advanced(by: (codeOffset))  // ldr w16 .long
+        let pointer = stubHelperVmAddr.advanced(by: (codeOffset))  // ldr w16 .byte
         let newMethod = UnsafeMutablePointer(pointer)
         var oldMethod: UnsafeMutableRawPointer? = nil
         FishHook.replaceSymbol(symbol, at: image, imageSlide: slide, newMethod: newMethod, oldMethod: &oldMethod)
@@ -296,3 +352,4 @@ fileprivate class FishHook {
         }
     }
 }
+#endif

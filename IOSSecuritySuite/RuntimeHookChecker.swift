@@ -9,10 +9,22 @@
 import Foundation
 import MachO
 
+/*
+    dladdr will look for symbolTable, and then get a symbolInfo
+    
+    if (symbolInfo.n_type & N_TYPE == N_SECT) && (symbolInfo.n_type & N_STAB == 0) {   // TEXT
+        if input_function_pointer == symbolInfo.n_value + image_vmaddr_slide {
+            return symbolInfo
+        }
+    }
+ */
+
 internal class RuntimeHookChecker {
         
     static private let swift_once_denyFishHooK: Void = {
+        #if arch(arm64)
         FishHookChecker.denyFishHook("dladdr")
+        #endif
     }()
     
     static func amIRuntimeHook(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {

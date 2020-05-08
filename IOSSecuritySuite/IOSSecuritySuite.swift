@@ -112,17 +112,39 @@ public class IOSSecuritySuite {
     }
     
     /**
-     This type method is used to determine if `function_address` had been `MSHook`
+    This type method is used to determine if `objc call` had been RuntimeHook
      
-     Usage example
-     ```
-     void denyDebugger() {
+    Usage example
+    ```
+     class SomeClass {
+        @objc dynamic func someFunction() {
+        }
      }
      
-     let amIMSHookFunction = amIMSHookFunction(denyDebugger) ? true : false
-     ```
+    let dylds = ["IOSSecuritySuite", ...]
+     
+    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction),      isClassMethod: false) ? true : false
+    ```
      */
-    public static func amIMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> Bool {
+    public static func amIRuntimeHook(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
+        return RuntimeHookChecker.amIRuntimeHook(dyldWhiteList: dyldWhiteList, detectionClass: detectionClass, selector: selector, isClassMethod: isClassMethod)
+    }
+}
+
+#if arch(arm64)
+public extension IOSSecuritySuite {
+    /**
+    This type method is used to determine if `function_address` had been `MSHook`
+    
+    Usage example
+    ```
+    void denyDebugger() {
+    }
+    
+    let amIMSHookFunction = amIMSHookFunction(denyDebugger) ? true : false
+    ```
+    */
+    static func amIMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> Bool {
         return MSHookFunctionChecker.amIMSHookFunction(function_address)
     }
     
@@ -153,10 +175,10 @@ public class IOSSecuritySuite {
      
     Usage example
     ```
-    denyFishHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // Foudation's NSlog of Swift
+    denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // Foudation's NSlog of Swift
     NSLog("Hello Symbol Hook")
      
-    denyFishHook("abort")
+    denySymbolHook("abort")
     abort()
     ```
      */
@@ -183,23 +205,5 @@ public class IOSSecuritySuite {
     static func denySymbolHook(_ symbol: String, at image: UnsafePointer<mach_header>, imageSlide slide: Int) {
         FishHookChecker.denyFishHook(symbol, at: image, imageSlide: slide)
     }
-
-    /**
-    This type method is used to determine if `objc call` had been RuntimeHook
-     
-    Usage example
-    ```
-     class SomeClass {
-        @objc dynamic func someFunction() {
-        }
-     }
-     
-    let dylds = ["IOSSecuritySuite", "", "UIKit"...]
-     
-    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction),      isClassMethod: false) ? true : false
-    ```
-     */
-    static func amIRuntimeHook(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
-        return RuntimeHookChecker.amIRuntimeHook(dyldWhiteList: dyldWhiteList, detectionClass: detectionClass, selector: selector, isClassMethod: isClassMethod)
-    }
 }
+ #endif
