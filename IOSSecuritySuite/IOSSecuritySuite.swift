@@ -138,10 +138,39 @@ public extension IOSSecuritySuite {
     
     Usage example
     ```
-    void denyDebugger() {
-    }
+    C:
+     void denyDebugger() {
+     }
+     let amIMSHookFunction = amIMSHookFunction(denyDebugger) ? true : false
+
+    Swift:
+     1.
+        typealias functionType = @convention(thin) ()->()
     
-    let amIMSHookFunction = amIMSHookFunction(denyDebugger) ? true : false
+        func getSwiftFunctionAddr(_ function: @escaping functionType) -> UnsafeMutableRawPointer {
+            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+        }
+     
+        func denyDebugger() {
+        }
+    
+        let func_addr = getSwiftFunctionAddr(denyDebugger)
+        let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
+     
+     2.
+        class Foo {
+            func poo(value: Int) {
+                print(value)
+            }
+        }
+        typealias classFunctionType = @convention(thin) (Foo)->(Int)->()
+     
+        func getSwiftFunctionAddr(_ function: @escaping classFunctionType) -> UnsafeMutableRawPointer {
+            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+        }
+    
+        let func_addr = getSwiftFunctionAddr(Foo.poo)
+        let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
     ```
     */
     static func amIMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> Bool {
