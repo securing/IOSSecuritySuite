@@ -221,7 +221,6 @@ internal class FishHookChecker {
         var oldMethod: UnsafeMutableRawPointer? = nil
         FishHook.replaceSymbol(symbol, at: image, imageSlide: slide, newMethod: newMethod, oldMethod: &oldMethod)
     }
-    
 }
 
 
