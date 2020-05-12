@@ -62,6 +62,28 @@ Lazy_Symbol_Ptr:
 #if arch(arm64)
 internal class FishHookChecker {
     
+    static private func read_uleb128(p: inout UnsafePointer<UInt8>, end: UnsafePointer<UInt8>) -> UInt64 {
+        var result: UInt64 = 0
+        var bit = 0
+        var read_next = true
+        
+        repeat {
+            if p == end {
+                assert(false, "malformed uleb128")
+            }
+            let slice = UInt64(p.pointee & 0x7f)
+            if bit > 63 {
+                assert(false, "uleb128 too big for uint64")
+            } else {
+                result |= (slice << bit)
+                bit += 7
+            }
+            read_next = ((p.pointee & 0x80) >> 7) == 1
+            p += 1
+        } while (read_next)
+        return result
+    }
+    
     @inline(__always)
     static func denyFishHook(_ symbol: String) {
         for i in 0..<_dyld_image_count() {
@@ -178,6 +200,9 @@ internal class FishHookChecker {
         if stubHelperSection.pointee.size/4 <= 5 {
             return
         }
+        let lazyBindingInfoStart = lazyBindInfoCmd!
+        let lazyBindingInfoEnd = lazyBindInfoCmd! + lazyBindInfoSize
+        
         for i in 5..<stubHelperSection.pointee.size/4 {
             /*
                 ldr w16, #8 (.byte)
@@ -190,24 +215,37 @@ internal class FishHookChecker {
             
             // ldr w16, #8
             if ldr == 4 && w16 == 16 {
-                let bindingInfoOffset = stubHelperVmAddr.advanced(by: Int(i+2)).pointee
-                var p = bindingInfoOffset
+                let bindingInfoOffset = stubHelperVmAddr.advanced(by: Int(i+2)).pointee  // .byte
+                var p = lazyBindingInfoStart.advanced(by: Int(bindingInfoOffset))
                 
-                Label: while p < lazyBindInfoSize  {
-                    if lazyBindInfoCmd.advanced(by: Int(p)).pointee == BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB {
-                        p += 3 // pass uleb128
+                Label: while p <= lazyBindingInfoEnd  {
+                    let opcode = Int32(p.pointee) & BIND_OPCODE_MASK
+                    
+                    switch opcode {
+                    case BIND_OPCODE_DONE, BIND_OPCODE_SET_DYLIB_ORDINAL_IMM:
+                        p += 1
                         continue Label
-                    }
-                    if lazyBindInfoCmd.advanced(by: Int(p)).pointee == BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM {
+                    case BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB, BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB:
+                        p += 1
+                        _ = read_uleb128(p: &p, end: lazyBindingInfoEnd)
+                        continue Label
+                    case BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM:
+                        p += 1
                         // _symbol
-                        if String(cString: lazyBindInfoCmd.advanced(by: Int(p)+1 + 1)) == symbol {
+                        if String(cString: p + 1) == symbol {
                             codeOffset = Int(i)
                             break
                         }
+                        while p.pointee != 0 {  // '\0'
+                            p += 1
+                        }
+                        continue Label
+                    case BIND_OPCODE_DO_BIND:
                         break Label
+                    default:
+                        p += 1
+                        continue Label
                     }
-                    p += 1
-                    continue Label
                 }
             }
         }

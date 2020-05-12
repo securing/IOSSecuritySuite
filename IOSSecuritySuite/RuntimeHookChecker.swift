@@ -20,7 +20,7 @@ import MachO
  */
 
 internal class RuntimeHookChecker {
-        
+    
     static private let swift_once_denyFishHooK: Void = {
         #if arch(arm64)
         FishHookChecker.denyFishHook("dladdr")
