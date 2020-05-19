@@ -138,24 +138,14 @@ public extension IOSSecuritySuite {
     
     Usage example
     ```
-    C:
-        void denyDebugger() {
-        }
-        let amIMSHookFunction = amIMSHookFunction(denyDebugger) ? true : false
-
-    Swift:
-     1.
-        func denyDebugger() {
-        }
+    func denyDebugger() {
+    }
      
-        typealias functionType = @convention(thin) ()->()
+    typealias FunctionType = @convention(thin) ()->()
     
-        func getSwiftFunctionAddr(_ function: @escaping functionType) -> UnsafeMutableRawPointer {
-            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
-        }
-    
-        let func_addr = getSwiftFunctionAddr(denyDebugger)
-        let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
+    let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is must
+    let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+    let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
     ```
     */
     static func amIMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> Bool {
@@ -167,37 +157,19 @@ public extension IOSSecuritySuite {
     
     Usage example
     ```
-    C:
-        void denyDebugger() {
-    
-        }
-    
-        if let original_denyDebugger = denyMSHookFunction(denyDebugger) {
-            typealias DenyDebugger = @convention(c) ()->()
-            unsafeBitCast(original_denyDebugger, to: DenyDebugger.self)()
-        } else {
-            denyDebugger()
-        }
-    
-    Swift:
-     1.
-        func denyDebugger(value: Int) {
+    func denyDebugger(value: Int) {
+    }
      
-        }
+    typealias FunctionType = @convention(thin) (Int)->()
      
-        typealias functionType = @convention(thin) (Int)->()
+    let func_denyDebugger: FunctionType = denyDebugger    // `: FunctionType` is must
+    let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
      
-        func getSwiftFunctionAddr(_ function: @escaping functionType) -> UnsafeMutableRawPointer {
-            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
-        }
-    
-        let func_addr = getSwiftFunctionAddr(denyDebugger)
-     
-        if let original_denyDebugger = denyMSHookFunction(func_addr) {
-            unsafeBitCast(original_denyDebugger, to: functionType.self)()
-        } else {
-            denyDebugger()
-        }
+    if let original_denyDebugger = denyMSHookFunction(func_addr) {
+        unsafeBitCast(original_denyDebugger, to: functionType.self)(996)
+    } else {
+        denyDebugger()
+    }
     ```
     */
     static func denyMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {

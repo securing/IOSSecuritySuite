@@ -66,35 +66,147 @@ After MSHookFunction(mmap):
 #if arch(arm64)
 internal class MSHookFunctionChecker {
     
-    static func amIMSHookFunction(_ functionAddr: UnsafeMutableRawPointer) -> Bool {
-        let arms = functionAddr.assumingMemoryBound(to: UInt32.self)
+    // come from ARM® Architecture Reference Manual, ARMv8 for ARMv8-A architecture profile
+    private enum MSHookInstruction {
+        case ldr_x16
+        case br_x16
+        case adrp_x17(pageBase: UInt64)
+        case add_x17(pageOffset: UInt64)
+        case br_x17
         
-        let firstInstruction = arms.pointee
-        let secondInstruction = (arms + 1).pointee
+        @inline(__always)
+        static fileprivate func translateInstruction(at functionAddr: UnsafeMutableRawPointer) -> MSHookInstruction? {
+            let arm = functionAddr.assumingMemoryBound(to: UInt32.self).pointee
+            // ldr xt, #imm  (C4.4.5 and C6.2.84)
+            let ldr_register_litetal = (arm & (255 << 24)) >> 24
+            if ldr_register_litetal == 0b01011000 {
+                let rt = arm & 31
+                let imm19 = (arm & ((1 << 19 - 1) << 5)) >> 5
+                // ldr x16, #8
+                if rt == 16 && (imm19 << 2) == 8 {
+                    return ldr_x16
+                }
+            }
+            
+            // br
+            let br = arm >> 10
+            if br == 0b1101011000011111000000 {
+                let br_rn = (arm & (31 << 5)) >> 5
+                if br_rn == 16 {
+                    return .br_x16
+                }
+                if br_rn == 17 {
+                    return .br_x17
+                }
+            }
+            
+            // adrp (C6.2.10)
+            let adrp_op = arm >> 31
+            let adrp = (arm & (31 << 24)) >> 24
+            let rd = arm & (31 << 0)
+            
+            if adrp_op == 1 && adrp == 16 {
+                let pageBase = getAdrpPageBase(functionAddr)
+                // adrp x17, pageBase
+                if rd == 17 {
+                    return .adrp_x17(pageBase: pageBase)
+                }
+            }
+            
+            // add (C4.2.1 and C6.2.4)
+            let add = arm >> 24
+            if add == 0b10010001 {      // 32-bit: 0b00010001
+                let add_rn = (arm & (31 << 5)) >> 5
+                let add_rd = arm & 31
+                let add_imm12 = UInt32((arm & ((1 << 12-1) << 10)) >> 10)
+                var imm = UInt64(add_imm12)
+                let shift = (arm & (3 << 22)) >> 22
+                if shift == 0 {
+                    imm = UInt64(add_imm12)
+                } else if shift == 1 {
+                    imm = UInt64(add_imm12 << 12)
+                } else {
+                    // AArch64.UndefinedFault
+                    return nil
+                }
+                // add x17, x17, add_im
+                if add_rn == 17 && add_rd == 17 {
+                    return .add_x17(pageOffset: imm)
+                }
+            }
+            return nil
+        }
         
-        // firstInstruction
-        let ldr = (firstInstruction & (7 << 25)) >> 25
-        let x16 = firstInstruction & (31 << 0)
-        
-        let ldr_x16 = (ldr == 4 && x16 == 16)
-        
-        // secondInstruction
-        let ldr_2 = (secondInstruction & (7 << 25)) >> 25
-        let x15_2 = (secondInstruction & (15 << 16)) >> 16
-        let x16_2 = (secondInstruction & (127 << 5)) >> 5
-        
-        let br_x16 = (ldr_2 == 3 && x15_2 == 15 && x16_2 == 16)
-        
-        return ldr_x16 && br_x16
+        // pageBase
+        @inline(__always)
+        static private func getAdrpPageBase(_ functionAddr: UnsafeMutableRawPointer) -> UInt64 {
+            let arm = functionAddr.assumingMemoryBound(to: UInt32.self).pointee
+            
+            func singExtend(_ value: Int64) -> Int64 {
+                var result = value
+                let sing = value >> (33-1) == 1
+                if sing {
+                    result = ((1<<31-1) << 33) | value
+                }
+                return result
+            }
+            
+            // +/- 4GB
+            let immlo = (arm >> 29) & 3
+            let immhiMask = UInt32((1 << 19 - 1) << 5)
+            let immhi = (arm & immhiMask) >> 5
+            
+            let imm = (Int64((immhi << 2 | immlo)) << 12)
+            let pcBase = (UInt(bitPattern: functionAddr) >> 12) << 12
+            return UInt64(Int64(pcBase) + singExtend(imm))
+        }
     }
     
+    @inline(__always)
+    static func amIMSHookFunction(_ functionAddr: UnsafeMutableRawPointer) -> Bool {
+        guard let firstInstruction = MSHookInstruction.translateInstruction(at: functionAddr) else {
+            return false
+        }
+        
+        switch firstInstruction {
+        case .ldr_x16:
+            let secondInstructionAddr = functionAddr + 4
+            if case .br_x16 = MSHookInstruction.translateInstruction(at: secondInstructionAddr) {
+                return true
+            }
+            return false
+        case .adrp_x17:
+            let secondInstructionAddr = functionAddr + 4
+            let thridInstructionAddr = functionAddr + 8
+            if case .add_x17 = MSHookInstruction.translateInstruction(at: secondInstructionAddr),
+                case .br_x17 = MSHookInstruction.translateInstruction(at: thridInstructionAddr) {
+                return true
+            }
+            return false
+        default:
+            return false
+        }
+    }
+    
+    @inline(__always)
     static func denyMSHookFunction(_ functionAddr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
         if !amIMSHookFunction(functionAddr) {
             return nil
         }
         
-        // 16: size of replaced instructions
-        let functionBegin = functionAddr + 16
+        // size of replaced instructions
+        guard let firstInstruction = MSHookInstruction.translateInstruction(at: functionAddr) else {
+            assert(false, "amIMSHookFunction has judged")
+        }
+        var origFunctionBeginAddr = functionAddr
+        switch firstInstruction {
+        case .ldr_x16:
+            origFunctionBeginAddr += 16
+        case .adrp_x17:
+            origFunctionBeginAddr += 12
+        default:
+            assert(false, "amIMSHookFunction has judged")
+        }
         
         // look up vm_region
         let vm_region_info = UnsafeMutablePointer<Int32>.allocate(capacity: MemoryLayout<vm_region_basic_info_64>.size/4)
@@ -114,24 +226,32 @@ internal class MSHookFunctionChecker {
             
             if ret == KERN_SUCCESS {
                 let region_info = UnsafeMutableRawPointer(vm_region_info).assumingMemoryBound(to: vm_region_basic_info_64.self)
-                
                 // vm region of code
                 if region_info.pointee.protection == (VM_PROT_READ|VM_PROT_EXECUTE) {
-                    // mshook do not handle `pc` offset
-                    if let _func_begin = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vm_region_address) + 16 + 8),
-                        _func_begin.pointee == functionBegin {
-                        
-                        return UnsafeMutableRawPointer(bitPattern: Int(vm_region_address))
+                    // ldr
+                    if case .ldr_x16 = firstInstruction {
+                        // 20: max_buffer_insered_Instruction
+                        for i in 4..<20 {
+                            if let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vm_region_address) + i * 4),
+                                case .ldr_x16 = MSHookInstruction.translateInstruction(at: instructionAddr),
+                                case .br_x16 = MSHookInstruction.translateInstruction(at: UnsafeMutableRawPointer(instructionAddr) + 4),
+                                (instructionAddr + 1).pointee == origFunctionBeginAddr {
+                                return UnsafeMutableRawPointer(bitPattern: Int(vm_region_address))
+                            }
+                        }
                     }
                     
-                    // mshook handle `pc` offset
-                    /// 20:  max_buffer_instructions_count
-                    for i in 0..<20 {
-                        if let instruction_addr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vm_region_address) + i * 4),
-                            amIMSHookFunction(instruction_addr) &&
-                            (instruction_addr + 1).pointee == functionBegin {
-                            
-                            return UnsafeMutableRawPointer(bitPattern: Int(vm_region_address))
+                    // adrp
+                    if case .adrp_x17 = firstInstruction {
+                        // 20: max_buffer_insered_Instruction
+                        for i in 3..<20 {
+                            if let instructionAddr = UnsafeMutableRawPointer(bitPattern: Int(vm_region_address) + i * 4),
+                                case let .adrp_x17(pageBase: pageBase) = MSHookInstruction.translateInstruction(at: instructionAddr),
+                                case let .add_x17(pageOffset: pageOffset) = MSHookInstruction.translateInstruction(at: instructionAddr + 4),
+                                case .br_x17 = MSHookInstruction.translateInstruction(at: instructionAddr + 8),
+                                pageBase+pageOffset == UInt(bitPattern: origFunctionBeginAddr) {
+                                return UnsafeMutableRawPointer(bitPattern: Int(vm_region_address))
+                            }
                         }
                     }
                 }

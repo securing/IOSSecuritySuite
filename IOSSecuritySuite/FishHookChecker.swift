@@ -204,17 +204,20 @@ internal class FishHookChecker {
         let lazyBindingInfoEnd = lazyBindInfoCmd! + lazyBindInfoSize
         
         for i in 5..<stubHelperSection.pointee.size/4 {
-            /*
+            /*  at C4.4.5 and C6.2.84 of ARM® Architecture Reference Manual
                 ldr w16, #8 (.byte)
                 b stub(br_dyld_stub_binder)
                 .byte: symbol_bindInfo_offset
              */
             let instruction = stubHelperVmAddr.advanced(by: Int(i)).pointee
-            let ldr = (instruction & (7 << 25)) >> 25
-            let w16 = instruction & (31 << 0)
+            // ldr wt
+            let ldr = (instruction & (255 << 24)) >> 24
+            let wt = instruction & (31 << 0)
+            // #imm `00` sign = false
+            let imm19 = (instruction & ((1 << 19 - 1) << 5)) >> 5
             
             // ldr w16, #8
-            if ldr == 4 && w16 == 16 {
+            if ldr == 0b00011000 && wt == 16 && (imm19 << 2) == 8 {
                 let bindingInfoOffset = stubHelperVmAddr.advanced(by: Int(i+2)).pointee  // .byte
                 var p = lazyBindingInfoStart.advanced(by: Int(bindingInfoOffset))
                 
