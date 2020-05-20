@@ -21,7 +21,7 @@ import MachO
 
 internal class RuntimeHookChecker {
     
-    static private let swift_once_denyFishHooK: Void = {
+    static private let swiftOnceDenyFishHooK: Void = {
         #if arch(arm64)
         FishHookChecker.denyFishHook("dladdr")
         #endif
@@ -43,7 +43,7 @@ internal class RuntimeHookChecker {
         let imp = method_getImplementation(method!)
         var info = Dl_info()
         
-        _ = swift_once_denyFishHooK
+        _ = swiftOnceDenyFishHooK
         if dladdr(UnsafeRawPointer(imp), &info) != 1 {
             return false
         }

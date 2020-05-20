@@ -62,10 +62,11 @@ Lazy_Symbol_Ptr:
 #if arch(arm64)
 internal class FishHookChecker {
     
-    static private func read_uleb128(p: inout UnsafePointer<UInt8>, end: UnsafePointer<UInt8>) -> UInt64 {
+    @inline(__always)
+    static private func readUleb128(p: inout UnsafePointer<UInt8>, end: UnsafePointer<UInt8>) -> UInt64 {
         var result: UInt64 = 0
         var bit = 0
-        var read_next = true
+        var readNext = true
         
         repeat {
             if p == end {
@@ -78,9 +79,9 @@ internal class FishHookChecker {
                 result |= (slice << bit)
                 bit += 7
             }
-            read_next = ((p.pointee & 0x80) >> 7) == 1
+            readNext = ((p.pointee & 0x80) >> 7) == 1
             p += 1
-        } while (read_next)
+        } while (readNext)
         return result
     }
     
@@ -230,7 +231,7 @@ internal class FishHookChecker {
                         continue Label
                     case BIND_OPCODE_SET_SEGMENT_AND_OFFSET_ULEB, BIND_OPCODE_SET_DYLIB_ORDINAL_ULEB:
                         p += 1
-                        _ = read_uleb128(p: &p, end: lazyBindingInfoEnd)
+                        _ = readUleb128(p: &p, end: lazyBindingInfoEnd)
                         continue Label
                     case BIND_OPCODE_SET_SYMBOL_TRAILING_FLAGS_IMM:
                         p += 1
@@ -294,42 +295,42 @@ fileprivate class FishHook {
         
         // __Data cmd
         var dataCmd: UnsafeMutablePointer<segment_command_64>!
-        let seg_data = SEG_DATA.data(using: String.Encoding.utf8)!.map({ Int8($0) })
+        let segData = SEG_DATA.data(using: String.Encoding.utf8)!.map({ Int8($0) })
         
         
-        guard var cur_cmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: image)+UInt(MemoryLayout<mach_header_64>.size)) else { return }
+        guard var curCmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: image)+UInt(MemoryLayout<mach_header_64>.size)) else { return }
         
         for _ in 0..<image.pointee.ncmds {
-            cur_cmd = UnsafeMutableRawPointer(cur_cmd).advanced(by: Int(cur_cmd.pointee.cmdsize)).assumingMemoryBound(to: segment_command_64.self)
+            curCmd = UnsafeMutableRawPointer(curCmd).advanced(by: Int(curCmd.pointee.cmdsize)).assumingMemoryBound(to: segment_command_64.self)
             
-            if cur_cmd.pointee.cmd == LC_SEGMENT_64 {
-                if UInt8(cur_cmd.pointee.segname.0) == linkeditName[0] &&
-                    UInt8(cur_cmd.pointee.segname.1) == linkeditName[1] &&
-                    UInt8(cur_cmd.pointee.segname.2) == linkeditName[2] &&
-                    UInt8(cur_cmd.pointee.segname.3) == linkeditName[3] &&
-                    UInt8(cur_cmd.pointee.segname.4) == linkeditName[4] &&
-                    UInt8(cur_cmd.pointee.segname.5) == linkeditName[5] &&
-                    UInt8(cur_cmd.pointee.segname.6) == linkeditName[6] &&
-                    UInt8(cur_cmd.pointee.segname.7) == linkeditName[7] &&
-                    UInt8(cur_cmd.pointee.segname.8) == linkeditName[8] &&
-                    UInt8(cur_cmd.pointee.segname.9) == linkeditName[9] {
+            if curCmd.pointee.cmd == LC_SEGMENT_64 {
+                if UInt8(curCmd.pointee.segname.0) == linkeditName[0] &&
+                    UInt8(curCmd.pointee.segname.1) == linkeditName[1] &&
+                    UInt8(curCmd.pointee.segname.2) == linkeditName[2] &&
+                    UInt8(curCmd.pointee.segname.3) == linkeditName[3] &&
+                    UInt8(curCmd.pointee.segname.4) == linkeditName[4] &&
+                    UInt8(curCmd.pointee.segname.5) == linkeditName[5] &&
+                    UInt8(curCmd.pointee.segname.6) == linkeditName[6] &&
+                    UInt8(curCmd.pointee.segname.7) == linkeditName[7] &&
+                    UInt8(curCmd.pointee.segname.8) == linkeditName[8] &&
+                    UInt8(curCmd.pointee.segname.9) == linkeditName[9] {
                     
-                    linkeditCmd = cur_cmd
+                    linkeditCmd = curCmd
                 }
-                if cur_cmd.pointee.segname.0 == seg_data[0] &&
-                    cur_cmd.pointee.segname.1 == seg_data[1] &&
-                    cur_cmd.pointee.segname.2 == seg_data[2] &&
-                    cur_cmd.pointee.segname.3 == seg_data[3] &&
-                    cur_cmd.pointee.segname.4 == seg_data[4] &&
-                    cur_cmd.pointee.segname.5 == seg_data[5] {
+                if curCmd.pointee.segname.0 == segData[0] &&
+                    curCmd.pointee.segname.1 == segData[1] &&
+                    curCmd.pointee.segname.2 == segData[2] &&
+                    curCmd.pointee.segname.3 == segData[3] &&
+                    curCmd.pointee.segname.4 == segData[4] &&
+                    curCmd.pointee.segname.5 == segData[5] {
                     
-                    dataCmd = cur_cmd
+                    dataCmd = curCmd
                 }
                 
-            } else if cur_cmd.pointee.cmd == LC_SYMTAB {
-                symtabCmd = UnsafeMutablePointer<symtab_command>(OpaquePointer(cur_cmd))
-            }  else if cur_cmd.pointee.cmd == LC_DYSYMTAB {
-                dynamicSymtabCmd = UnsafeMutablePointer<dysymtab_command>(OpaquePointer(cur_cmd))
+            } else if curCmd.pointee.cmd == LC_SYMTAB {
+                symtabCmd = UnsafeMutablePointer<symtab_command>(OpaquePointer(curCmd))
+            }  else if curCmd.pointee.cmd == LC_DYSYMTAB {
+                dynamicSymtabCmd = UnsafeMutablePointer<dysymtab_command>(OpaquePointer(curCmd))
             }
         }
         
@@ -347,14 +348,14 @@ fileprivate class FishHook {
         }
         
         for j in 0..<dataCmd.pointee.nsects {
-            let cur_section = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(j)).assumingMemoryBound(to: section_64.self)
+            let curSection = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(j)).assumingMemoryBound(to: section_64.self)
             
             // symbol_pointers sections
-            if cur_section.pointee.flags == S_LAZY_SYMBOL_POINTERS {
-                replaceSymbolPointerAtSection(cur_section, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
+            if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
+                replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
             }
-            if cur_section.pointee.flags == S_NON_LAZY_SYMBOL_POINTERS {
-                replaceSymbolPointerAtSection(cur_section, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
+            if curSection.pointee.flags == S_NON_LAZY_SYMBOL_POINTERS {
+                replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
             }
         }
     }
@@ -369,15 +370,15 @@ fileprivate class FishHook {
                                                newMethod: UnsafeMutableRawPointer,
                                                oldMethod: inout UnsafeMutableRawPointer?)
     {
-        let indirectSym_vm_addr = indirectsym.advanced(by: Int(section.pointee.reserved1))
-        let section_vm_addr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: slide+Int(section.pointee.addr))
+        let indirectSymVmAddr = indirectsym.advanced(by: Int(section.pointee.reserved1))
+        let sectionVmAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: slide+Int(section.pointee.addr))
         
-        if section_vm_addr == nil {
+        if sectionVmAddr == nil {
             return
         }
         
         for i in 0..<Int(section.pointee.size)/MemoryLayout<UnsafeMutableRawPointer>.size {
-            let curIndirectSym = indirectSym_vm_addr.advanced(by: i)
+            let curIndirectSym = indirectSymVmAddr.advanced(by: i)
             if (curIndirectSym.pointee == INDIRECT_SYMBOL_ABS || curIndirectSym.pointee == INDIRECT_SYMBOL_LOCAL) {
                 continue
             }
@@ -385,8 +386,8 @@ fileprivate class FishHook {
             let curSymbolName = strtab.advanced(by: Int(curStrTabOff+1))
         
             if String(cString: curSymbolName) == symbolName {
-                oldMethod = section_vm_addr!.advanced(by: i).pointee
-                section_vm_addr!.advanced(by: i).initialize(to: newMethod)
+                oldMethod = sectionVmAddr!.advanced(by: i).pointee
+                sectionVmAddr!.advanced(by: i).initialize(to: newMethod)
                 break
             }
         }

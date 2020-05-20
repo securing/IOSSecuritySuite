@@ -209,34 +209,35 @@ internal class MSHookFunctionChecker {
         }
         
         // look up vm_region
-        let vm_region_info = UnsafeMutablePointer<Int32>.allocate(capacity: MemoryLayout<vm_region_basic_info_64>.size/4)
+        let vmRegionInfo = UnsafeMutablePointer<Int32>.allocate(capacity: MemoryLayout<vm_region_basic_info_64>.size/4)
         defer {
-            vm_region_info.deallocate()
+            vmRegionInfo.deallocate()
         }
-        var vm_region_address: vm_address_t = 1
-        var vm_region_size: vm_size_t = 0
-        var vm_region_info_count: mach_msg_type_number_t = mach_msg_type_number_t(VM_REGION_BASIC_INFO_64)
-        var object_name: mach_port_t = 0
+        var vmRegionAddress: vm_address_t = 1
+        var vmRegionSize: vm_size_t = 0
+        var vmRegionInfoCount: mach_msg_type_number_t = mach_msg_type_number_t(VM_REGION_BASIC_INFO_64)
+        var objectName: mach_port_t = 0
         
         while true {
-            if vm_region_address == 0 {
+            if vmRegionAddress == 0 {
                 return nil
             }
-            let ret = vm_region_64(mach_task_self_, &vm_region_address, &vm_region_size, VM_REGION_BASIC_INFO_64, vm_region_info, &vm_region_info_count, &object_name)
+            let ret = vm_region_64(mach_task_self_, &vmRegionAddress, &vmRegionSize, VM_REGION_BASIC_INFO_64, vmRegionInfo, &vmRegionInfoCount, &objectName)
             
             if ret == KERN_SUCCESS {
-                let region_info = UnsafeMutableRawPointer(vm_region_info).assumingMemoryBound(to: vm_region_basic_info_64.self)
+                let regionInfo = UnsafeMutableRawPointer(vmRegionInfo).assumingMemoryBound(to: vm_region_basic_info_64.self)
                 // vm region of code
-                if region_info.pointee.protection == (VM_PROT_READ|VM_PROT_EXECUTE) {
+                if regionInfo.pointee.protection == (VM_PROT_READ|VM_PROT_EXECUTE) {
                     // ldr
                     if case .ldr_x16 = firstInstruction {
                         // 20: max_buffer_insered_Instruction
                         for i in 4..<20 {
-                            if let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vm_region_address) + i * 4),
+                            if let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vmRegionAddress) + i * 4),
                                 case .ldr_x16 = MSHookInstruction.translateInstruction(at: instructionAddr),
                                 case .br_x16 = MSHookInstruction.translateInstruction(at: UnsafeMutableRawPointer(instructionAddr) + 4),
-                                (instructionAddr + 1).pointee == origFunctionBeginAddr {
-                                return UnsafeMutableRawPointer(bitPattern: Int(vm_region_address))
+                                (instructionAddr + 1).pointee == origFunctionBeginAddr
+                            {
+                                return UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress))
                             }
                         }
                     }
@@ -245,18 +246,19 @@ internal class MSHookFunctionChecker {
                     if case .adrp_x17 = firstInstruction {
                         // 20: max_buffer_insered_Instruction
                         for i in 3..<20 {
-                            if let instructionAddr = UnsafeMutableRawPointer(bitPattern: Int(vm_region_address) + i * 4),
+                            if let instructionAddr = UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress) + i * 4),
                                 case let .adrp_x17(pageBase: pageBase) = MSHookInstruction.translateInstruction(at: instructionAddr),
                                 case let .add_x17(pageOffset: pageOffset) = MSHookInstruction.translateInstruction(at: instructionAddr + 4),
                                 case .br_x17 = MSHookInstruction.translateInstruction(at: instructionAddr + 8),
-                                pageBase+pageOffset == UInt(bitPattern: origFunctionBeginAddr) {
-                                return UnsafeMutableRawPointer(bitPattern: Int(vm_region_address))
+                                pageBase+pageOffset == UInt(bitPattern: origFunctionBeginAddr)
+                            {
+                                return UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress))
                             }
                         }
                     }
                 }
                 
-                vm_region_address += vm_region_size
+                vmRegionAddress += vmRegionSize
             } else {
                 return nil
             }
