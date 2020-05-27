@@ -10,13 +10,8 @@ import Foundation
 import MachO
 
 /*
-    dladdr will look for symbolTable, and then get a symbolInfo
-    
-    if (symbolInfo.n_type & N_TYPE == N_SECT) && (symbolInfo.n_type & N_STAB == 0) {   // TEXT
-        if input_function_pointer == symbolInfo.n_value + image_vmaddr_slide {
-            return symbolInfo
-        }
-    }
+    dladdr will look for the vm range of allImages until find the vm range of an Image is contains The Ptr
+    And return info of the Image
  */
 
 internal class RuntimeHookChecker {
