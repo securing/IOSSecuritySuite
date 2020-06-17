@@ -302,7 +302,8 @@ internal class JailbreakChecker {
             "CustomWidgetIcons",
             "PreferenceLoader",
             "RocketBootstrap",
-            "WeeLoader"
+            "WeeLoader",
+            "/.file"
         ]
 
         for libraryIndex in 0..<_dyld_image_count() {
