@@ -120,6 +120,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [gcharita](https://github.com/gcharita) for adding the Swift Package Manager support
 * [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
 * [undeaDD](https://github.com/undeaDD) for various ISS improvements
+* [fnxpt](https://github.com/fnxpt) for adding HideJB detection
 
 ## TODO
 * [ ] File integrity checks
