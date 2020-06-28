@@ -162,11 +162,11 @@ public extension IOSSecuritySuite {
      
     typealias FunctionType = @convention(thin) (Int)->()
      
-    let func_denyDebugger: FunctionType = denyDebugger
-    let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+    let funcDenyDebugger: FunctionType = denyDebugger
+    let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
      
-    if let original_denyDebugger = denyMSHookFunction(func_addr) {
-        unsafeBitCast(original_denyDebugger, to: functionType.self)(1337) //Call orignal function wihh 1337 as Int argument
+    if let originalDenyDebugger = denyMSHook(funcAddr) {
+        unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337) //Call orignal function with 1337 as Int argument
     } else {
         denyDebugger()
     }

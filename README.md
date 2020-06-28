@@ -151,7 +151,7 @@ let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
 
 if let originalDenyDebugger = denyMSHook(funcAddr) {
 //Call orignal function wihh 1337 as Int argument
-     unsafeBitCast(originalDenyDebugger, to: functionType.self)(1337)
+     unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337)
  } else {
      denyDebugger()
  }

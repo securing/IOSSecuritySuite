@@ -54,9 +54,9 @@ After MSHookFunction(mmap):
  |
  |       1. vm_region_new is creaded by MSHookFunction with VM_PROT that is VM_PROT_READ and VM_PROT_EXECUTE
  |
- |       2. instructions that can call original function are stored at begion of vm_region_new
+ |       2. instructions that can call original function are stored at the beginning of vm_region_new
  |
- |       3. begion of vm_region_new should look like instructions below
+ |       3. the beginning of vm_region_new should look like instructions below
  |           ...         (>= 16 bytes for arm64)        >=4 hooked instructions
  |           ldr x16 #8  (4 bytes for arm64)
  |           br x16      (4 bytes for arm64)

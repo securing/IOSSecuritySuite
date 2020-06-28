@@ -101,12 +101,13 @@ internal class FishHookChecker {
                              at image: UnsafePointer<mach_header>,
                              imageSlide slide: Int) {
         // Linked cmd
-        let linkeditCmdName = SEG_LINKEDIT.data(using: String.Encoding.utf8)!.map({ $0 })
+        guard let linkeditCmdName = SEG_LINKEDIT.data(using: String.Encoding.utf8)?.map({ $0 }) else { return }
         var linkeditCmd: UnsafeMutablePointer<segment_command_64>!
         var dyldInfoCmd: UnsafeMutablePointer<dyld_info_command>!
 
+        
         // Text cmd
-        let textCmdName = SEG_TEXT.data(using: String.Encoding.utf8)!.map({ Int8($0) })
+        guard let textCmdName = SEG_TEXT.data(using: String.Encoding.utf8)?.map({ Int8($0) }) else { return }
         var textCmd: UnsafeMutablePointer<segment_command_64>!
 
         guard var curCmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: image)+UInt(MemoryLayout<mach_header_64>.size)) else { return }
@@ -144,7 +145,7 @@ internal class FishHookChecker {
 
         if linkeditCmd == nil || dyldInfoCmd == nil || textCmd == nil { return }
 
-        let linkeditBase = UInt64(slide) + linkeditCmd.pointee.vmaddr - linkeditCmd.pointee.fileoff
+        let linkeditBase = UInt64(slide + Int(linkeditCmd.pointee.vmaddr) - Int(linkeditCmd.pointee.fileoff))
         let lazyBindInfoCmd = linkeditBase + UInt64(dyldInfoCmd.pointee.lazy_bind_off)
         // swiftlint:disable:next line_length
         rebindLazySymbol(symbol: symbol, image: image, imageSlide: slide, textCmd: textCmd, lazyBindInfoCmd: UnsafePointer<UInt8>(bitPattern: UInt(lazyBindInfoCmd)), lazyBindInfoSize: Int(dyldInfoCmd.pointee.lazy_bind_size))
@@ -294,7 +295,7 @@ private class FishHook {
 
         // __Data cmd
         var dataCmd: UnsafeMutablePointer<segment_command_64>!
-        let segData = SEG_DATA.data(using: String.Encoding.utf8)!.map({ Int8($0) })
+        let segData = SEG_DATA.data(using: String.Encoding.utf8)!.map({ Int8($0) }) 
 
         guard var curCmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: image)+UInt(MemoryLayout<mach_header_64>.size)) else { return }
 
