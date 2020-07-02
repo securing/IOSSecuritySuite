@@ -112,7 +112,7 @@ public class IOSSecuritySuite {
     }
     
     /**
-    This type method is used to determine if `objc call` had been RuntimeHook
+    This type method is used to determine if `objc call` has been RuntimeHooked by for example `Flex`
      
     Usage example
     ```
@@ -123,10 +123,10 @@ public class IOSSecuritySuite {
      
     let dylds = ["IOSSecuritySuite", ...]
      
-    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction),      isClassMethod: false) ? true : false
+    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false) ? true : false
     ```
      */
-    public static func amIRuntimeHook(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
+    public static func amIRuntimeHooked(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
         return RuntimeHookChecker.amIRuntimeHook(dyldWhiteList: dyldWhiteList, detectionClass: detectionClass, selector: selector, isClassMethod: isClassMethod)
     }
 }
@@ -134,7 +134,7 @@ public class IOSSecuritySuite {
 #if arch(arm64)
 public extension IOSSecuritySuite {
     /**
-    This type method is used to determine if `function_address` had been `MSHook`
+    This type method is used to determine if `function_address` has been hooked by `MSHook`
     
     Usage example
     ```
@@ -148,12 +148,12 @@ public extension IOSSecuritySuite {
     let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
     ```
     */
-    static func amIMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> Bool {
-        return MSHookFunctionChecker.amIMSHookFunction(function_address)
+    static func amIMSHooked(_ functionAddress: UnsafeMutableRawPointer) -> Bool {
+        return MSHookFunctionChecker.amIMSHooked(functionAddress)
     }
     
     /**
-    This type method is used to get original `function_address` which had been `MSHook`
+    This type method is used to get original `function_address` which has been hooked by  `MSHook`
     
     Usage example
     ```
@@ -162,22 +162,22 @@ public extension IOSSecuritySuite {
      
     typealias FunctionType = @convention(thin) (Int)->()
      
-    let func_denyDebugger: FunctionType = denyDebugger    // `: FunctionType` is must
-    let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+    let funcDenyDebugger: FunctionType = denyDebugger
+    let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
      
-    if let original_denyDebugger = denyMSHookFunction(func_addr) {
-        unsafeBitCast(original_denyDebugger, to: functionType.self)(996)
+    if let originalDenyDebugger = denyMSHook(funcAddr) {
+        unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337) //Call orignal function with 1337 as Int argument
     } else {
         denyDebugger()
     }
     ```
     */
-    static func denyMSHookFunction(_ function_address: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
-        return MSHookFunctionChecker.denyMSHookFunction(function_address)
+    static func denyMSHook(_ functionAddress: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
+        return MSHookFunctionChecker.denyMSHook(functionAddress)
     }
     
     /**
-    This type method is used to rebind `symbol` which had been Hook . for example `fishhook`
+    This type method is used to rebind `symbol` which has been hooked by `fishhook`
      
     Usage example
     ```
@@ -193,7 +193,7 @@ public extension IOSSecuritySuite {
     }
     
     /**
-    This type method is used to rebind `symbol` which had been Hook  at one of image. for example `fishhook`
+    This type method is used to rebind `symbol` which has been hooked  at one of image by `fishhook`
      
     Usage example
     ```

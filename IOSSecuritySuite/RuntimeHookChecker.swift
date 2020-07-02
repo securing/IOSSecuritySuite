@@ -9,19 +9,14 @@
 import Foundation
 import MachO
 
-/*
-    dladdr will look for the vm range of allImages until find the vm range of an Image is contains The Ptr
-    And return info of the Image
- */
-
 internal class RuntimeHookChecker {
-    
+
     static private let swiftOnceDenyFishHooK: Void = {
         #if arch(arm64)
         FishHookChecker.denyFishHook("dladdr")
         #endif
     }()
-    
+
     static func amIRuntimeHook(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
         var method: Method?
         if isClassMethod {
@@ -29,22 +24,24 @@ internal class RuntimeHookChecker {
         } else {
             method = class_getInstanceMethod(detectionClass, selector)
         }
-        
+
         if method == nil {
             // method not found
             return true
         }
-        
+
         let imp = method_getImplementation(method!)
         var info = Dl_info()
-        
+
         _ = swiftOnceDenyFishHooK
+
+        //dladdr will look through vm range of allImages for vm range of an Image that contains pointer of method and return info of the Image
         if dladdr(UnsafeRawPointer(imp), &info) != 1 {
             return false
         }
-        
+
         let impDyldPath = String(cString: info.dli_fname)
-        
+
         // at system framework
         if impDyldPath.contains("/System/Library/Frameworks") {
             return false
@@ -60,7 +57,7 @@ internal class RuntimeHookChecker {
         if let impFramework = impDyldPath.components(separatedBy: "/").last {
             return !dyldWhiteList.contains(impFramework)
         }
-        
+
         // at injected framework
         return true
     }
