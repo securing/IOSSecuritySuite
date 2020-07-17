@@ -39,7 +39,7 @@ After adding ISS to your project, you will also need to update your main Info.pl
 	<string>sileo</string>
 	<string>zbra</string>
 </array>
-```  
+```
 
 ## How to use
 
@@ -100,6 +100,65 @@ let runInEmulator = IOSSecuritySuite.amIRunInEmulator() ? true : false
 let amIReverseEngineered = IOSSecuritySuite.amIReverseEngineered() ? true : false
 ```
 
+## Experimental features
+
+### Runtime hook detector module
+```Swift
+let amIRuntimeHooked = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false) ? true : false
+```
+### Symbol hook deny module
+```Swift
+//If we want to deny symbol hook of swift function, we have to pass not demangled name of that function
+denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // Foudation's NSlog of Swift
+NSLog("Hello Symbol Hook")
+     
+denySymbolHook("abort") 
+abort()
+```
+
+### MSHook detector module
+```Swift
+//Declaration of function
+func someFunction(takes: Int) -> Bool {
+         					return false
+} 
+
+//Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
+typealias FunctionType = @convention(thin) (Int) -> (Bool)
+
+//getting address pointer to function we're interested in
+func getSwiftFunctionAddr(_ function: @escaping FunctionType) -> UnsafeMutableRawPointer {
+                return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+}
+
+let funcAddr = getSwiftFunctionAddr(someFunction)
+let amIMSHooked = IOSSecuritySuite.amIMSHooked(funcAddr)
+```
+
+### MSHook deny module
+```Swift
+//Declaration of function
+func denyDebugger(value: Int) {
+}
+
+//Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
+typealias FunctionType = @convention(thin) (Int)->()
+
+//Getting function address of original function
+let funcDenyDebugger: FunctionType = denyDebugger 
+let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
+
+
+if let originalDenyDebugger = denyMSHook(funcAddr) {
+//Call orignal function wihh 1337 as Int argument
+     unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337)
+ } else {
+     denyDebugger()
+ }
+```
+
+
+
 ## Security considerations
 Before using this and other platform security checkers you have to understand that:
 
@@ -113,6 +172,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 
 ### Special thanks: 👏🏻
 
+* [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook and SymbolHook modules
 * [kubajakowski](https://github.com/kubajakowski) for pointing out the problem with ```canOpenURL(_:)``` method
 * [olbartek](https://github.com/olbartek) for code review and pull request 
 * [benbahrenburg](https://github.com/benbahrenburg) for various ISS improvements

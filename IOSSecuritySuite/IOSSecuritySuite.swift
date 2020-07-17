@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MachO
 
 public class IOSSecuritySuite {
 
@@ -109,5 +110,106 @@ public class IOSSecuritySuite {
     public static func amIReverseEngineered() -> Bool {
         return ReverseEngineeringToolsChecker.amIReverseEngineered()
     }
-
+    
+    /**
+    This type method is used to determine if `objc call` has been RuntimeHooked by for example `Flex`
+     
+    Usage example
+    ```
+     class SomeClass {
+        @objc dynamic func someFunction() {
+        }
+     }
+     
+    let dylds = ["IOSSecuritySuite", ...]
+     
+    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false) ? true : false
+    ```
+     */
+    public static func amIRuntimeHooked(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
+        return RuntimeHookChecker.amIRuntimeHook(dyldWhiteList: dyldWhiteList, detectionClass: detectionClass, selector: selector, isClassMethod: isClassMethod)
+    }
 }
+
+#if arch(arm64)
+public extension IOSSecuritySuite {
+    /**
+    This type method is used to determine if `function_address` has been hooked by `MSHook`
+    
+    Usage example
+    ```
+    func denyDebugger() {
+    }
+     
+    typealias FunctionType = @convention(thin) ()->()
+    
+    let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is must
+    let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+    let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
+    ```
+    */
+    static func amIMSHooked(_ functionAddress: UnsafeMutableRawPointer) -> Bool {
+        return MSHookFunctionChecker.amIMSHooked(functionAddress)
+    }
+    
+    /**
+    This type method is used to get original `function_address` which has been hooked by  `MSHook`
+    
+    Usage example
+    ```
+    func denyDebugger(value: Int) {
+    }
+     
+    typealias FunctionType = @convention(thin) (Int)->()
+     
+    let funcDenyDebugger: FunctionType = denyDebugger
+    let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
+     
+    if let originalDenyDebugger = denyMSHook(funcAddr) {
+        unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337) //Call orignal function with 1337 as Int argument
+    } else {
+        denyDebugger()
+    }
+    ```
+    */
+    static func denyMSHook(_ functionAddress: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
+        return MSHookFunctionChecker.denyMSHook(functionAddress)
+    }
+    
+    /**
+    This type method is used to rebind `symbol` which has been hooked by `fishhook`
+     
+    Usage example
+    ```
+    denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // Foudation's NSlog of Swift
+    NSLog("Hello Symbol Hook")
+     
+    denySymbolHook("abort")
+    abort()
+    ```
+     */
+    static func denySymbolHook(_ symbol: String) {
+        FishHookChecker.denyFishHook(symbol)
+    }
+    
+    /**
+    This type method is used to rebind `symbol` which has been hooked  at one of image by `fishhook`
+     
+    Usage example
+    ```
+    for i in 0..<_dyld_image_count() {
+        if let imageName = _dyld_get_image_name(i) {
+            let name = String(cString: imageName)
+            if name.contains("IOSSecuritySuite"), let image = _dyld_get_image_header(i) {
+                denySymbolHook("dlsym", at: image, imageSlide: _dyld_get_image_vmaddr_slide(i))
+                break
+            }
+        }
+    }
+    ```
+     */
+    static func denySymbolHook(_ symbol: String, at image: UnsafePointer<mach_header>, imageSlide slide: Int) {
+        FishHookChecker.denyFishHook(symbol, at: image, imageSlide: slide)
+    }
+}
+ #endif
