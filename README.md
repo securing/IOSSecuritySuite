@@ -120,7 +120,7 @@ abort()
 ```Swift
 // Function declaration
 func someFunction(takes: Int) -> Bool {
-         					return false
+	return false
 } 
 
 // Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
@@ -128,7 +128,7 @@ typealias FunctionType = @convention(thin) (Int) -> (Bool)
 
 // Getting pointer address of function we want to verify
 func getSwiftFunctionAddr(_ function: @escaping FunctionType) -> UnsafeMutableRawPointer {
-                return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+	return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
 }
 
 let funcAddr = getSwiftFunctionAddr(someFunction)
