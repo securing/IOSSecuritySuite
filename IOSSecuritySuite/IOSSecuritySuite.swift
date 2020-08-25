@@ -242,7 +242,7 @@ public extension IOSSecuritySuite {
      Usage example
      ```
      /// Check your IOSSecuritySuite dylib
-     if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "3e23fa17e64b4f09ee365f58b70316de25f4847e2402d0b7e61c76ae3ca5880c" {
+     if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
         print("I have not been Tampered.")
      }
      else {
