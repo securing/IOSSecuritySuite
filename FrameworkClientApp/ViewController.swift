@@ -36,6 +36,7 @@ internal class ViewController: UIViewController {
 
         let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailMessage()
         let title = jailbreakStatus.jailbroken ? "Jailbroken" : "Jailed"
+#if arch(arm64)
         let message = """
         Jailbreak: \(jailbreakStatus.failMessage),
         Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
@@ -43,7 +44,19 @@ internal class ViewController: UIViewController {
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
         Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)
+        Am I tempered with: \(IOSSecuritySuite.amITampered("biz.securing.FrameworkClientApp"))
+        Application executable file hash value: \(IOSSecuritySuite.getExecutableFileHashValue() ?? "")
+        IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")) ?? "")
         """
+#else
+        let message = """
+        Jailbreak: \(jailbreakStatus.failMessage),
+        Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
+        Debugged?: \(IOSSecuritySuite.amIDebugged())
+        Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
+        Am I runtime hooked: \(amIRuntimeHooked)
+        """
+#endif
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
@@ -53,5 +66,9 @@ internal class ViewController: UIViewController {
 
         let checks = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
         print("The failed checks are: \(checks)")
+        
+#if arch(arm64)
+        print("Loaded libs: \(IOSSecuritySuite.findLoadedDylib() ?? [])")
+#endif
     }
 }

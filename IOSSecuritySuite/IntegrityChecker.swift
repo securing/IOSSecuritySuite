@@ -12,7 +12,7 @@ import CommonCrypto
 
 
 internal class IntegrityChecker {
-    /// Check if the Mach-O file has been tampered with
+    /// Check if the bundle identify has been tampered with
     static func amITampered(_ expectedBundleID: String) -> Bool {
         if expectedBundleID != Bundle.main.bundleIdentifier {
             return true
@@ -227,45 +227,6 @@ fileprivate class MachOParse {
 extension Data {
     fileprivate func hexEncodedString() -> String {
         return map { String(format: "%02hhx", $0) }.joined()
-    }
-}
-
-extension String {
-    
-    /// Convert String to UnsafePointer<Int8>
-    fileprivate func convertCString(usig encoding: String.Encoding = .utf8) -> UnsafePointer<Int8> {
-        let data = self.data(using: encoding)!
-        let bytes = UnsafeMutablePointer<UInt8>.allocate(capacity: data.count)
-        defer {
-            bytes.deallocate()
-        }
-        data.copyBytes(to: bytes, count: data.count)
-        return UnsafeRawPointer(bytes).assumingMemoryBound(to: CChar.self)
-    }
-}
-
-extension UnsafeMutablePointer {
-    
-    ///  Compare C string
-    fileprivate func equalUnsafePointer<T> (other:UnsafePointer<T>) ->Bool{
-        let cStringValue = unsafeDowncast(self.pointee as AnyObject, to: CFString.self)
-        let cOtherStringValue = unsafeDowncast(other.pointee as AnyObject, to: CFString.self)
-        return cStringValue == cOtherStringValue
-    }
-    
-    /// Convert UnsafeMutablePointer to Swift String
-    fileprivate func toString() -> String   {
-        let cBuffer =  UnsafeRawPointer(self).assumingMemoryBound(to: CChar.self)
-        return String.init(cString: cBuffer)
-    }
-}
-
-extension UnsafePointer {
-    /// Convert UnsafePointer to Swift String
-    fileprivate func  toValue() -> String {
-        let unsafeMutablePointer =  UnsafeMutablePointer(mutating: self)
-        let cBuffer = UnsafeMutableRawPointer(unsafeMutablePointer).assumingMemoryBound(to: CChar.self)
-        return String(cString: cBuffer)
     }
 }
 
