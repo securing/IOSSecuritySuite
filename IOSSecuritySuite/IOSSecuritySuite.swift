@@ -102,11 +102,9 @@ public class IOSSecuritySuite {
     /**
     This type method is used to determine if application has been tampered with
     
-    Work on Apple App code sign mechanism. Seealso [Code signing guide](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Introduction/Introduction.html)
-    
     Usage example
     ```
-    if IOSSecuritySuite.amITampered("biz.securing.FrameworkClientApp") {
+    if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"), .mobileProvision("your-mobile-provision-sha256-value")]).result {
         print("I have been Tampered.")
     }
     else {
@@ -114,11 +112,11 @@ public class IOSSecuritySuite {
     }
     ```
     
-    - Parameter expectedBundleID: The expected bundle Identify
-    - Returns: A hash value of the executable file.
+    - Parameter checks: The file Integrity checks you want
+    - Returns: The file Integrity checker result
     */
-    public static func amITampered(_ expectedBundleID: String) -> Bool {
-        return IntegrityChecker.amITampered(expectedBundleID)
+    public static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
+        return IntegrityChecker.amITampered(checks)
     }
 
     /**

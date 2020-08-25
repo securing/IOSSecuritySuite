@@ -10,14 +10,105 @@ import Foundation
 import MachO
 import CommonCrypto
 
+protocol RawValuable {
+    var rawValue: String { get }
+}
+
+public enum FileIntegrityCheck {
+    /// Compare current bundle identify with a specified bundle identify.
+    case bundleID(String)
+    /// Compare current hash value(sha256 hex string) of `embedded.mobileprovision` with a specified hash value.
+    /// Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get sha256 value in your macOS.
+    case mobileProvision(String)
+    /// Compare current hash value(sha256 hex string) of executable file with a specified (Image Name, Hash Value).
+    /// Only for dynamic library and arm64.
+    case machO(String, String)
+}
+
+extension FileIntegrityCheck: RawValuable {
+    public var rawValue: String {
+        switch self {
+        case .bundleID(_):
+            return "BundleID"
+        case .mobileProvision(_):
+            return "MobileProvision"
+        case .machO(_, _):
+            return "Mach-O"
+        }
+    }
+}
+
+public typealias FileIntegrityCheckResult = (result: Bool, hitChecks: [FileIntegrityCheck])
 
 internal class IntegrityChecker {
-    /// Check if the bundle identify has been tampered with
-    static func amITampered(_ expectedBundleID: String) -> Bool {
+    
+    /// Check if the application has been tampered with the specified checks
+    static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
+        
+        var hitChecks: Array<FileIntegrityCheck> = []
+        var result = false
+        
+        for check in checks {
+            switch check {
+            case .bundleID(let exceptedBundleID):
+                if checkBundleID(exceptedBundleID) {
+                    result = true
+                    hitChecks.append(check)
+                }
+                break
+            case .mobileProvision(let expectedSha256Value):
+                if checkMobileProvision(expectedSha256Value.lowercased()) {
+                    result = true
+                    hitChecks.append(check)
+                }
+            case .machO(let imageName, let expectedSha256Value):
+                if checkMachO(imageName, with: expectedSha256Value.lowercased()) {
+                    result = true
+                    hitChecks.append(check)
+                }
+            }
+        }
+        
+        return (result, hitChecks)
+    }
+    
+    private static func checkBundleID(_ expectedBundleID: String) -> Bool {
         if expectedBundleID != Bundle.main.bundleIdentifier {
             return true
         }
         
+        return false
+    }
+    
+    private static func checkMobileProvision(_ expectedSha256Value: String) -> Bool {
+        
+        guard let path = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision"),
+            let url = URL(string: path) else { return false }
+        
+        if FileManager.default.fileExists(atPath: url.path) {
+            if let data = FileManager.default.contents(atPath: url.path) {
+                
+                // Hash: Sha256
+                var hash = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
+                data.withUnsafeBytes {
+                    _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
+                }
+                
+                if Data(hash).hexEncodedString() != expectedSha256Value {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    private static func checkMachO(_ imageName: String, with expectedSha256Value: String) -> Bool {
+#if arch(arm64)
+        if let hashValue = getExecutableFileHashValue(.custom(imageName)), hashValue != expectedSha256Value {
+            return true
+        }
+#endif
         return false
     }
     
@@ -224,10 +315,10 @@ fileprivate class MachOParse {
     }
 }
 
+#endif
+
 extension Data {
     fileprivate func hexEncodedString() -> String {
         return map { String(format: "%02hhx", $0) }.joined()
     }
 }
-
-#endif
