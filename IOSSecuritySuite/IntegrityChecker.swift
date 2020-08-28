@@ -148,12 +148,12 @@ extension IntegrityChecker {
 
 // MARK: - MachOParse
 
-struct SectionInfo {
+fileprivate struct SectionInfo {
     var section: UnsafePointer<section_64>
     var addr: UInt64
 }
 
-struct SegmentInfo {
+fileprivate struct SegmentInfo {
     var segment: UnsafePointer<segment_command_64>
     var addr: UInt64
 }
