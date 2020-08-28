@@ -10,8 +10,8 @@ import Foundation
 import MachO
 import CommonCrypto
 
-protocol RawValuable {
-    var rawValue: String { get }
+protocol Explainable {
+    var description: String { get }
 }
 
 public enum FileIntegrityCheck {
@@ -25,15 +25,15 @@ public enum FileIntegrityCheck {
     case machO(String, String)
 }
 
-extension FileIntegrityCheck: RawValuable {
-    public var rawValue: String {
+extension FileIntegrityCheck: Explainable {
+    public var description: String {
         switch self {
-        case .bundleID(_):
-            return "BundleID"
-        case .mobileProvision(_):
-            return "MobileProvision"
-        case .machO(_, _):
-            return "Mach-O"
+        case .bundleID(let exceptedBundleID):
+            return "The expected bundle identify was \(exceptedBundleID)"
+        case .mobileProvision(let expectedSha256Value):
+            return "The expected hash value of Mobile Provision file was \(expectedSha256Value)"
+        case .machO(let imageName, let expectedSha256Value):
+            return "The expected hash value of \"__TEXT.__text\" data of \(imageName) Mach-O file was \(expectedSha256Value)"
         }
     }
 }
