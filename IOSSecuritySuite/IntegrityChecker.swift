@@ -18,10 +18,10 @@ public enum FileIntegrityCheck {
     /// Compare current bundle identify with a specified bundle identify.
     case bundleID(String)
     /// Compare current hash value(sha256 hex string) of `embedded.mobileprovision` with a specified hash value.
-    /// Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get sha256 value in your macOS.
+    /// Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get sha256 value on your macOS.
     case mobileProvision(String)
     /// Compare current hash value(sha256 hex string) of executable file with a specified (Image Name, Hash Value).
-    /// Only for dynamic library and arm64.
+    /// Only work on dynamic library and arm64.
     case machO(String, String)
 }
 
@@ -125,7 +125,7 @@ public enum IntegrityCheckerImageTarget {
 
 extension IntegrityChecker {
     
-    /// Get hash value of Mach-O "__TXET.__text" data with a specified image target
+    /// Get hash value of Mach-O "__TEXT.__text" data with a specified image target
     static func getExecutableFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
         switch target {
         case .custom(let imageName):

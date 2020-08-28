@@ -237,7 +237,7 @@ public extension IOSSecuritySuite {
      
      **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your *Build Settings*.
      
-     Calculate the hash value by the `__TEXT.__text` data of Mach-O file.
+     Calculate the hash value of the `__TEXT.__text` data of the specified image Mach-O file.
      
      Usage example
      ```
