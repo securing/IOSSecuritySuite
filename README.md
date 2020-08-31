@@ -80,7 +80,7 @@ if jailbreakStatus.jailbroken {
 }
 ```
 
-### Debbuger detector module
+### Debugger detector module
 ```Swift
 let amIDebugged = IOSSecuritySuite.amIDebugged() ? true : false
 ```
