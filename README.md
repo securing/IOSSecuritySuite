@@ -8,7 +8,7 @@ What ISS detects:
 
 * Jailbreak (even the iOS 11+ with brand new indicators! 🔥)
 * Attached debugger 👨🏻‍🚀
-* If an app was run in emulator 👽
+* If an app was run in an emulator 👽
 * Common reverse engineering tools running on the device 🔭
 
 ## Setup
@@ -29,7 +29,7 @@ Add `IOSSecuritySuite/*.swift` files to your project
 ```
 
 ### Update Info.plist
-After adding ISS to your project, you will also need to update your main Info.plist. There is a check in jailbreak detection module that uses ```canOpenURL(_:)``` method and [requires](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) specyfing URLs that will be queried.
+After adding ISS to your project, you will also need to update your main Info.plist. There is a check in jailbreak detection module that uses ```canOpenURL(_:)``` method and [requires](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) specifying URLs that will be queried.
 
 ```xml
 <key>LSApplicationQueriesSchemes</key>
@@ -66,7 +66,7 @@ if jailbreakStatus.jailbroken {
 	print("This device is not jailbroken")
 }
 ```
-The failMessage is a String containing comma separated indicators as shown on the example below:
+The failMessage is a String containing comma-separated indicators as shown on the example below:
 `Cydia URL scheme detected, Suspicious file exists: /Library/MobileSubstrate/MobileSubstrate.dylib, Fork was able to create a new process`
 
 * **Verbose & filterable**, if you also want to for example identify devices that were jailbroken in the past, but now are jailed
@@ -80,7 +80,7 @@ if jailbreakStatus.jailbroken {
 }
 ```
 
-### Debbuger detector module
+### Debugger detector module
 ```Swift
 let amIDebugged = IOSSecuritySuite.amIDebugged() ? true : false
 ```
@@ -108,8 +108,8 @@ let amIRuntimeHooked = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: Some
 ```
 ### Symbol hook deny module
 ```Swift
-//If we want to deny symbol hook of swift function, we have to pass not demangled name of that function
-denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // Foudation's NSlog of Swift
+// If we want to deny symbol hook of Swift function, we have to pass mangled name of that function
+denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF")   // denying hooking for the NSLog function
 NSLog("Hello Symbol Hook")
      
 denySymbolHook("abort") 
@@ -118,17 +118,17 @@ abort()
 
 ### MSHook detector module
 ```Swift
-//Declaration of function
+// Function declaration
 func someFunction(takes: Int) -> Bool {
-         					return false
+	return false
 } 
 
-//Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
+// Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
 typealias FunctionType = @convention(thin) (Int) -> (Bool)
 
-//getting address pointer to function we're interested in
+// Getting pointer address of function we want to verify
 func getSwiftFunctionAddr(_ function: @escaping FunctionType) -> UnsafeMutableRawPointer {
-                return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+	return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
 }
 
 let funcAddr = getSwiftFunctionAddr(someFunction)
@@ -137,20 +137,20 @@ let amIMSHooked = IOSSecuritySuite.amIMSHooked(funcAddr)
 
 ### MSHook deny module
 ```Swift
-//Declaration of function
+// Function declaration
 func denyDebugger(value: Int) {
 }
 
-//Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
+// Defining FunctionType : @convention(thin) indicates a “thin” function reference, which uses the Swift calling convention with no special “self” or “context” parameters.
 typealias FunctionType = @convention(thin) (Int)->()
 
-//Getting function address of original function
+// Getting original function address
 let funcDenyDebugger: FunctionType = denyDebugger 
 let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
 
 
 if let originalDenyDebugger = denyMSHook(funcAddr) {
-//Call orignal function wihh 1337 as Int argument
+// Call the original function with 1337 as Int argument
      unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337)
  } else {
      denyDebugger()
@@ -160,12 +160,12 @@ if let originalDenyDebugger = denyMSHook(funcAddr) {
 
 
 ## Security considerations
-Before using this and other platform security checkers you have to understand that:
+Before using this and other platform security checkers, you have to understand that:
 
 * Including this tool in your project is not the only thing you should do in order to improve your app security! You can read a general mobile security whitepaper [here](https://www.securing.biz/en/mobile-application-security-best-practices/index.html).
 * Detecting if a device is jailbroken is done locally on the device. It means that every jailbreak detector may be bypassed (even this)! 
 * Swift code is considered to be harder to manipulate dynamically than Objective-C. Since this library was written in pure Swift, the IOSSecuritySuite methods shouldn't be exposed to Objective-C runtime (which makes it more difficult to bypass ✅). You have to know that attacker is still able to MSHookFunction/MSFindSymbol Swift symbols and dynamically change Swift code execution flow.
-* It's also a good idea to obfuscate the whole project code including this library. See [Swiftshield](https://github.com/rockbruno/swiftshield)
+* It's also a good idea to obfuscate the whole project code, including this library. See [Swiftshield](https://github.com/rockbruno/swiftshield)
 
 ## Contribution ❤️
 Yes, please! If you have a better idea or you just want to improve this project, please text me on [Twitter](https://twitter.com/_r3ggi) or [Linkedin](https://www.linkedin.com/in/wojciech-regula/). Pull requests are more than welcome!
@@ -180,6 +180,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [gcharita](https://github.com/gcharita) for adding the Swift Package Manager support
 * [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
 * [undeaDD](https://github.com/undeaDD) for various ISS improvements
+* [fnxpt](https://github.com/fnxpt) for adding HideJB detection
 
 ## TODO
 * [ ] File integrity checks

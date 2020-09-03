@@ -302,7 +302,8 @@ internal class JailbreakChecker {
             "CustomWidgetIcons",
             "PreferenceLoader",
             "RocketBootstrap",
-            "WeeLoader"
+            "WeeLoader",
+            "/.file" // HideJB (2.1.1) changes full paths of the suspicious libraries to "/.file"
         ]
 
         for libraryIndex in 0..<_dyld_image_count() {

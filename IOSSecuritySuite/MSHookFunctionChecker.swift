@@ -185,6 +185,7 @@ internal class MSHookFunctionChecker {
         // size of replaced instructions
         guard let firstInstruction = MSHookInstruction.translateInstruction(at: functionAddr) else {
             assert(false, "amIMSHookFunction has judged")
+            return nil
         }
         var origFunctionBeginAddr = functionAddr
         switch firstInstruction {
