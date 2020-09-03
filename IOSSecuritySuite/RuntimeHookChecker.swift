@@ -40,10 +40,10 @@ internal class RuntimeHookChecker {
             return false
         }
 
-        let impDyldPath = String(cString: info.dli_fname)
+        let impDyldPath = String(cString: info.dli_fname).lowercased()
 
         // at system framework
-        if impDyldPath.contains("/System/Library/Frameworks") {
+        if impDyldPath.contains("/System/Library".lowercased()) {
             return false
         }
 

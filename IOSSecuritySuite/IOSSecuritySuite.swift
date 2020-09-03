@@ -98,6 +98,28 @@ public class IOSSecuritySuite {
     public static func denyDebugger() {
         return DebuggerChecker.denyDebugger()
     }
+    
+#if arch(arm64)
+    /**
+    This type method is used to determine if there are any breakpoints at the function
+    
+    Usage example
+    ```
+    func denyDebugger() {
+        // add breakpoint at here to test
+    }
+     
+    typealias FunctionType = @convention(thin) ()->()
+    
+    let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is must
+    let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+    let hasBreakpoint = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil) ? true : false
+    ```
+    */
+    public static func hasBreakpointAt(_ functionAddr: UnsafeRawPointer, functionSize: vm_size_t?) -> Bool {
+        return DebuggerChecker.hasBreakpointAt(functionAddr, functionSize: functionSize)
+    }
+#endif
 
     /**
      This type method is used to determine if there are any popular reverse engineering tools installed on the device

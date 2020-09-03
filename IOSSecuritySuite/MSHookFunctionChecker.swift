@@ -195,6 +195,7 @@ internal class MSHookFunctionChecker {
             origFunctionBeginAddr += 12
         default:
             assert(false, "amIMSHookFunction has judged")
+            return nil
         }
         // look up vm_region
         let vmRegionInfo = UnsafeMutablePointer<Int32>.allocate(capacity: MemoryLayout<vm_region_basic_info_64>.size/4)
