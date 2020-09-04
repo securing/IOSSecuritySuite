@@ -5,6 +5,7 @@
 //  Created by NikoXu on 2020/8/21.
 //  Copyright © 2020 wregula. All rights reserved.
 //
+// swiftlint:disable line_length large_tuple force_cast
 
 import Foundation
 import MachO
@@ -47,7 +48,7 @@ internal class IntegrityChecker {
     // Check if the application has been tampered with the specified checks
     static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
         
-        var hitChecks: Array<FileIntegrityCheck> = []
+        var hitChecks: [FileIntegrityCheck] = []
         var result = false
         
         for check in checks {
@@ -57,7 +58,6 @@ internal class IntegrityChecker {
                     result = true
                     hitChecks.append(check)
                 }
-                break
             case .mobileProvision(let expectedSha256Value):
                 if checkMobileProvision(expectedSha256Value.lowercased()) {
                     result = true
@@ -91,7 +91,7 @@ internal class IntegrityChecker {
             if let data = FileManager.default.contents(atPath: url.path) {
                 
                 // Hash: SHA256
-                var hash = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
+                var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
                 data.withUnsafeBytes {
                     _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
                 }
@@ -139,7 +139,7 @@ extension IntegrityChecker {
     }
     
     // Find loaded dylib with a specified image target
-    static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> Array<String>? {
+    static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
         switch target {
         case .custom(let imageName):
             return MachOParse(imageName: imageName).findLoadedDylib()
@@ -151,19 +151,19 @@ extension IntegrityChecker {
 
 // MARK: - MachOParse
 
-fileprivate struct SectionInfo {
+private struct SectionInfo {
     var section: UnsafePointer<section_64>
     var addr: UInt64
 }
 
-fileprivate struct SegmentInfo {
+private struct SegmentInfo {
     var segment: UnsafePointer<segment_command_64>
     var addr: UInt64
 }
 
 // Convert (Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8) to String
 @inline(__always)
-fileprivate func Convert16BitInt8TupleToString(int8Tuple: (Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8)) -> String {
+private func convert16BitInt8TupleToString(int8Tuple: (Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8)) -> String {
     let mirror = Mirror(reflecting: int8Tuple)
     
     return mirror.children.map {
@@ -171,7 +171,7 @@ fileprivate func Convert16BitInt8TupleToString(int8Tuple: (Int8, Int8, Int8, Int
         }.joined().replacingOccurrences(of: "\0", with: "")
 }
 
-fileprivate class MachOParse {
+private class MachOParse {
     private var base: UnsafePointer<mach_header>?
     private var slide: Int?
     
@@ -203,7 +203,7 @@ fileprivate class MachOParse {
         return UInt64(slide) + vmaddr
     }
     
-    func findLoadedDylib() -> Array<String>? {
+    func findLoadedDylib() -> [String]? {
         guard let header = base else {
             return nil
         }
@@ -212,7 +212,7 @@ fileprivate class MachOParse {
             return nil
         }
         
-        var array: Array<String> = Array()
+        var array: [String] = Array()
         var segCmd: UnsafeMutablePointer<segment_command_64>!
         
         for _ in 0..<header.pointee.ncmds {
@@ -245,7 +245,7 @@ fileprivate class MachOParse {
         for _ in 0..<header.pointee.ncmds {
             segCmd = curCmd
             if segCmd.pointee.cmd == LC_SEGMENT_64 {
-                let segName = Convert16BitInt8TupleToString(int8Tuple: segCmd.pointee.segname)
+                let segName = convert16BitInt8TupleToString(int8Tuple: segCmd.pointee.segname)
                 
                 if segname == segName,
                     let vmaddr = vm2real(segCmd.pointee.vmaddr) {
@@ -274,15 +274,15 @@ fileprivate class MachOParse {
         for _ in 0..<header.pointee.ncmds {
             segCmd = curCmd
             if segCmd.pointee.cmd == LC_SEGMENT_64 {
-                let segName = Convert16BitInt8TupleToString(int8Tuple: segCmd.pointee.segname)
+                let segName = convert16BitInt8TupleToString(int8Tuple: segCmd.pointee.segname)
                 
                 if segname == segName {
-                    for i in 0..<segCmd.pointee.nsects {
-                        guard let sect = UnsafeMutablePointer<section_64>(bitPattern: UInt(bitPattern: curCmd) + UInt(MemoryLayout<segment_command_64>.size) + UInt(i)) else {
+                    for sectionID in 0..<segCmd.pointee.nsects {
+                        guard let sect = UnsafeMutablePointer<section_64>(bitPattern: UInt(bitPattern: curCmd) + UInt(MemoryLayout<segment_command_64>.size) + UInt(sectionID)) else {
                             return nil
                         }
                         
-                        let secName = Convert16BitInt8TupleToString(int8Tuple: sect.pointee.sectname)
+                        let secName = convert16BitInt8TupleToString(int8Tuple: sect.pointee.sectname)
                         
                         if secName == secname,
                             let addr = vm2real(sect.pointee.addr) {
@@ -311,7 +311,7 @@ fileprivate class MachOParse {
         let size = sectionInfo.section.pointee.size
         
         // Hash: SHA256
-        var hash = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
+        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
         _ = CC_SHA256(startAddr, CC_LONG(size), &hash)
         
         return Data(hash).hexEncodedString()

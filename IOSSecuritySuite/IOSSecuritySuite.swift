@@ -5,6 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
+//swiftlint:disable line_length
 
 import Foundation
 import MachO
@@ -280,7 +281,7 @@ public extension IOSSecuritySuite {
      - Parameter target: The target image
      - Returns: An Array with all loaded dylib name
     */
-    static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> Array<String>? {
+    static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
         return IntegrityChecker.findLoadedDylib(target)
     }
 }

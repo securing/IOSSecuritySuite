@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-//swiftlint:disable line_length
+//swiftlint:disable all
 
 import UIKit
 import IOSSecuritySuite
@@ -19,12 +19,12 @@ class RuntimeClass {
 internal class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
-        //Runtime Check
+        // Runtime Check
         let test = RuntimeClass.init()
         test.runtimeModifiedFunction()
         let dylds = ["UIKit"]
         let amIRuntimeHooked = IOSSecuritySuite.amIRuntimeHooked(dyldWhiteList: dylds, detectionClass: RuntimeClass.self, selector: #selector(RuntimeClass.runtimeModifiedFunction), isClassMethod: false)
-        //MSHook Check
+        // MSHook Check
         func msHookReturnFalse(takes: Int) -> Bool {
             return false
         }
