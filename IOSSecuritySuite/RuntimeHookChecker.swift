@@ -48,14 +48,14 @@ internal class RuntimeHookChecker {
         }
 
         // at binary of app
-        let binaryPath = String(cString: _dyld_get_image_name(0))
+        let binaryPath = String(cString: _dyld_get_image_name(0)).lowercased()
         if impDyldPath.contains(binaryPath) {
             return false
         }
 
         // at whiteList 
         if let impFramework = impDyldPath.components(separatedBy: "/").last {
-            return !dyldWhiteList.contains(impFramework)
+            return !dyldWhiteList.map({ $0.lowercased() }).contains(impFramework)
         }
 
         // at injected framework
