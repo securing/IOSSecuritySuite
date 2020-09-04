@@ -15,13 +15,15 @@ protocol Explainable {
 }
 
 public enum FileIntegrityCheck {
-    /// Compare current bundle identify with a specified bundle identify.
+    // Compare current bundleID with a specified bundleID.
     case bundleID(String)
-    /// Compare current hash value(sha256 hex string) of `embedded.mobileprovision` with a specified hash value.
-    /// Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get sha256 value on your macOS.
+    
+    // Compare current hash value(SHA256 hex string) of `embedded.mobileprovision` with a specified hash value.
+    // Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get SHA256 value on your macOS.
     case mobileProvision(String)
-    /// Compare current hash value(sha256 hex string) of executable file with a specified (Image Name, Hash Value).
-    /// Only work on dynamic library and arm64.
+    
+    // Compare current hash value(SHA256 hex string) of executable file with a specified (Image Name, Hash Value).
+    // Only work on dynamic library and arm64.
     case machO(String, String)
 }
 
@@ -42,7 +44,7 @@ public typealias FileIntegrityCheckResult = (result: Bool, hitChecks: [FileInteg
 
 internal class IntegrityChecker {
     
-    /// Check if the application has been tampered with the specified checks
+    // Check if the application has been tampered with the specified checks
     static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
         
         var hitChecks: Array<FileIntegrityCheck> = []
@@ -88,7 +90,7 @@ internal class IntegrityChecker {
         if FileManager.default.fileExists(atPath: url.path) {
             if let data = FileManager.default.contents(atPath: url.path) {
                 
-                // Hash: Sha256
+                // Hash: SHA256
                 var hash = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
                 data.withUnsafeBytes {
                     _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
@@ -117,15 +119,16 @@ internal class IntegrityChecker {
 #if arch(arm64)
 
 public enum IntegrityCheckerImageTarget {
-    /// Default image
+    // Default image
     case `default`
-    /// Custom image with a specified name
+    
+    // Custom image with a specified name
     case custom(String)
 }
 
 extension IntegrityChecker {
     
-    /// Get hash value of Mach-O "__TEXT.__text" data with a specified image target
+    // Get hash value of Mach-O "__TEXT.__text" data with a specified image target
     static func getExecutableFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
         switch target {
         case .custom(let imageName):
@@ -135,7 +138,7 @@ extension IntegrityChecker {
         }
     }
     
-    /// Find loaded dylib with a specified image target
+    // Find loaded dylib with a specified image target
     static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> Array<String>? {
         switch target {
         case .custom(let imageName):
@@ -158,7 +161,7 @@ fileprivate struct SegmentInfo {
     var addr: UInt64
 }
 
-/// Convert (Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8) to String
+// Convert (Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8) to String
 @inline(__always)
 fileprivate func Convert16BitInt8TupleToString(int8Tuple: (Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8, Int8)) -> String {
     let mirror = Mirror(reflecting: int8Tuple)
@@ -307,7 +310,7 @@ fileprivate class MachOParse {
         
         let size = sectionInfo.section.pointee.size
         
-        // Hash: Sha256
+        // Hash: SHA256
         var hash = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
         _ = CC_SHA256(startAddr, CC_LONG(size), &hash)
         
