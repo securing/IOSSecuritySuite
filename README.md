@@ -157,7 +157,7 @@ if let originalDenyDebugger = denyMSHook(funcAddr) {
  }
 ```
 
-### File integrity detector module
+### File integrity verifier module
 
 ```Swift
 // Determine if application has been tampered with 
