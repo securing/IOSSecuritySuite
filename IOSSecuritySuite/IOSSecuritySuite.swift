@@ -242,18 +242,8 @@ public extension IOSSecuritySuite {
      
      Usage example
      ```
-     // Determine if application has been tampered with
-     if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"),
-         .mobileProvision("2976c70b56e9ae1e2c8e8b231bf6b0cff12bbbd0a593f21846d9a004dd181be3"),
-         .machO("IOSSecuritySuite", "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc")]).result {
-         print("I have been Tampered.")
-     }
-     else {
-         print("I have not been Tampered.")
-     }
-
      // Manually verify SHA256 hash value of a loaded dylib
-     if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+     if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
          print("I have not been Tampered.")
      }
      else {
@@ -264,8 +254,8 @@ public extension IOSSecuritySuite {
      - Parameter target: The target image
      - Returns: A hash value of the executable file.
      */
-    static func getExecutableFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
-        return IntegrityChecker.getExecutableFileHashValue(target)
+    static func getMachOFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
+        return IntegrityChecker.getMachOFileHashValue(target)
     }
     
     /**
@@ -275,7 +265,7 @@ public extension IOSSecuritySuite {
      
      Usage example
      ```
-     if let loadedDylib = IOSSecuritySuite.findLoadedDylib() {
+     if let loadedDylib = IOSSecuritySuite.findLoadedDylibs() {
          print("Loaded dylibs: \(loadedDylib)")
      }
      ```
@@ -283,8 +273,8 @@ public extension IOSSecuritySuite {
      - Parameter target: The target image
      - Returns: An Array with all loaded dylib names
     */
-    static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
-        return IntegrityChecker.findLoadedDylib(target)
+    static func findLoadedDylibs(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
+        return IntegrityChecker.findLoadedDylibs(target)
     }
 }
  #endif

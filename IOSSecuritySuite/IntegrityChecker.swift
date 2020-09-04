@@ -107,7 +107,7 @@ internal class IntegrityChecker {
     
     private static func checkMachO(_ imageName: String, with expectedSha256Value: String) -> Bool {
 #if arch(arm64)
-        if let hashValue = getExecutableFileHashValue(.custom(imageName)), hashValue != expectedSha256Value {
+        if let hashValue = getMachOFileHashValue(.custom(imageName)), hashValue != expectedSha256Value {
             return true
         }
 #endif
@@ -129,7 +129,7 @@ public enum IntegrityCheckerImageTarget {
 extension IntegrityChecker {
     
     // Get hash value of Mach-O "__TEXT.__text" data with a specified image target
-    static func getExecutableFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
+    static func getMachOFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
         switch target {
         case .custom(let imageName):
             return MachOParse(imageName: imageName).getTextSectionDataSHA256Value()
@@ -139,12 +139,12 @@ extension IntegrityChecker {
     }
     
     // Find loaded dylib with a specified image target
-    static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
+    static func findLoadedDylibs(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
         switch target {
         case .custom(let imageName):
-            return MachOParse(imageName: imageName).findLoadedDylib()
+            return MachOParse(imageName: imageName).findLoadedDylibs()
         case .default:
-            return MachOParse().findLoadedDylib()
+            return MachOParse().findLoadedDylibs()
         }
     }
 }
@@ -203,7 +203,7 @@ private class MachOParse {
         return UInt64(slide) + vmaddr
     }
     
-    func findLoadedDylib() -> [String]? {
+    func findLoadedDylibs() -> [String]? {
         guard let header = base else {
             return nil
         }

@@ -171,7 +171,7 @@ else {
 }
 
 // Manually verify SHA256 hash value of a loaded dylib
-if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
     print("I have not been Tampered.")
 }
 else {
@@ -180,7 +180,7 @@ else {
  
 // Check SHA256 hash value of the main executable
 // Tip: Your application may retrieve this value from the server
-if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
+if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
     print("I have not been Tampered.")
 }
 else {
