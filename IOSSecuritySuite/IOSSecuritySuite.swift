@@ -234,7 +234,7 @@ public extension IOSSecuritySuite {
     }
     
     /**
-     This type method is used to get the hash value of the executable file in a specified image
+     This type method is used to get the SHA256 hash value of the executable file in a specified image
      
      **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your *Build Settings*.
      
@@ -242,16 +242,18 @@ public extension IOSSecuritySuite {
      
      Usage example
      ```
-     /// Check your IOSSecuritySuite dylib
-     if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "aca4d2dc32f4c101b3eb0614f68a744d16178937741cb36b22c252a2bf735848" {
-        print("I have not been Tampered.")
-     }
-     else {
+     // Determine if application has been tampered with
+     if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"),
+         .mobileProvision("2976c70b56e9ae1e2c8e8b231bf6b0cff12bbbd0a593f21846d9a004dd181be3"),
+         .machO("IOSSecuritySuite", "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc")]).result {
          print("I have been Tampered.")
      }
-     
-     /// Check your main application. Generally we submit the hash value to server side
-     if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
+     else {
+         print("I have not been Tampered.")
+     }
+
+     // Manually verify SHA256 hash value of a loaded dylib
+     if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
          print("I have not been Tampered.")
      }
      else {
@@ -267,7 +269,7 @@ public extension IOSSecuritySuite {
     }
     
     /**
-     This type method is used to find all loaded dylib in a specified image
+     This type method is used to find all loaded dylibs in the specified image
      
      **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your *Build Settings*.
      
@@ -279,7 +281,7 @@ public extension IOSSecuritySuite {
      ```
     
      - Parameter target: The target image
-     - Returns: An Array with all loaded dylib name
+     - Returns: An Array with all loaded dylib names
     */
     static func findLoadedDylib(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
         return IntegrityChecker.findLoadedDylib(target)
