@@ -20,6 +20,7 @@
 		70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */; };
 		70B0BBCD226F3A90000CFB39 /* EmulatorChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */; };
 		70B0BBCF226F3AB2000CFB39 /* IOSSecuritySuite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */; };
+		7A12583D24EFA8D40071460D /* IntegrityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A12583C24EFA8D40071460D /* IntegrityChecker.swift */; };
 		A90FD5FE24528925007212BF /* MSHookFunctionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */; };
 		A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FF24528A94007212BF /* FishHookChecker.swift */; };
 		A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */; };
@@ -56,6 +57,7 @@
 		70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmulatorChecker.swift; sourceTree = "<group>"; };
 		70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSecuritySuite.swift; sourceTree = "<group>"; };
 		70DDFD5A2284AA9600D95EE7 /* FrameworkClientApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FrameworkClientApp.entitlements; sourceTree = "<group>"; };
+		7A12583C24EFA8D40071460D /* IntegrityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrityChecker.swift; sourceTree = "<group>"; };
 		A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSHookFunctionChecker.swift; sourceTree = "<group>"; };
 		A90FD5FF24528A94007212BF /* FishHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishHookChecker.swift; sourceTree = "<group>"; };
 		A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeHookChecker.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 				70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */,
 				70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */,
 				70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */,
+				7A12583C24EFA8D40071460D /* IntegrityChecker.swift */,
 				70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */,
 				703F74E122704E0F000635D8 /* ReverseEngineeringToolsChecker.swift */,
 				A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */,
@@ -297,6 +300,7 @@
 				70B0BBCF226F3AB2000CFB39 /* IOSSecuritySuite.swift in Sources */,
 				703F74E222704E0F000635D8 /* ReverseEngineeringToolsChecker.swift in Sources */,
 				A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */,
+				7A12583D24EFA8D40071460D /* IntegrityChecker.swift in Sources */,
 				70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -327,6 +331,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FrameworkClientApp/Info.plist;

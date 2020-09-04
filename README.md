@@ -157,7 +157,36 @@ if let originalDenyDebugger = denyMSHook(funcAddr) {
  }
 ```
 
+### File integrity detector module
 
+```Swift
+// Determine if application has been tampered with 
+if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"),
+    .mobileProvision("2976c70b56e9ae1e2c8e8b231bf6b0cff12bbbd0a593f21846d9a004dd181be3"),
+    .machO("IOSSecuritySuite", "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc")]).result {
+    print("I have been Tampered.")
+}
+else {
+    print("I have not been Tampered.")
+}
+
+/// In advanced, you can compare the hash value manually
+/// Check your IOSSecuritySuite dylib
+if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+    print("I have not been Tampered.")
+}
+else {
+    print("I have been Tampered.")
+}
+ 
+/// Check your main application. Generally we submit the hash value to server side
+if let hashValue = IOSSecuritySuite.getExecutableFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
+    print("I have not been Tampered.")
+}
+else {
+    print("I have been Tampered.")
+}
+```
 
 ## Security considerations
 Before using this and other platform security checkers, you have to understand that:
@@ -183,7 +212,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [fnxpt](https://github.com/fnxpt) for adding HideJB detection
 
 ## TODO
-* [ ] File integrity checks
+* [x] File integrity checks
 
 * [ ] Research Installer5 and Zebra Package Manager detection ( Cydia Alternatives )
 

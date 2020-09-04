@@ -43,6 +43,9 @@ internal class ViewController: UIViewController {
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
         Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)
+        Am I tempered with: \(IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp")]).result)
+        Application executable file hash value: \(IOSSecuritySuite.getExecutableFileHashValue() ?? "")
+        IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getExecutableFileHashValue(.custom("IOSSecuritySuite")) ?? "")
         """
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -53,5 +56,9 @@ internal class ViewController: UIViewController {
 
         let checks = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
         print("The failed checks are: \(checks)")
+        
+#if arch(arm64)
+        print("Loaded libs: \(IOSSecuritySuite.findLoadedDylib() ?? [])")
+#endif
     }
 }
