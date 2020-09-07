@@ -157,7 +157,36 @@ if let originalDenyDebugger = denyMSHook(funcAddr) {
  }
 ```
 
+### File integrity verifier module
 
+```Swift
+// Determine if application has been tampered with 
+if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"),
+    .mobileProvision("2976c70b56e9ae1e2c8e8b231bf6b0cff12bbbd0a593f21846d9a004dd181be3"),
+    .machO("IOSSecuritySuite", "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc")]).result {
+    print("I have been Tampered.")
+}
+else {
+    print("I have not been Tampered.")
+}
+
+// Manually verify SHA256 hash value of a loaded dylib
+if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+    print("I have not been Tampered.")
+}
+else {
+    print("I have been Tampered.")
+}
+ 
+// Check SHA256 hash value of the main executable
+// Tip: Your application may retrieve this value from the server
+if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
+    print("I have not been Tampered.")
+}
+else {
+    print("I have been Tampered.")
+}
+```
 
 ## Security considerations
 Before using this and other platform security checkers, you have to understand that:
@@ -172,7 +201,6 @@ Yes, please! If you have a better idea or you just want to improve this project,
 
 ### Special thanks: 👏🏻
 
-* [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook and SymbolHook modules
 * [kubajakowski](https://github.com/kubajakowski) for pointing out the problem with ```canOpenURL(_:)``` method
 * [olbartek](https://github.com/olbartek) for code review and pull request 
 * [benbahrenburg](https://github.com/benbahrenburg) for various ISS improvements
@@ -181,13 +209,12 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
 * [undeaDD](https://github.com/undeaDD) for various ISS improvements
 * [fnxpt](https://github.com/fnxpt) for adding HideJB detection
+* [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook and SymbolHook modules
+* [NikoXu](https://github.com/NikoXu) for adding file integrity module
 
 ## TODO
-* [ ] File integrity checks
 
 * [ ] Research Installer5 and Zebra Package Manager detection ( Cydia Alternatives )
-
-* [x] Deny debugger
 
 ## License
 See the LICENSE file.

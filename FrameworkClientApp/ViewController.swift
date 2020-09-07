@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-//swiftlint:disable line_length
+//swiftlint:disable all
 
 import UIKit
 import IOSSecuritySuite
@@ -19,12 +19,12 @@ class RuntimeClass {
 internal class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
-        //Runtime Check
+        // Runtime Check
         let test = RuntimeClass.init()
         test.runtimeModifiedFunction()
         let dylds = ["UIKit"]
         let amIRuntimeHooked = IOSSecuritySuite.amIRuntimeHooked(dyldWhiteList: dylds, detectionClass: RuntimeClass.self, selector: #selector(RuntimeClass.runtimeModifiedFunction), isClassMethod: false)
-        //MSHook Check
+        // MSHook Check
         func msHookReturnFalse(takes: Int) -> Bool {
             /// add breakpoint at here to test `IOSSecuritySuite.hasBreakpointAt`
             return false
@@ -45,6 +45,9 @@ internal class ViewController: UIViewController {
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
         Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)
+        Am I tempered with: \(IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp")]).result)
+        Application executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue() ?? "")
+        IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")) ?? "")
         """
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -55,5 +58,9 @@ internal class ViewController: UIViewController {
 
         let checks = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
         print("The failed checks are: \(checks)")
+        
+#if arch(arm64)
+        print("Loaded libs: \(IOSSecuritySuite.findLoadedDylibs() ?? [])")
+#endif
     }
 }
