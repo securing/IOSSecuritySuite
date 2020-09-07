@@ -5,7 +5,7 @@
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
 //  https://github.com/TannerJin/anti-fishhook
-// swiftlint:disable cyclomatic_complexity line_length function_body_length function_parameter_count identifier_name
+//swiftlint:disable all
 
 import Foundation
 import MachO

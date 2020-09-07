@@ -5,6 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
+//swiftlint:disable line_length
 
 import Foundation
 import MachO
@@ -120,6 +121,26 @@ public class IOSSecuritySuite {
         return DebuggerChecker.hasBreakpointAt(functionAddr, functionSize: functionSize)
     }
 #endif
+    
+    /**
+    This type method is used to determine if application has been tampered with
+    
+    Usage example
+    ```
+    if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"), .mobileProvision("your-mobile-provision-sha256-value")]).result {
+        print("I have been Tampered.")
+    }
+    else {
+        print("I have not been Tampered.")
+    }
+    ```
+    
+    - Parameter checks: The file Integrity checks you want
+    - Returns: The file Integrity checker result
+    */
+    public static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
+        return IntegrityChecker.amITampered(checks)
+    }
 
     /**
      This type method is used to determine if there are any popular reverse engineering tools installed on the device
@@ -232,6 +253,50 @@ public extension IOSSecuritySuite {
      */
     static func denySymbolHook(_ symbol: String, at image: UnsafePointer<mach_header>, imageSlide slide: Int) {
         FishHookChecker.denyFishHook(symbol, at: image, imageSlide: slide)
+    }
+    
+    /**
+     This type method is used to get the SHA256 hash value of the executable file in a specified image
+     
+     **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your *Build Settings*.
+     
+     Calculate the hash value of the `__TEXT.__text` data of the specified image Mach-O file.
+     
+     Usage example
+     ```
+     // Manually verify SHA256 hash value of a loaded dylib
+     if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+         print("I have not been Tampered.")
+     }
+     else {
+         print("I have been Tampered.")
+     }
+     ```
+     
+     - Parameter target: The target image
+     - Returns: A hash value of the executable file.
+     */
+    static func getMachOFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
+        return IntegrityChecker.getMachOFileHashValue(target)
+    }
+    
+    /**
+     This type method is used to find all loaded dylibs in the specified image
+     
+     **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your *Build Settings*.
+     
+     Usage example
+     ```
+     if let loadedDylib = IOSSecuritySuite.findLoadedDylibs() {
+         print("Loaded dylibs: \(loadedDylib)")
+     }
+     ```
+    
+     - Parameter target: The target image
+     - Returns: An Array with all loaded dylib names
+    */
+    static func findLoadedDylibs(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
+        return IntegrityChecker.findLoadedDylibs(target)
     }
 }
  #endif
