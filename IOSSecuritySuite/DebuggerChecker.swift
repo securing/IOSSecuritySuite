@@ -62,8 +62,8 @@ internal class DebuggerChecker {
         let vmRegion = vmRegionInfo.withMemoryRebound(to: vm_region_basic_info_64.self, capacity: 1, { $0 })
         
         if (vmRegion.pointee.protection == (VM_PROT_READ | VM_PROT_EXECUTE)) {
-            let arm64BreakpointOpcode = 0xd4200000
             let armBreakpointOpcode = 0xe7ffdefe
+            let arm64BreakpointOpcode = 0xd4200000
             let instructionBegin = functionAddr.bindMemory(to: UInt32.self, capacity: 1)
             var judgeSize = (vmSize - (funcAddr - vmStart))
             if let size = functionSize, size < judgeSize {
