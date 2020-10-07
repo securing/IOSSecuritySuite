@@ -26,11 +26,12 @@ internal class ViewController: UIViewController {
         let amIRuntimeHooked = IOSSecuritySuite.amIRuntimeHooked(dyldWhiteList: dylds, detectionClass: RuntimeClass.self, selector: #selector(RuntimeClass.runtimeModifiedFunction), isClassMethod: false)
         // MSHook Check
         func msHookReturnFalse(takes: Int) -> Bool {
+            /// add breakpoint at here to test `IOSSecuritySuite.hasBreakpointAt`
             return false
         }
         typealias FunctionType = @convention(thin) (Int) -> (Bool)
         func getSwiftFunctionAddr(_ function: @escaping FunctionType) -> UnsafeMutableRawPointer {
-                return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
+            return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
         }
         let funcAddr = getSwiftFunctionAddr(msHookReturnFalse)
 
@@ -40,6 +41,7 @@ internal class ViewController: UIViewController {
         Jailbreak: \(jailbreakStatus.failMessage),
         Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
         Debugged?: \(IOSSecuritySuite.amIDebugged())
+        HasBreakpoint?: \(IOSSecuritySuite.hasBreakpointAt(funcAddr, functionSize: nil))
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
         Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)

@@ -40,5 +40,47 @@ internal class DebuggerChecker {
             print("Error occured when calling ptrace(). Denying debugger may not be reliable")
         }
     }
+    
+#if arch(arm64)
+    static func hasBreakpointAt(_ functionAddr: UnsafeRawPointer, functionSize: vm_size_t?) -> Bool {
+        let funcAddr = vm_address_t(UInt(bitPattern: functionAddr))
+        
+        var vmStart: vm_address_t = funcAddr
+        var vmSize: vm_size_t = 0
+        let vmRegionInfo = UnsafeMutablePointer<Int32>.allocate(capacity: MemoryLayout<vm_region_basic_info_64>.size/4)
+        defer {
+            vmRegionInfo.deallocate()
+        }
+        var vmRegionInfoCount: mach_msg_type_number_t = mach_msg_type_number_t(VM_REGION_BASIC_INFO_64)
+        var objectName: mach_port_t = 0
+        
+        let ret = vm_region_64(mach_task_self_, &vmStart, &vmSize, VM_REGION_BASIC_INFO_64, vmRegionInfo, &vmRegionInfoCount, &objectName)
+        if (ret != KERN_SUCCESS) {
+            return false
+        }
+        
+        let vmRegion = vmRegionInfo.withMemoryRebound(to: vm_region_basic_info_64.self, capacity: 1, { $0 })
+        
+        if (vmRegion.pointee.protection == (VM_PROT_READ | VM_PROT_EXECUTE)) {
+            let armBreakpointOpcode = 0xe7ffdefe
+            let arm64BreakpointOpcode = 0xd4200000
+            let instructionBegin = functionAddr.bindMemory(to: UInt32.self, capacity: 1)
+            var judgeSize = (vmSize - (funcAddr - vmStart))
+            if let size = functionSize, size < judgeSize {
+                judgeSize = size
+            }
+            
+            for i in 0..<(judgeSize / 4) {
+                if (instructionBegin.advanced(by: Int(i)).pointee == armBreakpointOpcode) ||
+                    (instructionBegin.advanced(by: Int(i)).pointee == arm64BreakpointOpcode)
+                {
+                    return true
+                }
+            }
+        }
+        
+        return false
+    }
+#endif
 
 }
