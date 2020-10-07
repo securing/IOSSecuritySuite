@@ -5,6 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
+//swiftlint:disable line_length
 
 import Foundation
 
@@ -55,13 +56,13 @@ internal class DebuggerChecker {
         var objectName: mach_port_t = 0
         
         let ret = vm_region_64(mach_task_self_, &vmStart, &vmSize, VM_REGION_BASIC_INFO_64, vmRegionInfo, &vmRegionInfoCount, &objectName)
-        if (ret != KERN_SUCCESS) {
+        if ret != KERN_SUCCESS {
             return false
         }
         
         let vmRegion = vmRegionInfo.withMemoryRebound(to: vm_region_basic_info_64.self, capacity: 1, { $0 })
         
-        if (vmRegion.pointee.protection == (VM_PROT_READ | VM_PROT_EXECUTE)) {
+        if vmRegion.pointee.protection == (VM_PROT_READ | VM_PROT_EXECUTE) {
             let armBreakpointOpcode = 0xe7ffdefe
             let arm64BreakpointOpcode = 0xd4200000
             let instructionBegin = functionAddr.bindMemory(to: UInt32.self, capacity: 1)
@@ -70,10 +71,8 @@ internal class DebuggerChecker {
                 judgeSize = size
             }
             
-            for i in 0..<(judgeSize / 4) {
-                if (instructionBegin.advanced(by: Int(i)).pointee == armBreakpointOpcode) ||
-                    (instructionBegin.advanced(by: Int(i)).pointee == arm64BreakpointOpcode)
-                {
+            for valueToOffset in 0..<(judgeSize / 4) {
+                if (instructionBegin.advanced(by: Int(valueToOffset)).pointee == armBreakpointOpcode) || (instructionBegin.advanced(by: Int(valueToOffset)).pointee == arm64BreakpointOpcode) {
                     return true
                 }
             }
