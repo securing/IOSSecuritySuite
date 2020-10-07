@@ -191,9 +191,9 @@ else {
 ### Breakpoint detection module
 
 ```Swift
- func denyDebugger() {
-        // add a breakpoint at here to test
-    }
+func denyDebugger() {
+    // add a breakpoint at here to test
+}
      
 typealias FunctionType = @convention(thin) ()->()
 let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is a must
