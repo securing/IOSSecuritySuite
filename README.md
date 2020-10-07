@@ -188,6 +188,25 @@ else {
 }
 ```
 
+### Breakpoint detection module
+
+```Swift
+ func denyDebugger() {
+        // add a breakpoint at here to test
+    }
+     
+typealias FunctionType = @convention(thin) ()->()
+let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is a must
+let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+let hasBreakpoint = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil)
+
+if hasBreakpoint {
+    print("Breakpoint found in the specified function")
+} else {
+    print("Breakpoint not found in the specified function")
+}
+```
+
 ## Security considerations
 Before using this and other platform security checkers, you have to understand that:
 
