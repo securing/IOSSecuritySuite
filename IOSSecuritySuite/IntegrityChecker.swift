@@ -84,8 +84,9 @@ internal class IntegrityChecker {
     
     private static func checkMobileProvision(_ expectedSha256Value: String) -> Bool {
         
-        guard let path = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision"),
-            let url = URL(string: path) else { return false }
+        guard let path = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else { return false }
+
+        let url = URL(fileURLWithPath: path)
         
         if FileManager.default.fileExists(atPath: url.path) {
             if let data = FileManager.default.contents(atPath: url.path) {
