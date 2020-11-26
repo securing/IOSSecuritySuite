@@ -353,9 +353,6 @@ private class FishHook {
             if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
                 replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
             }
-            if curSection.pointee.flags == S_NON_LAZY_SYMBOL_POINTERS {
-                replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
-            }
         }
     }
 
@@ -384,8 +381,12 @@ private class FishHook {
             let curSymbolName = strtab.advanced(by: Int(curStrTabOff+1))
 
             if String(cString: curSymbolName) == symbolName {
+                // -2: RTLD_DEFAULT
+                let symbolPointer = dlsym(UnsafeMutableRawPointer(bitPattern: -2), symbolName.cString(using: .utf8))
                 oldMethod = sectionVmAddr!.advanced(by: tmp).pointee
-                sectionVmAddr!.advanced(by: tmp).initialize(to: newMethod)
+                if (oldMethod != symbolPointer) {  // hooked
+                    sectionVmAddr!.advanced(by: tmp).initialize(to: newMethod)
+                }
                 break
             }
         }
