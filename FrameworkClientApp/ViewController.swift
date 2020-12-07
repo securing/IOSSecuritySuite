@@ -48,6 +48,7 @@ internal class ViewController: UIViewController {
         Am I tempered with: \(IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp")]).result)
         Application executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue() ?? "")
         IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")) ?? "")
+        Am I proxied: \(IOSSecuritySuite.amIProxied())
         """
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

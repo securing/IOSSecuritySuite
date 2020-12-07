@@ -150,6 +150,18 @@ public class IOSSecuritySuite {
     public static func amIRuntimeHooked(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
         return RuntimeHookChecker.amIRuntimeHook(dyldWhiteList: dyldWhiteList, detectionClass: detectionClass, selector: selector, isClassMethod: isClassMethod)
     }
+    
+    /**
+    This type method is used to determine if  HTTP proxy was set in the iOS Settings.
+     
+    Usage example
+    ```
+    let amIProxied = IOSSecuritySuite.amIReverseEngineered() ? true : false
+    ```
+     */
+    public static func amIProxied() -> Bool {
+        return ProxyChecker.amIProxied()
+    }
 }
 
 #if arch(arm64)
