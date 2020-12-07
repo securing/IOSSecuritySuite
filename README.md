@@ -100,6 +100,11 @@ let runInEmulator = IOSSecuritySuite.amIRunInEmulator() ? true : false
 let amIReverseEngineered = IOSSecuritySuite.amIReverseEngineered() ? true : false
 ```
 
+### System proxy detector module
+```Swift
+let amIProxied = IOSSecuritySuite.amIProxied() ? true : false
+```
+
 ## Experimental features
 
 ### Runtime hook detector module

@@ -156,7 +156,7 @@ public class IOSSecuritySuite {
      
     Usage example
     ```
-    let amIProxied = IOSSecuritySuite.amIReverseEngineered() ? true : false
+    let amIProxied = IOSSecuritySuite.amIProxied() ? true : false
     ```
      */
     public static func amIProxied() -> Bool {
