@@ -82,7 +82,7 @@ if jailbreakStatus.jailbroken {
 
 ### Debugger detector module
 ```Swift
-let amIDebugged = IOSSecuritySuite.amIDebugged() ? true : false
+let amIDebugged: Bool = IOSSecuritySuite.amIDebugged()
 ```
 
 ### Deny debugger at all
@@ -92,24 +92,24 @@ IOSSecuritySuite.denyDebugger()
 
 ### Emulator detector module
 ```Swift
-let runInEmulator = IOSSecuritySuite.amIRunInEmulator() ? true : false
+let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
 ```
 
 ### Reverse engineering tools detector module
 ```Swift
-let amIReverseEngineered = IOSSecuritySuite.amIReverseEngineered() ? true : false
+let amIReverseEngineered: Bool = IOSSecuritySuite.amIReverseEngineered()
 ```
 
 ### System proxy detector module
 ```Swift
-let amIProxied = IOSSecuritySuite.amIProxied() ? true : false
+let amIProxied: Bool = IOSSecuritySuite.amIProxied()
 ```
 
 ## Experimental features
 
 ### Runtime hook detector module
 ```Swift
-let amIRuntimeHooked = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false) ? true : false
+let amIRuntimeHooked: Bool = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false)
 ```
 ### Symbol hook deny module
 ```Swift

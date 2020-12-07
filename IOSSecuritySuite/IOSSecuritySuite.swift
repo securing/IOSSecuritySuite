@@ -17,7 +17,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let isDeviceJailbroken = IOSSecuritySuite.amIJailbroken() ? true : false
+     let isDeviceJailbroken: Bool = IOSSecuritySuite.amIJailbroken()
      ```
      */
     public static func amIJailbroken() -> Bool {
@@ -69,7 +69,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let runInEmulator = IOSSecuritySuite.amIRunInEmulator() ? true : false
+     let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
      ```
      */
     public static func amIRunInEmulator() -> Bool {
@@ -81,7 +81,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let amIDebugged = IOSSecuritySuite.amIDebugged() ? true : false
+     let amIDebugged: Bool = IOSSecuritySuite.amIDebugged()
      ```
      */
     public static func amIDebugged() -> Bool {
@@ -125,7 +125,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let amIReverseEngineered = IOSSecuritySuite.amIReverseEngineered() ? true : false
+     let amIReverseEngineered: Bool = IOSSecuritySuite.amIReverseEngineered()
      ```
      */
     public static func amIReverseEngineered() -> Bool {
@@ -144,7 +144,7 @@ public class IOSSecuritySuite {
      
     let dylds = ["IOSSecuritySuite", ...]
      
-    let amIRuntimeHook = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false) ? true : false
+    let amIRuntimeHook: Bool = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false)
     ```
      */
     public static func amIRuntimeHooked(dyldWhiteList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
@@ -156,7 +156,7 @@ public class IOSSecuritySuite {
      
     Usage example
     ```
-    let amIProxied = IOSSecuritySuite.amIProxied() ? true : false
+    let amIProxied: Bool = IOSSecuritySuite.amIProxied()
     ```
      */
     public static func amIProxied() -> Bool {
@@ -178,7 +178,7 @@ public extension IOSSecuritySuite {
     
     let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is must
     let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
-    let amIMSHookFunction = amIMSHookFunction(func_addr) ? true : false
+    let amIMSHookFunction: Bool = amIMSHookFunction(func_addr)
     ```
     */
     static func amIMSHooked(_ functionAddress: UnsafeMutableRawPointer) -> Bool {
@@ -301,7 +301,7 @@ public extension IOSSecuritySuite {
     
     let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is a must
     let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
-    let hasBreakpoint = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil) ? true : false
+    let hasBreakpoint: Bool = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil)
     ```
     */
     static func hasBreakpointAt(_ functionAddr: UnsafeRawPointer, functionSize: vm_size_t?) -> Bool {
