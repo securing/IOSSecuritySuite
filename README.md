@@ -82,7 +82,7 @@ if jailbreakStatus.jailbroken {
 
 ### Debugger detector module
 ```Swift
-let amIDebugged = IOSSecuritySuite.amIDebugged() ? true : false
+let amIDebugged: Bool = IOSSecuritySuite.amIDebugged()
 ```
 
 ### Deny debugger at all
@@ -92,19 +92,24 @@ IOSSecuritySuite.denyDebugger()
 
 ### Emulator detector module
 ```Swift
-let runInEmulator = IOSSecuritySuite.amIRunInEmulator() ? true : false
+let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
 ```
 
 ### Reverse engineering tools detector module
 ```Swift
-let amIReverseEngineered = IOSSecuritySuite.amIReverseEngineered() ? true : false
+let amIReverseEngineered: Bool = IOSSecuritySuite.amIReverseEngineered()
+```
+
+### System proxy detector module
+```Swift
+let amIProxied: Bool = IOSSecuritySuite.amIProxied()
 ```
 
 ## Experimental features
 
 ### Runtime hook detector module
 ```Swift
-let amIRuntimeHooked = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false) ? true : false
+let amIRuntimeHooked: Bool = amIRuntimeHook(dyldWhiteList: dylds, detectionClass: SomeClass.self, selector: #selector(SomeClass.someFunction), isClassMethod: false)
 ```
 ### Symbol hook deny module
 ```Swift
@@ -185,6 +190,25 @@ if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.default), hashValue =
 }
 else {
     print("I have been Tampered.")
+}
+```
+
+### Breakpoint detection module
+
+```Swift
+func denyDebugger() {
+    // add a breakpoint at here to test
+}
+     
+typealias FunctionType = @convention(thin) ()->()
+let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is a must
+let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
+let hasBreakpoint = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil)
+
+if hasBreakpoint {
+    print("Breakpoint found in the specified function")
+} else {
+    print("Breakpoint not found in the specified function")
 }
 ```
 
