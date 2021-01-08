@@ -17,8 +17,28 @@ class RuntimeClass {
 }
 
 internal class ViewController: UIViewController {
+    
+    func testHookPrint() {
+        typealias MyPrint = @convention(thin) (Any..., String, String) ->Void
+        func myPrint(_ items: Any..., separator: String = " ", terminator: String = "\n") {
+            NSLog("print has been hooked")
+        }
+        let myprint: MyPrint = myPrint
+        let myPrintPointer = unsafeBitCast(myprint, to: UnsafeMutableRawPointer.self)
+        var oldMethod: UnsafeMutableRawPointer?
+        
+        // hook
+        replaceSymbol("$ss5print_9separator10terminatoryypd_S2StF", newMethod: myPrintPointer, oldMethod: &oldMethod)
+        print("print hasn't been hooked")
+        
+        // antiHook
+        IOSSecuritySuite.denySymbolHook("$ss5print_9separator10terminatoryypd_S2StF")
+        print("print has been antiHooked")
+    }
 
     override func viewDidAppear(_ animated: Bool) {
+//        testHookPrint()
+        
         // Runtime Check
         let test = RuntimeClass.init()
         test.runtimeModifiedFunction()

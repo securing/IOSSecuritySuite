@@ -5,7 +5,7 @@
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
 //  https://github.com/TannerJin/AntiMSHookFunction
-// swiftlint:disable cyclomatic_complexity function_body_length
+// swiftlint:disable cyclomatic_complexity function_body_length trailing_whitespace
 
 import Foundation
 
@@ -74,6 +74,7 @@ internal class MSHookFunctionChecker {
         case adrp_x17(pageBase: UInt64)
         case add_x17(pageOffset: UInt64)
         case br_x17
+        
         @inline(__always)
         static fileprivate func translateInstruction(at functionAddr: UnsafeMutableRawPointer) -> MSHookInstruction? {
             let arm = functionAddr.assumingMemoryBound(to: UInt32.self).pointee
@@ -132,6 +133,7 @@ internal class MSHookFunctionChecker {
             }
             return nil
         }
+        
         // pageBase
         @inline(__always)
         static private func getAdrpPageBase(_ functionAddr: UnsafeMutableRawPointer) -> UInt64 {
@@ -153,6 +155,7 @@ internal class MSHookFunctionChecker {
             return UInt64(Int64(pcBase) + singExtend(imm))
         }
     }
+    
     @inline(__always)
     static func amIMSHooked(_ functionAddr: UnsafeMutableRawPointer) -> Bool {
         guard let firstInstruction = MSHookInstruction.translateInstruction(at: functionAddr) else {
@@ -177,6 +180,7 @@ internal class MSHookFunctionChecker {
             return false
         }
     }
+    
     @inline(__always)
     static func denyMSHook(_ functionAddr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
         if !amIMSHooked(functionAddr) {
@@ -206,6 +210,7 @@ internal class MSHookFunctionChecker {
         var vmRegionSize: vm_size_t = 0
         var vmRegionInfoCount: mach_msg_type_number_t = mach_msg_type_number_t(VM_REGION_BASIC_INFO_64)
         var objectName: mach_port_t = 0
+        
         while true {
             if vmRegionAddress == 0 {
                 return nil
