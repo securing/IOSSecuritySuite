@@ -109,7 +109,9 @@ internal class JailbreakChecker {
             "undecimus://",
             "cydia://",
             "sileo://",
-            "zbra://"
+            "zbra://",
+            "filza://",
+            "activator://"
         ]
 
         if Thread.isMainThread {
@@ -169,7 +171,17 @@ internal class JailbreakChecker {
             "/System/Library/LaunchDaemons/com.ikey.bbot.plist",
             "/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
             "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
-            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist"
+            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
+            "/Applications/Sileo.app",
+            "/var/binpack",
+            "/Library/PreferenceBundles/LibertyPref.bundle",
+            "/Library/PreferenceBundles/ShadowPreferences.bundle",
+            "/Library/PreferenceBundles/ABypassPrefs.bundle",
+            "/Library/PreferenceBundles/FlyJBPrefs.bundle",
+            "/usr/lib/libhooker.dylib",
+            "/usr/lib/libsubstitute.dylib",
+            "/usr/lib/substrate",
+            "/usr/lib/TweakInject",
         ]
         
         // These files can give false positive in the emulator
@@ -304,7 +316,15 @@ internal class JailbreakChecker {
             "PreferenceLoader",
             "RocketBootstrap",
             "WeeLoader",
-            "/.file" // HideJB (2.1.1) changes full paths of the suspicious libraries to "/.file"
+            "/.file", // HideJB (2.1.1) changes full paths of the suspicious libraries to "/.file"
+            "libhooker",
+            "SubstrateInserter",
+            "SubstrateBootstrap",
+            "ABypass",
+            "FlyJB",
+            "Substitute",
+            "Cephei",
+            "Electra",
         ]
 
         for libraryIndex in 0..<_dyld_image_count() {
