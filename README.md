@@ -38,6 +38,8 @@ After adding ISS to your project, you will also need to update your main Info.pl
 	<string>undecimus</string>
 	<string>sileo</string>
 	<string>zbra</string>
+    <string>filza</string>
+    <string>activator</string>
 </array>
 ```
 
