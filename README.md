@@ -237,6 +237,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [fnxpt](https://github.com/fnxpt) for adding multiple JB detections
 * [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook and SymbolHook modules
 * [NikoXu](https://github.com/NikoXu) for adding file integrity module
+* [hellpf](https://github.com/hellpf) for fixing a dangling socket problem
 
 ## TODO
 
