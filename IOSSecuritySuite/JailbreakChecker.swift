@@ -24,6 +24,7 @@ public enum JailbreakCheck: CaseIterable {
     case dyld
 }
 
+@available(iOSApplicationExtension, unavailable)
 internal class JailbreakChecker {
     typealias CheckResult = (passed: Bool, failMessage: String)
 
