@@ -10,6 +10,7 @@
 import Foundation
 import MachO
 
+@available(iOSApplicationExtension, unavailable)
 public class IOSSecuritySuite {
 
     /**
@@ -165,6 +166,7 @@ public class IOSSecuritySuite {
 }
 
 #if arch(arm64)
+@available(iOSApplicationExtension, unavailable)
 public extension IOSSecuritySuite {
     /**
     This type method is used to determine if `function_address` has been hooked by `MSHook`

@@ -34,10 +34,12 @@ After adding ISS to your project, you will also need to update your main Info.pl
 ```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
-	<string>cydia</string>
-	<string>undecimus</string>
-	<string>sileo</string>
-	<string>zbra</string>
+    <string>cydia</string>
+    <string>undecimus</string>
+    <string>sileo</string>
+    <string>zbra</string>
+    <string>filza</string>
+    <string>activator</string>
 </array>
 ```
 
@@ -232,9 +234,10 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [gcharita](https://github.com/gcharita) for adding the Swift Package Manager support
 * [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
 * [undeaDD](https://github.com/undeaDD) for various ISS improvements
-* [fnxpt](https://github.com/fnxpt) for adding HideJB detection
+* [fnxpt](https://github.com/fnxpt) for adding multiple JB detections
 * [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook and SymbolHook modules
 * [NikoXu](https://github.com/NikoXu) for adding file integrity module
+* [hellpf](https://github.com/hellpf) for fixing a dangling socket problem
 
 ## TODO
 

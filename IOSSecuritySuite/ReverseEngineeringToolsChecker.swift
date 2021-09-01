@@ -89,6 +89,10 @@ internal class ReverseEngineeringToolsChecker {
                 connect(sock, $0, socklen_t(MemoryLayout<sockaddr_in>.stride))
             }
         }
+        
+        defer {
+            close(sock)
+        }
 
         if result != -1 {
             return true // Port is opened
