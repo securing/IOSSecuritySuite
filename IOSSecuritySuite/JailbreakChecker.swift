@@ -33,27 +33,27 @@ internal class JailbreakChecker {
         let failedChecks: [FailedCheck]
     }
 
-    static func amIJailbroken() -> Bool {
-        return !performChecks().passed
+    static func amIJailbroken(_ checks: [JailbreakCheck] = JailbreakCheck.allCases) -> Bool {
+        return !performChecks(checks).passed
     }
 
-    static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
-        let status = performChecks()
+    static func amIJailbrokenWithFailMessage(_ checks: [JailbreakCheck] = JailbreakCheck.allCases) -> (jailbroken: Bool, failMessage: String) {
+        let status = performChecks(checks)
         return (!status.passed, status.failMessage)
     }
 
-    static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheck]) {
-        let status = performChecks()
+    static func amIJailbrokenWithFailedChecks(_ checks: [JailbreakCheck] = JailbreakCheck.allCases) -> (jailbroken: Bool, failedChecks: [FailedCheck]) {
+        let status = performChecks(checks)
         return (!status.passed, status.failedChecks)
     }
 
-    private static func performChecks() -> JailbreakStatus {
+    private static func performChecks(_ checks: [JailbreakCheck]) -> JailbreakStatus {
         var passed = true
         var failMessage = ""
         var result: CheckResult = (true, "")
         var failedChecks: [FailedCheck] = []
 
-        for check in JailbreakCheck.allCases {
+        for check in checks {
             switch check {
             case .urlSchemes:
                 result = checkURLSchemes()
