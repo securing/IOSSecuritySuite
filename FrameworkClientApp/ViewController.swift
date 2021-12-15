@@ -69,7 +69,7 @@ internal class ViewController: UIViewController {
         Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
         Debugged?: \(IOSSecuritySuite.amIDebugged())
         HasBreakpoint?: \(IOSSecuritySuite.hasBreakpointAt(funcAddr, functionSize: nil))
-        HasWatchpoint?: \(IOSSecuritySuite.hasWatchpoint())
+        Has watchpoint: \(testWatchpoint())
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
         Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)
@@ -77,7 +77,6 @@ internal class ViewController: UIViewController {
         Application executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue() ?? "")
         IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")) ?? "")
         Am I proxied: \(IOSSecuritySuite.amIProxied())
-        Has watchpoint: \(testWatchpoint())
         """
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
