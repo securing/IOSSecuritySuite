@@ -16,6 +16,13 @@ class RuntimeClass {
    }
 }
 
+//Test watchpoint
+func testWatchpoint() -> Bool{
+    var ptr = malloc(9)
+    var count = 3
+    return IOSSecuritySuite.hasWatchpoint()
+}
+
 internal class ViewController: UIViewController {
     
     func testHookPrint() {
@@ -62,7 +69,7 @@ internal class ViewController: UIViewController {
         Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
         Debugged?: \(IOSSecuritySuite.amIDebugged())
         HasBreakpoint?: \(IOSSecuritySuite.hasBreakpointAt(funcAddr, functionSize: nil))
-        HasWatchpoint?: \(IOSSecuritySuite.hasWatchpoint())
+        Has watchpoint: \(testWatchpoint())
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
         Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)
