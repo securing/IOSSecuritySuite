@@ -309,5 +309,9 @@ public extension IOSSecuritySuite {
     static func hasBreakpointAt(_ functionAddr: UnsafeRawPointer, functionSize: vm_size_t?) -> Bool {
         return DebuggerChecker.hasBreakpointAt(functionAddr, functionSize: functionSize)
     }
-}
+    
+    static func hasWatchpoint() -> Bool {
+        return DebuggerChecker.hasWatchpoint()
+    }
+ }
  #endif
