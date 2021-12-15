@@ -16,6 +16,13 @@ class RuntimeClass {
    }
 }
 
+//Test watchpoint
+func testWatchpoint() -> Bool{
+    var ptr = malloc(9)
+    var count = 3
+    return IOSSecuritySuite.hasWatchpoint()
+}
+
 internal class ViewController: UIViewController {
     
     func testHookPrint() {
@@ -70,6 +77,7 @@ internal class ViewController: UIViewController {
         Application executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue() ?? "")
         IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")) ?? "")
         Am I proxied: \(IOSSecuritySuite.amIProxied())
+        Has watchpoint: \(testWatchpoint())
         """
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
