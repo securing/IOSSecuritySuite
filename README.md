@@ -199,7 +199,7 @@ else {
 
 ```Swift
 func denyDebugger() {
-    // add a breakpoint at here to test
+    // Set breakpoint here
 }
      
 typealias FunctionType = @convention(thin) ()->()
@@ -214,7 +214,23 @@ if hasBreakpoint {
 }
 ```
 
+### Watchpoint detection module
+
+```Swift
+// Set a breakpoint at the testWatchpoint function
+func testWatchpoint() -> Bool{
+		// lldb: watchpoint set expression ptr
+    var ptr = malloc(9)
+    // lldb: watchpoint set variable count
+    var count = 3
+    return IOSSecuritySuite.hasWatchpoint()
+}
+```
+
+
+
 ## Security considerations
+
 Before using this and other platform security checkers, you have to understand that:
 
 * Including this tool in your project is not the only thing you should do in order to improve your app security! You can read a general mobile security whitepaper [here](https://www.securing.biz/en/mobile-application-security-best-practices/index.html).
@@ -235,7 +251,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [rynaardb](https://github.com/rynaardb) for creating the `amIJailbrokenWithFailedChecks()` method
 * [undeaDD](https://github.com/undeaDD) for various ISS improvements
 * [fnxpt](https://github.com/fnxpt) for adding multiple JB detections
-* [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook and SymbolHook modules
+* [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook, SymbolHook and Watchpoint Detection modules
 * [NikoXu](https://github.com/NikoXu) for adding file integrity module
 * [hellpf](https://github.com/hellpf) for fixing a dangling socket problem
 
