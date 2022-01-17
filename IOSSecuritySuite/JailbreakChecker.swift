@@ -182,6 +182,9 @@ internal class JailbreakChecker {
             "/usr/lib/libsubstitute.dylib",
             "/usr/lib/substrate",
             "/usr/lib/TweakInject",
+            "/var/binpack/Applications/loader.app", // checkra1n
+            "/Applications/FlyJB.app", // Fly JB X
+            "/Applications/Zebra.app" // Zebra
         ]
         
         // These files can give false positive in the emulator
