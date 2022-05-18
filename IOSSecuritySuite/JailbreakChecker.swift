@@ -130,6 +130,9 @@ internal class JailbreakChecker {
 
     private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
         var paths = [
+            "/var/mobile/Library/Preferences/ABPattern", // A-Bypass
+            "/usr/lib/ABDYLD.dylib", // A-Bypass,
+            "/usr/lib/ABSubLoader.dylib", // A-Bypass
             "/usr/sbin/frida-server", // frida
             "/etc/apt/sources.list.d/electra.list", // electra
             "/etc/apt/sources.list.d/sileo.sources", // electra
