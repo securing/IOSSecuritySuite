@@ -34,7 +34,6 @@ After adding ISS to your project, you will also need to update your main Info.pl
 ```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
-    <string>cydia</string>
     <string>undecimus</string>
     <string>sileo</string>
     <string>zbra</string>
@@ -69,7 +68,7 @@ if jailbreakStatus.jailbroken {
 }
 ```
 The failMessage is a String containing comma-separated indicators as shown on the example below:
-`Cydia URL scheme detected, Suspicious file exists: /Library/MobileSubstrate/MobileSubstrate.dylib, Fork was able to create a new process`
+`sileo:// URL scheme detected, Suspicious file exists: /Library/MobileSubstrate/MobileSubstrate.dylib, Fork was able to create a new process`
 
 * **Verbose & filterable**, if you also want to for example identify devices that were jailbroken in the past, but now are jailed
 
