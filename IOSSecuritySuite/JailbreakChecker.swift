@@ -191,8 +191,8 @@ internal class JailbreakChecker {
             "/Applications/Zebra.app" // Zebra
         ]
         
-        // These files can give false positive in the emulator
-        if !EmulatorChecker.amIRunInEmulator() {
+        // These files can give false positive in the emulator or mac
+        if !EmulatorChecker.amIRunInEmulator() && !MacChecker.amIRunInMac() {
             paths += [
             "/bin/bash",
             "/usr/sbin/sshd",
@@ -224,8 +224,8 @@ internal class JailbreakChecker {
             "/var/log/apt"
         ]
         
-        // These files can give false positive in the emulator
-        if !EmulatorChecker.amIRunInEmulator() {
+        // These files can give false positive in the emulator or mac
+        if !EmulatorChecker.amIRunInEmulator() && !MacChecker.amIRunInMac() {
             paths += [
             "/bin/bash",
             "/usr/sbin/sshd",
