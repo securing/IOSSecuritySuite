@@ -42,6 +42,10 @@ After adding ISS to your project, you will also need to update your main Info.pl
 </array>
 ```
 
+### Notice
+
+iOS Security Suite is meant to be used on iOS/iPadOS. It should not be used on Macs with Apple Silicon.
+
 ## How to use
 
 ### Jailbreak detector module
