@@ -233,7 +233,9 @@ internal class MSHookFunctionChecker {
                 return nil
             }
             
-            let regionInfo = UnsafeMutableRawPointer(vmRegionInfo).assumingMemoryBound(to: vm_region_basic_info_64.self)
+            let regionInfo = UnsafeMutableRawPointer(vmRegionInfo).assumingMemoryBound(
+                to: vm_region_basic_info_64.self
+            )
             
             // vm region of code
             if regionInfo.pointee.protection != (VM_PROT_READ|VM_PROT_EXECUTE) {
@@ -252,9 +254,13 @@ internal class MSHookFunctionChecker {
                 //Last address of current vm region
                 let vmRegionEndAddress = vmRegionAddress + vmRegionSize
                 
+                //Unlike substitute, When using substrate, branching address may resides anywhere in vm region.
+                //So every region must be investigated to check whether it contains original function address.
                 while (vmRegionEndAddress >= vmRegionInstAddr) {
                     vmRegionInstAddr += 4
-                    guard let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vmRegionInstAddr)) else {
+                    guard let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(
+                        bitPattern: Int(vmRegionInstAddr)
+                    ) else {
                         continue
                     }
                     
@@ -263,10 +269,14 @@ internal class MSHookFunctionChecker {
                         continue
                     }
                     
-                    if case .ldr_x16 = MSHookInstruction.translateInstruction(at: instructionAddr),
-                       case .br_x16 = MSHookInstruction.translateInstruction(at: UnsafeMutableRawPointer(instructionAddr) + 4),
-                       (instructionAddr + 1).pointee == origFunctionBeginAddr {
-                        return UnsafeMutableRawPointer(bitPattern: Int(vmRegionProcedureAddr))
+                    if case .ldr_x16 = MSHookInstruction.translateInstruction(
+                        at: instructionAddr
+                    ), case .br_x16 = MSHookInstruction.translateInstruction(
+                        at: UnsafeMutableRawPointer(instructionAddr) + 4
+                    ), (instructionAddr + 1).pointee == origFunctionBeginAddr {
+                        return UnsafeMutableRawPointer(
+                            bitPattern: Int(vmRegionProcedureAddr + 4)
+                        )
                     }
                 }
             }
