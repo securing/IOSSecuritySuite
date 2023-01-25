@@ -3,6 +3,8 @@
 //  IOSSecuritySuite
 //
 //  Created by jintao on 2020/4/24.
+//  Modified by Ant-Tree on 2023/01/25.
+//
 //  Copyright © 2020 wregula. All rights reserved.
 //  https://github.com/TannerJin/AntiMSHookFunction
 // swiftlint:disable cyclomatic_complexity function_body_length trailing_whitespace
@@ -213,43 +215,76 @@ internal class MSHookFunctionChecker {
         
         while true {
             if vmRegionAddress == 0 {
+                //False address
                 return nil
             }
-            let ret = vm_region_64(mach_task_self_, &vmRegionAddress, &vmRegionSize, VM_REGION_BASIC_INFO_64, vmRegionInfo, &vmRegionInfoCount, &objectName)
-            if ret == KERN_SUCCESS {
-                let regionInfo = UnsafeMutableRawPointer(vmRegionInfo).assumingMemoryBound(to: vm_region_basic_info_64.self)
-                // vm region of code
-                if regionInfo.pointee.protection == (VM_PROT_READ|VM_PROT_EXECUTE) {
-                    // ldr
-                    if case .ldr_x16 = firstInstruction {
-                        // 20: max_buffer_insered_Instruction
-                        for i in 4..<20 {
-                            if let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vmRegionAddress) + i * 4),
-                                case .ldr_x16 = MSHookInstruction.translateInstruction(at: instructionAddr),
-                                case .br_x16 = MSHookInstruction.translateInstruction(at: UnsafeMutableRawPointer(instructionAddr) + 4),
-                                (instructionAddr + 1).pointee == origFunctionBeginAddr {
-                                return UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress))
-                            }
-                        }
+            
+            //Get VM region of designated address
+            if vm_region_64(
+                mach_task_self_,
+                &vmRegionAddress,
+                &vmRegionSize,
+                VM_REGION_BASIC_INFO_64,
+                vmRegionInfo,
+                &vmRegionInfoCount,
+                &objectName
+            ) != KERN_SUCCESS {
+                //End of vm_regions or something wrong
+                return nil
+            }
+            
+            let regionInfo = UnsafeMutableRawPointer(vmRegionInfo).assumingMemoryBound(to: vm_region_basic_info_64.self)
+            
+            // vm region of code
+            if regionInfo.pointee.protection != (VM_PROT_READ|VM_PROT_EXECUTE) {
+                //Memory protection level of executable region is always READ + EXECUTE
+                vmRegionAddress += vmRegionSize
+                continue
+            }
+            
+            // ldr (Mobile Substrate)
+            if case .ldr_x16 = firstInstruction {
+                
+                //Current vm region instruction address
+                var vmRegionProcedureAddr = vmRegionAddress
+                //Current vm region instruction address
+                var vmRegionInstAddr = vmRegionAddress
+                //Last address of current vm region
+                let vmRegionEndAddress = vmRegionAddress + vmRegionSize
+                
+                while (vmRegionEndAddress >= vmRegionInstAddr) {
+                    vmRegionInstAddr += 4
+                    guard let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: Int(vmRegionInstAddr)) else {
+                        continue
                     }
-                    // adrp
-                    if case .adrp_x17 = firstInstruction {
-                        // 20: max_buffer_insered_Instruction
-                        for i in 3..<20 {
-                            if let instructionAddr = UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress) + i * 4),
-                                case let .adrp_x17(pageBase: pageBase) = MSHookInstruction.translateInstruction(at: instructionAddr),
-                                case let .add_x17(pageOffset: pageOffset) = MSHookInstruction.translateInstruction(at: instructionAddr + 4),
-                                case .br_x17 = MSHookInstruction.translateInstruction(at: instructionAddr + 8),
-                                pageBase+pageOffset == UInt(bitPattern: origFunctionBeginAddr) {
-                                return UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress))
-                            }
-                        }
+                    
+                    if UInt(bitPattern: instructionAddr.pointee) == 0 {
+                        vmRegionProcedureAddr = vmRegionInstAddr + 4
+                        continue
+                    }
+                    
+                    if case .ldr_x16 = MSHookInstruction.translateInstruction(at: instructionAddr),
+                       case .br_x16 = MSHookInstruction.translateInstruction(at: UnsafeMutableRawPointer(instructionAddr) + 4),
+                       (instructionAddr + 1).pointee == origFunctionBeginAddr {
+                        return UnsafeMutableRawPointer(bitPattern: Int(vmRegionProcedureAddr))
                     }
                 }
-                vmRegionAddress += vmRegionSize
-            } else {
-                return nil
             }
+            // adrp (Substitute)
+            if case .adrp_x17 = firstInstruction {
+                // 20: max_buffer_insered_Instruction
+                for i in 3..<20 {
+                    if let instructionAddr = UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress) + i * 4),
+                       case let .adrp_x17(pageBase: pageBase) = MSHookInstruction.translateInstruction(at: instructionAddr),
+                       case let .add_x17(pageOffset: pageOffset) = MSHookInstruction.translateInstruction(at: instructionAddr + 4),
+                       case .br_x17 = MSHookInstruction.translateInstruction(at: instructionAddr + 8),
+                       pageBase+pageOffset == UInt(bitPattern: origFunctionBeginAddr) {
+                        return UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress))
+                    }
+                }
+            }
+            vmRegionAddress += vmRegionSize
+            
         }
     }
 }
