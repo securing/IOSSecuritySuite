@@ -64,6 +64,7 @@ After MSHookFunction(mmap):
  |           br x16      (4 bytes for arm64)
  *------     address     (8 bytes for arm64)            address = original_function_address + 16
  
+ (For Cydia Substrate, the code block above doesn't guaranteed to be at the beginning of a region)
  */
 
 #if arch(arm64)
@@ -189,7 +190,9 @@ internal class MSHookFunctionChecker {
             return nil
         }
         // size of replaced instructions
-        guard let firstInstruction = MSHookInstruction.translateInstruction(at: functionAddr) else {
+        guard let firstInstruction = MSHookInstruction.translateInstruction(
+            at: functionAddr
+        ) else {
             assert(false, "amIMSHookFunction has judged")
             return nil
         }
@@ -204,7 +207,9 @@ internal class MSHookFunctionChecker {
             return nil
         }
         // look up vm_region
-        let vmRegionInfo = UnsafeMutablePointer<Int32>.allocate(capacity: MemoryLayout<vm_region_basic_info_64>.size/4)
+        let vmRegionInfo = UnsafeMutablePointer<Int32>.allocate(
+            capacity: MemoryLayout<vm_region_basic_info_64>.size/4
+        )
         defer {
             vmRegionInfo.deallocate()
         }
