@@ -102,6 +102,25 @@ let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
 let amIReverseEngineered: Bool = IOSSecuritySuite.amIReverseEngineered()
 ```
 
+* **The simplest method** returns True/False if you just want to know if the device has evidence of reverse engineering
+
+```Swift
+if IOSSecuritySuite.amIReverseEngineered() {
+  print("This device has evidence of reverse engineering")
+} else {
+  print("This device hasn't evidence of reverse engineering")
+}
+```
+
+* **Verbose & filterable**, if you also want the list of checks done
+
+```Swift
+let reverseStatus = IOSSecuritySuite.amIReverseEngineeredWithFailedChecks()
+if reverseStatus.reverseEngineered {
+   // check for reverseStatus.failedChecks for more details
+}
+```
+
 ### System proxy detector module
 ```Swift
 let amIProxied: Bool = IOSSecuritySuite.amIProxied()
