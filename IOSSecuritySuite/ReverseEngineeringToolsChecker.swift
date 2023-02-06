@@ -10,12 +10,52 @@ import Foundation
 import MachO // dyld
 
 internal class ReverseEngineeringToolsChecker {
+    typealias CheckResult = (passed: Bool, failMessage: String)
 
-    static func amIReverseEngineered() -> Bool {
-        return (checkDYLD() || checkExistenceOfSuspiciousFiles() || checkOpenedPorts() || checkPSelectFlag())
+    struct ReverseEngineeringToolsStatus {
+        let passed: Bool
+        let failedChecks: [FailedCheckType]
     }
 
-    private static func checkDYLD() -> Bool {
+    static func amIReverseEngineered() -> Bool {
+        return !performChecks().passed
+    }
+
+    static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
+        let status = performChecks()
+        return (!status.passed, status.failedChecks)
+    }
+  
+    private static func performChecks() -> ReverseEngineeringToolsStatus {
+        var passed = true
+        var result: CheckResult = (true, "")
+        var failedChecks: [FailedCheckType] = []
+        
+        for check in FailedCheck.allCases {
+            switch check {
+            case .existenceOfSuspiciousFiles:
+                result = checkExistenceOfSuspiciousFiles()
+            case .dyld:
+                result = checkDYLD()
+            case .openedPorts:
+                result = checkOpenedPorts()
+            case .pSelectFlag:
+                result = checkPSelectFlag()
+            default:
+              continue
+            }
+
+            passed = passed && result.passed
+
+            if !result.passed {
+                failedChecks.append((check: check, failMessage: result.failMessage))
+            }
+        }
+
+        return ReverseEngineeringToolsStatus(passed: passed, failedChecks: failedChecks)
+    }
+
+    private static func checkDYLD() -> CheckResult {
 
         let suspiciousLibraries = [
             "FridaGadget",
@@ -31,15 +71,15 @@ internal class ReverseEngineeringToolsChecker {
 
             for suspiciousLibrary in suspiciousLibraries {
                 if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
-                    return true
+                    return (false, "Suspicious library loaded: \(loadedLibrary)")
                 }
             }
         }
 
-        return false
+        return (true, "")
     }
 
-    private static func checkExistenceOfSuspiciousFiles() -> Bool {
+    private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
 
         let paths = [
             "/usr/sbin/frida-server"
@@ -47,14 +87,14 @@ internal class ReverseEngineeringToolsChecker {
 
         for path in paths {
             if FileManager.default.fileExists(atPath: path) {
-                return true
+                return (false, "Suspicious file found: \(path)")
             }
         }
 
-        return false
+        return (true, "")
     }
 
-    private static func checkOpenedPorts() -> Bool {
+    private static func checkOpenedPorts() -> CheckResult {
 
         let ports = [
             27042, // default Frida
@@ -64,11 +104,11 @@ internal class ReverseEngineeringToolsChecker {
         for port in ports {
 
             if canOpenLocalConnection(port: port) {
-                return true
+                return (false, "Port \(port) is open")
             }
         }
 
-        return false
+        return (true, "")
     }
 
     private static func canOpenLocalConnection(port: Int) -> Bool {
@@ -102,7 +142,7 @@ internal class ReverseEngineeringToolsChecker {
     }
     
     // EXPERIMENTAL
-    private static func checkPSelectFlag() -> Bool {
+    private static func checkPSelectFlag() -> CheckResult {
         var kinfo = kinfo_proc()
         var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
         var size = MemoryLayout<kinfo_proc>.stride
@@ -112,6 +152,10 @@ internal class ReverseEngineeringToolsChecker {
             print("Error occured when calling sysctl(). This check may not be reliable")
         }
         
-        return (kinfo.kp_proc.p_flag & P_SELECT) != 0
+        if (kinfo.kp_proc.p_flag & P_SELECT) != 0 {
+            return (false, "Suspicious PFlag value")
+        }
+      
+        return (true, "")
     }
 }

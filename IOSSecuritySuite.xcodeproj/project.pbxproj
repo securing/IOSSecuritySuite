@@ -22,6 +22,7 @@
 		70B0BBCF226F3AB2000CFB39 /* IOSSecuritySuite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */; };
 		70B8E16C257E528D00917097 /* ProxyChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B8E16B257E528D00917097 /* ProxyChecker.swift */; };
 		7A12583D24EFA8D40071460D /* IntegrityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A12583C24EFA8D40071460D /* IntegrityChecker.swift */; };
+		890685F829912FCF00EEC5A6 /* FailedChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890685F729912FCF00EEC5A6 /* FailedChecks.swift */; };
 		A90FD5FE24528925007212BF /* MSHookFunctionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */; };
 		A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FF24528A94007212BF /* FishHookChecker.swift */; };
 		A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */; };
@@ -60,6 +61,7 @@
 		70B8E16B257E528D00917097 /* ProxyChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyChecker.swift; sourceTree = "<group>"; };
 		70DDFD5A2284AA9600D95EE7 /* FrameworkClientApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FrameworkClientApp.entitlements; sourceTree = "<group>"; };
 		7A12583C24EFA8D40071460D /* IntegrityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrityChecker.swift; sourceTree = "<group>"; };
+		890685F729912FCF00EEC5A6 /* FailedChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedChecks.swift; sourceTree = "<group>"; };
 		A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSHookFunctionChecker.swift; sourceTree = "<group>"; };
 		A90FD5FF24528A94007212BF /* FishHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishHookChecker.swift; sourceTree = "<group>"; };
 		A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeHookChecker.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				70B0BBC0226F3A4D000CFB39 /* Info.plist */,
 				70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */,
 				70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */,
+				890685F729912FCF00EEC5A6 /* FailedChecks.swift */,
 				70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */,
 				7A12583C24EFA8D40071460D /* IntegrityChecker.swift */,
 				70B0BBCE226F3AB2000CFB39 /* IOSSecuritySuite.swift */,
@@ -297,6 +300,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				70B0BBC9226F3A74000CFB39 /* DebuggerChecker.swift in Sources */,
+				890685F829912FCF00EEC5A6 /* FailedChecks.swift in Sources */,
 				70B0BBCD226F3A90000CFB39 /* EmulatorChecker.swift in Sources */,
 				70B8E16C257E528D00917097 /* ProxyChecker.swift in Sources */,
 				A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */,

@@ -61,7 +61,7 @@ public class IOSSecuritySuite {
      - Returns: Tuple with with the jailbreak status *Bool* labeled *jailbroken* and *[FailedCheck]* labeled *failedChecks*
      for the list of failed checks
      */
-    public static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheck]) {
+    public static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheckType]) {
         return JailbreakChecker.amIJailbrokenWithFailedChecks()
     }
 
@@ -132,7 +132,26 @@ public class IOSSecuritySuite {
     public static func amIReverseEngineered() -> Bool {
         return ReverseEngineeringToolsChecker.amIReverseEngineered()
     }
-    
+  
+    /**
+    This type method is used to determine the reverse engineered status with a list of failed checks
+
+     Usage example
+     ```
+     let reStatus = IOSSecuritySuite.amIReverseEngineeredWithFailedChecks()
+     if reStatus.reverseEngineered {
+        print("This device has evidence of reverse engineering")
+        print("The following checks failed: \(reStatus.failedChecks)")
+     }
+     ```
+
+     - Returns: Tuple with with the reverse engineered status *Bool* labeled *reverseEngineered* and *[FailedCheck]* labeled *failedChecks*
+     for the list of failed checks
+     */
+    public static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
+        return ReverseEngineeringToolsChecker.amIReverseEngineeredWithFailedChecks()
+    }
+      
     /**
     This type method is used to determine if `objc call` has been RuntimeHooked by for example `Flex`
      
