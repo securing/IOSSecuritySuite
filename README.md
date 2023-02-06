@@ -273,6 +273,8 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [TannerJin](https://github.com/TannerJin) for MSHook, RuntimeHook, SymbolHook and Watchpoint Detection modules
 * [NikoXu](https://github.com/NikoXu) for adding file integrity module
 * [hellpf](https://github.com/hellpf) for fixing a dangling socket problem
+* [Ant-tree](https://github.com/Ant-tree) for improving hooking resistence
+* [izmcm](https://github.com/izmcm) for implementing the `amIReverseEngineeredWithFailedChecks()` method
 
 ## TODO
 
