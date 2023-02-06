@@ -98,9 +98,6 @@ let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
 ```
 
 ### Reverse engineering tools detector module
-```Swift
-let amIReverseEngineered: Bool = IOSSecuritySuite.amIReverseEngineered()
-```
 
 * **The simplest method** returns True/False if you just want to know if the device has evidence of reverse engineering
 
