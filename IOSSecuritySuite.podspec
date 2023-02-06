@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "IOSSecuritySuite"
-  s.version      = "1.9.5"
+  s.version      = "1.9.6"
   s.summary      = "iOS platform security & anti-tampering Swift library"
   s.homepage     = "https://github.com/securing/IOSSecuritySuite"
   s.license      = "bsd-2-clause"
