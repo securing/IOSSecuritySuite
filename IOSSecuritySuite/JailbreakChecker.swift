@@ -12,25 +12,13 @@ import UIKit
 import Darwin // fork
 import MachO // dyld
 
-public typealias FailedCheck = (check: JailbreakCheck, failMessage: String)
-
-public enum JailbreakCheck: CaseIterable {
-    case urlSchemes
-    case existenceOfSuspiciousFiles
-    case suspiciousFilesCanBeOpened
-    case restrictedDirectoriesWriteable
-    case fork
-    case symbolicLinks
-    case dyld
-}
-
 internal class JailbreakChecker {
     typealias CheckResult = (passed: Bool, failMessage: String)
 
     struct JailbreakStatus {
         let passed: Bool
         let failMessage: String // Added for backwards compatibility
-        let failedChecks: [FailedCheck]
+        let failedChecks: [FailedCheckType]
     }
 
     static func amIJailbroken() -> Bool {
@@ -42,7 +30,7 @@ internal class JailbreakChecker {
         return (!status.passed, status.failMessage)
     }
 
-    static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheck]) {
+    static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheckType]) {
         let status = performChecks()
         return (!status.passed, status.failedChecks)
     }
@@ -51,9 +39,9 @@ internal class JailbreakChecker {
         var passed = true
         var failMessage = ""
         var result: CheckResult = (true, "")
-        var failedChecks: [FailedCheck] = []
-
-        for check in JailbreakCheck.allCases {
+        var failedChecks: [FailedCheckType] = []
+        
+        for check in FailedCheck.allCases {
             switch check {
             case .urlSchemes:
                 result = checkURLSchemes()
@@ -74,6 +62,8 @@ internal class JailbreakChecker {
                 result = checkSymbolicLinks()
             case .dyld:
                 result = checkDYLD()
+            default:
+                continue
             }
 
             passed = passed && result.passed
@@ -341,7 +331,7 @@ internal class JailbreakChecker {
 
             for suspiciousLibrary in suspiciousLibraries {
                 if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
-                    return(false, "Suspicious library loaded: \(loadedLibrary)")
+                    return (false, "Suspicious library loaded: \(loadedLibrary)")
                 }
             }
         }
