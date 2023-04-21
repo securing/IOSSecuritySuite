@@ -20,4 +20,5 @@ public enum FailedCheck: CaseIterable {
     case dyld
     case openedPorts
     case pSelectFlag
+    case suspiciousObjCClasses
 }

@@ -11,30 +11,31 @@ import Foundation
 import UIKit
 import Darwin // fork
 import MachO // dyld
+import ObjectiveC // NSObject and Selector
 
 internal class JailbreakChecker {
     typealias CheckResult = (passed: Bool, failMessage: String)
-
+    
     struct JailbreakStatus {
         let passed: Bool
         let failMessage: String // Added for backwards compatibility
         let failedChecks: [FailedCheckType]
     }
-
+    
     static func amIJailbroken() -> Bool {
         return !performChecks().passed
     }
-
+    
     static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
         let status = performChecks()
         return (!status.passed, status.failMessage)
     }
-
+    
     static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheckType]) {
         let status = performChecks()
         return (!status.passed, status.failedChecks)
     }
-
+    
     private static func performChecks() -> JailbreakStatus {
         var passed = true
         var failMessage = ""
@@ -62,26 +63,28 @@ internal class JailbreakChecker {
                 result = checkSymbolicLinks()
             case .dyld:
                 result = checkDYLD()
+            case .suspiciousObjCClasses:
+                result = checkSuspiciousObjCClasses()
             default:
                 continue
             }
-
+            
             passed = passed && result.passed
-
+            
             if !result.passed {
                 failedChecks.append((check: check, failMessage: result.failMessage))
-
+                
                 if !failMessage.isEmpty {
                     failMessage += ", "
                 }
             }
-
+            
             failMessage += result.failMessage
         }
-
+        
         return JailbreakStatus(passed: passed, failMessage: failMessage, failedChecks: failedChecks)
     }
-
+    
     private static func canOpenUrlFromList(urlSchemes: [String]) -> CheckResult {
         for urlScheme in urlSchemes {
             if let url = URL(string: urlScheme) {
@@ -92,7 +95,7 @@ internal class JailbreakChecker {
         }
         return (true, "")
     }
-
+    
     // "cydia://" URL scheme has been removed. Turns out there is app in the official App Store
     // that has the cydia:// URL scheme registered, so it may cause false positive
     private static func checkURLSchemes() -> CheckResult {
@@ -104,7 +107,7 @@ internal class JailbreakChecker {
             "filza://",
             "activator://"
         ]
-
+        
         if Thread.isMainThread {
             flag = canOpenUrlFromList(urlSchemes: urlSchemes)
         } else {
@@ -117,7 +120,7 @@ internal class JailbreakChecker {
         }
         return flag
     }
-
+    
     private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
         var paths = [
             "/var/mobile/Library/Preferences/ABPattern", // A-Bypass
@@ -186,33 +189,34 @@ internal class JailbreakChecker {
             "/Library/MobileSubstrate/DynamicLibraries/SSLKillSwitch2.plist", // SSL Killswitch
             "/Library/MobileSubstrate/DynamicLibraries/PreferenceLoader.plist", // PreferenceLoader
             "/Library/MobileSubstrate/DynamicLibraries/PreferenceLoader.dylib", // PreferenceLoader
-            "/Library/MobileSubstrate/DynamicLibraries" // DynamicLibraries directory in general
+            "/Library/MobileSubstrate/DynamicLibraries", // DynamicLibraries directory in general
+            "/var/mobile/Library/Preferences/me.jjolano.shadow.plist"
         ]
         
         // These files can give false positive in the emulator
         if !EmulatorChecker.amIRunInEmulator() {
             paths += [
-            "/bin/bash",
-            "/usr/sbin/sshd",
-            "/usr/libexec/ssh-keysign",
-            "/bin/sh",
-            "/etc/ssh/sshd_config",
-            "/usr/libexec/sftp-server",
-            "/usr/bin/ssh"
+                "/bin/bash",
+                "/usr/sbin/sshd",
+                "/usr/libexec/ssh-keysign",
+                "/bin/sh",
+                "/etc/ssh/sshd_config",
+                "/usr/libexec/sftp-server",
+                "/usr/bin/ssh"
             ]
         }
-
+        
         for path in paths {
             if FileManager.default.fileExists(atPath: path) {
                 return (false, "Suspicious file exists: \(path)")
             }
         }
-
+        
         return (true, "")
     }
-
+    
     private static func checkSuspiciousFilesCanBeOpened() -> CheckResult {
-
+        
         var paths = [
             "/.installed_unc0ver",
             "/.bootstrapped_electra",
@@ -225,31 +229,31 @@ internal class JailbreakChecker {
         // These files can give false positive in the emulator
         if !EmulatorChecker.amIRunInEmulator() {
             paths += [
-            "/bin/bash",
-            "/usr/sbin/sshd",
-            "/usr/bin/ssh"
+                "/bin/bash",
+                "/usr/sbin/sshd",
+                "/usr/bin/ssh"
             ]
         }
-
+        
         for path in paths {
-
+            
             if FileManager.default.isReadableFile(atPath: path) {
                 return (false, "Suspicious file can be opened: \(path)")
             }
         }
-
+        
         return (true, "")
     }
-
+    
     private static func checkRestrictedDirectoriesWriteable() -> CheckResult {
-
+        
         let paths = [
             "/",
             "/root/",
             "/private/",
             "/jb/"
         ]
-
+        
         // If library won't be able to write to any restricted directory the return(false, ...) is never reached
         // because of catch{} statement
         for path in paths {
@@ -260,30 +264,30 @@ internal class JailbreakChecker {
                 return (false, "Wrote to restricted path: \(path)")
             } catch {}
         }
-
+        
         return (true, "")
     }
-
+    
     private static func checkFork() -> CheckResult {
-
+        
         let pointerToFork = UnsafeMutableRawPointer(bitPattern: -2)
         let forkPtr = dlsym(pointerToFork, "fork")
         typealias ForkType = @convention(c) () -> pid_t
         let fork = unsafeBitCast(forkPtr, to: ForkType.self)
         let forkResult = fork()
-
+        
         if forkResult >= 0 {
             if forkResult > 0 {
                 kill(forkResult, SIGTERM)
             }
             return (false, "Fork was able to create a new process (sandbox violation)")
         }
-
+        
         return (true, "")
     }
-
+    
     private static func checkSymbolicLinks() -> CheckResult {
-
+        
         let paths = [
             "/var/lib/undecimus/apt", // unc0ver
             "/Applications",
@@ -294,7 +298,7 @@ internal class JailbreakChecker {
             "/usr/libexec",
             "/usr/share"
         ]
-
+        
         for path in paths {
             do {
                 let result = try FileManager.default.destinationOfSymbolicLink(atPath: path)
@@ -303,12 +307,12 @@ internal class JailbreakChecker {
                 }
             } catch {}
         }
-
+        
         return (true, "")
     }
-
+    
     private static func checkDYLD() -> CheckResult {
-
+        
         let suspiciousLibraries = [
             "SubstrateLoader.dylib",
             "SSLKillSwitch2.dylib",
@@ -330,20 +334,33 @@ internal class JailbreakChecker {
             "Substitute",
             "Cephei",
             "Electra",
+            "AppSyncUnified-FrontBoard.dylib",
+            "Shadow"
         ]
-
+        
         for libraryIndex in 0..<_dyld_image_count() {
-
+            
             // _dyld_get_image_name returns const char * that needs to be casted to Swift String
             guard let loadedLibrary = String(validatingUTF8: _dyld_get_image_name(libraryIndex)) else { continue }
-
+            
             for suspiciousLibrary in suspiciousLibraries {
                 if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
                     return (false, "Suspicious library loaded: \(loadedLibrary)")
                 }
             }
         }
-
+        
+        return (true, "")
+    }
+    
+    private static func checkSuspiciousObjCClasses() -> CheckResult {
+        
+        if let ShadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
+            let selector = Selector(("isURLSchemeRestricted:"))
+            if class_getInstanceMethod(ShadowRulesetClass, selector) != nil {
+                return (false, "Shadow anti-anti-jailbreak detector detected :-)")
+            }
+        }
         return (true, "")
     }
 }
