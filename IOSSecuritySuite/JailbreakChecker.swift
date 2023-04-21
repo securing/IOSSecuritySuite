@@ -172,13 +172,21 @@ internal class JailbreakChecker {
             "/Library/PreferenceBundles/ShadowPreferences.bundle",
             "/Library/PreferenceBundles/ABypassPrefs.bundle",
             "/Library/PreferenceBundles/FlyJBPrefs.bundle",
+            "/Library/PreferenceBundles/Cephei.bundle",
+            "/Library/PreferenceBundles/SubstitutePrefs.bundle",
+            "/Library/PreferenceBundles/libhbangprefs.bundle",
             "/usr/lib/libhooker.dylib",
             "/usr/lib/libsubstitute.dylib",
             "/usr/lib/substrate",
             "/usr/lib/TweakInject",
             "/var/binpack/Applications/loader.app", // checkra1n
             "/Applications/FlyJB.app", // Fly JB X
-            "/Applications/Zebra.app" // Zebra
+            "/Applications/Zebra.app", // Zebra
+            "/Library/BawAppie/ABypass", // ABypass
+            "/Library/MobileSubstrate/DynamicLibraries/SSLKillSwitch2.plist", // SSL Killswitch
+            "/Library/MobileSubstrate/DynamicLibraries/PreferenceLoader.plist", // PreferenceLoader
+            "/Library/MobileSubstrate/DynamicLibraries/PreferenceLoader.dylib", // PreferenceLoader
+            "/Library/MobileSubstrate/DynamicLibraries" // DynamicLibraries directory in general
         ]
         
         // These files can give false positive in the emulator
