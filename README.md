@@ -275,6 +275,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [hellpf](https://github.com/hellpf) for fixing a dangling socket problem
 * [Ant-tree](https://github.com/Ant-tree) for improving hooking resistence
 * [izmcm](https://github.com/izmcm) for implementing the `amIReverseEngineeredWithFailedChecks()` method
+* [sanu](https://github.com/sanu) for new providing new file checks
 
 ## TODO
 
