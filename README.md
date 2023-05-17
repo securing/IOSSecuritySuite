@@ -63,7 +63,7 @@ if IOSSecuritySuite.amIJailbroken() {
 * **Verbose**, if you also want to know what indicators were identified
 
 ```Swift
-let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailMessage()
+let jailbreakStatus = SecuritySuiteiOS.amIJailbrokenWithFailMessage()
 if jailbreakStatus.jailbroken {
 	print("This device is jailbroken")
 	print("Because: \(jailbreakStatus.failMessage)")
@@ -77,7 +77,7 @@ The failMessage is a String containing comma-separated indicators as shown on th
 * **Verbose & filterable**, if you also want to for example identify devices that were jailbroken in the past, but now are jailed
 
 ```Swift
-let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+let jailbreakStatus = SecuritySuiteiOS.amIJailbrokenWithFailedChecks()
 if jailbreakStatus.jailbroken {
    if (jailbreakStatus.failedChecks.contains { $0.check == .existenceOfSuspiciousFiles }) && (jailbreakStatus.failedChecks.contains { $0.check == .suspiciousFilesCanBeOpened }) {
          print("This is real jailbroken device")
@@ -87,17 +87,17 @@ if jailbreakStatus.jailbroken {
 
 ### Debugger detector module
 ```Swift
-let amIDebugged: Bool = IOSSecuritySuite.amIDebugged()
+let amIDebugged: Bool = SecuritySuiteiOS.amIDebugged()
 ```
 
 ### Deny debugger at all
 ```Swift
-IOSSecuritySuite.denyDebugger()
+SecuritySuiteiOS.denyDebugger()
 ```
 
 ### Emulator detector module
 ```Swift
-let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
+let runInEmulator: Bool = SecuritySuiteiOS.amIRunInEmulator()
 ```
 
 ### Reverse engineering tools detector module
@@ -105,7 +105,7 @@ let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
 * **The simplest method** returns True/False if you just want to know if the device has evidence of reverse engineering
 
 ```Swift
-if IOSSecuritySuite.amIReverseEngineered() {
+if SecuritySuiteiOS.amIReverseEngineered() {
   print("This device has evidence of reverse engineering")
 } else {
   print("This device hasn't evidence of reverse engineering")
@@ -115,7 +115,7 @@ if IOSSecuritySuite.amIReverseEngineered() {
 * **Verbose & filterable**, if you also want the list of checks done
 
 ```Swift
-let reverseStatus = IOSSecuritySuite.amIReverseEngineeredWithFailedChecks()
+let reverseStatus = SecuritySuiteiOS.amIReverseEngineeredWithFailedChecks()
 if reverseStatus.reverseEngineered {
    // check for reverseStatus.failedChecks for more details
 }
@@ -123,7 +123,7 @@ if reverseStatus.reverseEngineered {
 
 ### System proxy detector module
 ```Swift
-let amIProxied: Bool = IOSSecuritySuite.amIProxied()
+let amIProxied: Bool = SecuritySuiteiOS.amIProxied()
 ```
 
 ## Experimental features
@@ -187,7 +187,7 @@ if let originalDenyDebugger = denyMSHook(funcAddr) {
 
 ```Swift
 // Determine if application has been tampered with 
-if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"),
+if SecuritySuiteiOS.amITampered([.bundleID("biz.securing.FrameworkClientApp"),
     .mobileProvision("2976c70b56e9ae1e2c8e8b231bf6b0cff12bbbd0a593f21846d9a004dd181be3"),
     .machO("IOSSecuritySuite", "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc")]).result {
     print("I have been Tampered.")
@@ -197,7 +197,7 @@ else {
 }
 
 // Manually verify SHA256 hash value of a loaded dylib
-if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+if let hashValue = SecuritySuiteiOS.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
     print("I have not been Tampered.")
 }
 else {
@@ -206,7 +206,7 @@ else {
  
 // Check SHA256 hash value of the main executable
 // Tip: Your application may retrieve this value from the server
-if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
+if let hashValue = SecuritySuiteiOS.getMachOFileHashValue(.default), hashValue == "your-application-executable-hash-value" {
     print("I have not been Tampered.")
 }
 else {
@@ -224,7 +224,7 @@ func denyDebugger() {
 typealias FunctionType = @convention(thin) ()->()
 let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is a must
 let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
-let hasBreakpoint = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil)
+let hasBreakpoint = SecuritySuiteiOS.hasBreakpointAt(func_addr, functionSize: nil)
 
 if hasBreakpoint {
     print("Breakpoint found in the specified function")
@@ -242,7 +242,7 @@ func testWatchpoint() -> Bool{
     var ptr = malloc(9)
     // lldb: watchpoint set variable count
     var count = 3
-    return IOSSecuritySuite.hasWatchpoint()
+    return SecuritySuiteiOS.hasWatchpoint()
 }
 ```
 

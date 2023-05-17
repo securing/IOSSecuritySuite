@@ -1,5 +1,5 @@
 //
-//  IOSSecuritySuite.swift
+//  SecuritySuiteiOS.swift
 //  IOSSecuritySuite
 //
 //  Created by wregula on 23/04/2019.
@@ -11,14 +11,14 @@ import Foundation
 import MachO
 
 @available(iOSApplicationExtension, unavailable)
-public class IOSSecuritySuite {
+public class SecuritySuiteiOS {
 
     /**
      This type method is used to determine the true/false jailbreak status
      
      Usage example
      ```
-     let isDeviceJailbroken: Bool = IOSSecuritySuite.amIJailbroken()
+     let isDeviceJailbroken: Bool = SecuritySuiteiOS.amIJailbroken()
      ```
      */
     public static func amIJailbroken() -> Bool {
@@ -30,7 +30,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailMessage()
+     let jailbreakStatus = SecuritySuiteiOS.amIJailbrokenWithFailMessage()
      if jailbreakStatus.jailbroken {
      print("This device is jailbroken")
      print("Because: \(jailbreakStatus.failMessage)")
@@ -51,7 +51,7 @@ public class IOSSecuritySuite {
 
      Usage example
      ```
-     let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+     let jailbreakStatus = SecuritySuiteiOS.amIJailbrokenWithFailedChecks()
      if jailbreakStatus.jailbroken {
      print("This device is jailbroken")
      print("The following checks failed: \(jailbreakStatus.failedChecks)")
@@ -70,7 +70,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let runInEmulator: Bool = IOSSecuritySuite.amIRunInEmulator()
+     let runInEmulator: Bool = SecuritySuiteiOS.amIRunInEmulator()
      ```
      */
     public static func amIRunInEmulator() -> Bool {
@@ -82,7 +82,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let amIDebugged: Bool = IOSSecuritySuite.amIDebugged()
+     let amIDebugged: Bool = SecuritySuiteiOS.amIDebugged()
      ```
      */
     public static func amIDebugged() -> Bool {
@@ -94,7 +94,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     IOSSecuritySuite.denyDebugger()
+     SecuritySuiteiOS.denyDebugger()
      ```
      */
     public static func denyDebugger() {
@@ -106,7 +106,7 @@ public class IOSSecuritySuite {
     
     Usage example
     ```
-    if IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp"), .mobileProvision("your-mobile-provision-sha256-value")]).result {
+    if SecuritySuiteiOS.amITampered([.bundleID("biz.securing.FrameworkClientApp"), .mobileProvision("your-mobile-provision-sha256-value")]).result {
         print("I have been Tampered.")
     }
     else {
@@ -126,7 +126,7 @@ public class IOSSecuritySuite {
      
      Usage example
      ```
-     let amIReverseEngineered: Bool = IOSSecuritySuite.amIReverseEngineered()
+     let amIReverseEngineered: Bool = SecuritySuiteiOS.amIReverseEngineered()
      ```
      */
     public static func amIReverseEngineered() -> Bool {
@@ -138,7 +138,7 @@ public class IOSSecuritySuite {
 
      Usage example
      ```
-     let reStatus = IOSSecuritySuite.amIReverseEngineeredWithFailedChecks()
+     let reStatus = SecuritySuiteiOS.amIReverseEngineeredWithFailedChecks()
      if reStatus.reverseEngineered {
         print("This device has evidence of reverse engineering")
         print("The following checks failed: \(reStatus.failedChecks)")
@@ -176,7 +176,7 @@ public class IOSSecuritySuite {
      
     Usage example
     ```
-    let amIProxied: Bool = IOSSecuritySuite.amIProxied()
+    let amIProxied: Bool = SecuritySuiteiOS.amIProxied()
     ```
      */
     public static func amIProxied() -> Bool {
@@ -186,7 +186,7 @@ public class IOSSecuritySuite {
 
 #if arch(arm64)
 @available(iOSApplicationExtension, unavailable)
-public extension IOSSecuritySuite {
+public extension SecuritySuiteiOS {
     /**
     This type method is used to determine if `function_address` has been hooked by `MSHook`
     
@@ -276,7 +276,7 @@ public extension IOSSecuritySuite {
      Usage example
      ```
      // Manually verify SHA256 hash value of a loaded dylib
-     if let hashValue = IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
+     if let hashValue = SecuritySuiteiOS.getMachOFileHashValue(.custom("IOSSecuritySuite")), hashValue == "6d8d460b9a4ee6c0f378e30f137cebaf2ce12bf31a2eef3729c36889158aa7fc" {
          print("I have not been Tampered.")
      }
      else {
@@ -298,7 +298,7 @@ public extension IOSSecuritySuite {
      
      Usage example
      ```
-     if let loadedDylib = IOSSecuritySuite.findLoadedDylibs() {
+     if let loadedDylib = SecuritySuiteiOS.findLoadedDylibs() {
          print("Loaded dylibs: \(loadedDylib)")
      }
      ```
@@ -322,7 +322,7 @@ public extension IOSSecuritySuite {
     
     let func_denyDebugger: FunctionType = denyDebugger   // `: FunctionType` is a must
     let func_addr = unsafeBitCast(func_denyDebugger, to: UnsafeMutableRawPointer.self)
-    let hasBreakpoint: Bool = IOSSecuritySuite.hasBreakpointAt(func_addr, functionSize: nil)
+    let hasBreakpoint: Bool = SecuritySuiteiOS.hasBreakpointAt(func_addr, functionSize: nil)
     ```
     */
     static func hasBreakpointAt(_ functionAddr: UnsafeRawPointer, functionSize: vm_size_t?) -> Bool {

@@ -20,7 +20,7 @@ class RuntimeClass {
 func testWatchpoint() -> Bool{
     var ptr = malloc(9)
     var count = 3
-    return IOSSecuritySuite.hasWatchpoint()
+    return SecuritySuiteiOS.hasWatchpoint()
 }
 
 internal class ViewController: UIViewController {
@@ -39,7 +39,7 @@ internal class ViewController: UIViewController {
         print("print hasn't been hooked")
         
         // antiHook
-        IOSSecuritySuite.denySymbolHook("$ss5print_9separator10terminatoryypd_S2StF")
+        SecuritySuiteiOS.denySymbolHook("$ss5print_9separator10terminatoryypd_S2StF")
         print("print has been antiHooked")
     }
 
@@ -50,10 +50,10 @@ internal class ViewController: UIViewController {
         let test = RuntimeClass.init()
         test.runtimeModifiedFunction()
         let dylds = ["UIKit"]
-        let amIRuntimeHooked = IOSSecuritySuite.amIRuntimeHooked(dyldWhiteList: dylds, detectionClass: RuntimeClass.self, selector: #selector(RuntimeClass.runtimeModifiedFunction), isClassMethod: false)
+        let amIRuntimeHooked = SecuritySuiteiOS.amIRuntimeHooked(dyldWhiteList: dylds, detectionClass: RuntimeClass.self, selector: #selector(RuntimeClass.runtimeModifiedFunction), isClassMethod: false)
         // MSHook Check
         func msHookReturnFalse(takes: Int) -> Bool {
-            /// add breakpoint at here to test `IOSSecuritySuite.hasBreakpointAt`
+            /// add breakpoint at here to test `SecuritySuiteiOS.hasBreakpointAt`
             return false
         }
         typealias FunctionType = @convention(thin) (Int) -> (Bool)
@@ -62,21 +62,21 @@ internal class ViewController: UIViewController {
         }
         let funcAddr = getSwiftFunctionAddr(msHookReturnFalse)
 
-        let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailMessage()
+        let jailbreakStatus = SecuritySuiteiOS.amIJailbrokenWithFailMessage()
         let title = jailbreakStatus.jailbroken ? "Jailbroken" : "Jailed"
         let message = """
         Jailbreak: \(jailbreakStatus.failMessage),
-        Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
-        Debugged?: \(IOSSecuritySuite.amIDebugged())
-        HasBreakpoint?: \(IOSSecuritySuite.hasBreakpointAt(funcAddr, functionSize: nil))
+        Run in emulator?: \(SecuritySuiteiOS.amIRunInEmulator())
+        Debugged?: \(SecuritySuiteiOS.amIDebugged())
+        HasBreakpoint?: \(SecuritySuiteiOS.hasBreakpointAt(funcAddr, functionSize: nil))
         Has watchpoint: \(testWatchpoint())
-        Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
-        Am I MSHooked: \(IOSSecuritySuite.amIMSHooked(funcAddr))
+        Reversed?: \(SecuritySuiteiOS.amIReverseEngineered())
+        Am I MSHooked: \(SecuritySuiteiOS.amIMSHooked(funcAddr))
         Am I runtime hooked: \(amIRuntimeHooked)
-        Am I tempered with: \(IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp")]).result)
-        Application executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue() ?? "")
-        IOSSecuritySuite executable file hash value: \(IOSSecuritySuite.getMachOFileHashValue(.custom("IOSSecuritySuite")) ?? "")
-        Am I proxied: \(IOSSecuritySuite.amIProxied())
+        Am I tempered with: \(SecuritySuiteiOS.amITampered([.bundleID("biz.securing.FrameworkClientApp")]).result)
+        Application executable file hash value: \(SecuritySuiteiOS.getMachOFileHashValue() ?? "")
+        IOSSecuritySuite executable file hash value: \(SecuritySuiteiOS.getMachOFileHashValue(.custom("IOSSecuritySuite")) ?? "")
+        Am I proxied: \(SecuritySuiteiOS.amIProxied())
         """
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -85,11 +85,11 @@ internal class ViewController: UIViewController {
         print("FailMessage: \(message)")
         present(alert, animated: false)
 
-        let checks = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+        let checks = SecuritySuiteiOS.amIJailbrokenWithFailedChecks()
         print("The failed checks are: \(checks)")
         
 #if arch(arm64)
-        print("Loaded libs: \(IOSSecuritySuite.findLoadedDylibs() ?? [])")
+        print("Loaded libs: \(SecuritySuiteiOS.findLoadedDylibs() ?? [])")
 #endif
     }
 }
