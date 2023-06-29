@@ -99,7 +99,9 @@ internal class ReverseEngineeringToolsChecker {
 
         let ports = [
             27042, // default Frida
-            4444 // default Needle
+            4444, // default Needle
+            22, // OpenSSH
+            44 // checkra1n
         ]
 
         for port in ports {
