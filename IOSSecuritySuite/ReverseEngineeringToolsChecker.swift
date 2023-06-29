@@ -5,6 +5,7 @@
 //  Created by wregula on 24/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
+// swiftlint:disable trailing_whitespace
 
 import Foundation
 import MachO // dyld

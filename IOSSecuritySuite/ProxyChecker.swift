@@ -5,6 +5,7 @@
 //  Created by Wojciech Reguła on 07/12/2020.
 //  Copyright © 2020 wregula. All rights reserved.
 //
+// swiftlint:disable trailing_whitespace
 
 import Foundation
 

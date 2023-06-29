@@ -5,7 +5,7 @@
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
 //
-//swiftlint:disable line_length
+// swiftlint:disable line_length
 
 import Foundation
 import MachO
