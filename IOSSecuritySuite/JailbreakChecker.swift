@@ -335,7 +335,10 @@ internal class JailbreakChecker {
             "Cephei",
             "Electra",
             "AppSyncUnified-FrontBoard.dylib",
-            "Shadow"
+            "Shadow",
+            "FridaGadget",
+            "frida",
+            "libcycript"
         ]
         
         for libraryIndex in 0..<_dyld_image_count() {
