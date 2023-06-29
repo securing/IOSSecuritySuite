@@ -68,6 +68,7 @@ internal class ViewController: UIViewController {
         Jailbreak: \(jailbreakStatus.failMessage),
         Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
         Debugged?: \(IOSSecuritySuite.amIDebugged())
+        Unexpected Launcher?: \(IOSSecuritySuite.isParentPidUnexpected())
         HasBreakpoint?: \(IOSSecuritySuite.hasBreakpointAt(funcAddr, functionSize: nil))
         Has watchpoint: \(testWatchpoint())
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())

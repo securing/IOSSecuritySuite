@@ -104,5 +104,10 @@ internal class DebuggerChecker {
         return hasWatchpoint
     }
 #endif
-
+            
+    static func isParentPidUnexpected() -> Bool {
+        let parentPid: pid_t = getppid()
+        
+        return parentPid != 1 // LaunchD is pid 1
+    }
 }
