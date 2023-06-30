@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-//swiftlint:disable cyclomatic_complexity function_body_length type_body_length
+// swiftlint:disable cyclomatic_complexity function_body_length type_body_length trailing_whitespace
 
 import Foundation
 import UIKit
@@ -209,6 +209,12 @@ internal class JailbreakChecker {
         for path in paths {
             if FileManager.default.fileExists(atPath: path) {
                 return (false, "Suspicious file exists: \(path)")
+            } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaStat(path: path) {
+                return result
+            } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaFOpen(path: path, mode: .readable) {
+                return result
+            } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaAccess(path: path, mode: .readable) {
+                return result
             }
         }
         
@@ -239,6 +245,10 @@ internal class JailbreakChecker {
             
             if FileManager.default.isReadableFile(atPath: path) {
                 return (false, "Suspicious file can be opened: \(path)")
+            } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaFOpen(path: path, mode: .writable) {
+                return result
+            } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaAccess(path: path, mode: .writable) {
+                return result
             }
         }
         
@@ -253,6 +263,14 @@ internal class JailbreakChecker {
             "/private/",
             "/jb/"
         ]
+        
+        if FileChecker.checkRestrictedPathIsReadonlyViaStatvfs(path: "/") == false {
+            return (false, "Restricted path '/' is not Read-Only")
+        } else if FileChecker.checkRestrictedPathIsReadonlyViaStatfs(path: "/") == false {
+            return (false, "Restricted path '/' is not Read-Only")
+        } else if FileChecker.checkRestrictedPathIsReadonlyViaGetfsstat(name: "/") == false {
+            return (false, "Restricted path '/' is not Read-Only")
+        }
         
         // If library won't be able to write to any restricted directory the return(false, ...) is never reached
         // because of catch{} statement
@@ -335,7 +353,10 @@ internal class JailbreakChecker {
             "Cephei",
             "Electra",
             "AppSyncUnified-FrontBoard.dylib",
-            "Shadow"
+            "Shadow",
+            "FridaGadget",
+            "frida",
+            "libcycript"
         ]
         
         for libraryIndex in 0..<_dyld_image_count() {
@@ -355,9 +376,9 @@ internal class JailbreakChecker {
     
     private static func checkSuspiciousObjCClasses() -> CheckResult {
         
-        if let ShadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
+        if let shadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
             let selector = Selector(("isURLSchemeRestricted:"))
-            if class_getInstanceMethod(ShadowRulesetClass, selector) != nil {
+            if class_getInstanceMethod(shadowRulesetClass, selector) != nil {
                 return (false, "Shadow anti-anti-jailbreak detector detected :-)")
             }
         }

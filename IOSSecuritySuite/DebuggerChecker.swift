@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-//swiftlint:disable line_length
+// swiftlint:disable line_length trailing_whitespace
 
 import Foundation
 
@@ -86,16 +86,16 @@ internal class DebuggerChecker {
         var threadCount: mach_msg_type_number_t = 0
         var hasWatchpoint = false
         
-        if (task_threads(mach_task_self_, &threads, &threadCount) == KERN_SUCCESS) {
+        if task_threads(mach_task_self_, &threads, &threadCount) == KERN_SUCCESS {
             var threadStat = arm_debug_state64_t()
             let capacity = MemoryLayout<arm_debug_state64_t>.size / MemoryLayout<natural_t>.size
             let threadStatPointer = withUnsafeMutablePointer(to: &threadStat, { $0.withMemoryRebound(to: natural_t.self, capacity: capacity, { $0 }) })
             var count = mach_msg_type_number_t(MemoryLayout<arm_debug_state64_t>.size / MemoryLayout<UInt32>.size)
             
             for threadIndex in 0..<threadCount {
-                if (thread_get_state(threads![Int(threadIndex)], ARM_DEBUG_STATE64, threadStatPointer, &count) == KERN_SUCCESS) {
+                if thread_get_state(threads![Int(threadIndex)], ARM_DEBUG_STATE64, threadStatPointer, &count) == KERN_SUCCESS {
                     hasWatchpoint = threadStatPointer.withMemoryRebound(to: arm_debug_state64_t.self, capacity: 1, { $0 }).pointee.__wvr.0 != 0
-                    if (hasWatchpoint) { break }
+                    if hasWatchpoint { break }
                 }
             }
             vm_deallocate(mach_task_self_, UInt(bitPattern: threads), vm_size_t(threadCount * UInt32(MemoryLayout<thread_act_t>.size)))
@@ -104,5 +104,10 @@ internal class DebuggerChecker {
         return hasWatchpoint
     }
 #endif
-
+            
+    static func isParentPidUnexpected() -> Bool {
+        let parentPid: pid_t = getppid()
+        
+        return parentPid != 1 // LaunchD is pid 1
+    }
 }

@@ -220,11 +220,11 @@ internal class MSHookFunctionChecker {
         
         while true {
             if vmRegionAddress == 0 {
-                //False address
+                // False address
                 return nil
             }
             
-            //Get VM region of designated address
+            // Get VM region of designated address
             if vm_region_64(
                 mach_task_self_,
                 &vmRegionAddress,
@@ -234,7 +234,7 @@ internal class MSHookFunctionChecker {
                 &vmRegionInfoCount,
                 &objectName
             ) != KERN_SUCCESS {
-                //End of vm_regions or something wrong
+                // End of vm_regions or something wrong
                 return nil
             }
             
@@ -244,7 +244,7 @@ internal class MSHookFunctionChecker {
             
             // vm region of code
             if regionInfo.pointee.protection != (VM_PROT_READ|VM_PROT_EXECUTE) {
-                //Memory protection level of executable region is always READ + EXECUTE
+                // Memory protection level of executable region is always READ + EXECUTE
                 vmRegionAddress += vmRegionSize
                 continue
             }
@@ -252,16 +252,16 @@ internal class MSHookFunctionChecker {
             // ldr (Mobile Substrate)
             if case .ldr_x16 = firstInstruction {
                 
-                //Current vm region instruction address
+                // Current vm region instruction address
                 var vmRegionProcedureAddr = vmRegionAddress
-                //Current vm region instruction address
+                // Current vm region instruction address
                 var vmRegionInstAddr = vmRegionAddress
-                //Last address of current vm region
+                // Last address of current vm region
                 let vmRegionEndAddress = vmRegionAddress + vmRegionSize
                 
-                //Unlike substitute, When using substrate, branching address may resides anywhere in vm region.
-                //So every region must be investigated to check whether it contains original function address.
-                while (vmRegionEndAddress >= vmRegionInstAddr) {
+                // Unlike substitute, When using substrate, branching address may resides anywhere in vm region.
+                // So every region must be investigated to check whether it contains original function address.
+                while vmRegionEndAddress >= vmRegionInstAddr {
                     vmRegionInstAddr += 4
                     guard let instructionAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(
                         bitPattern: Int(vmRegionInstAddr)

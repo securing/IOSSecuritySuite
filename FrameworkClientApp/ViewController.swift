@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-//swiftlint:disable all
+// swiftlint:disable all
 
 import UIKit
 import IOSSecuritySuite
@@ -48,7 +48,7 @@ internal class ViewController: UIViewController {
         
         // Runtime Check
         let test = RuntimeClass.init()
-        test.runtimeModifiedFunction()
+        _ = test.runtimeModifiedFunction()
         let dylds = ["UIKit"]
         let amIRuntimeHooked = IOSSecuritySuite.amIRuntimeHooked(dyldWhiteList: dylds, detectionClass: RuntimeClass.self, selector: #selector(RuntimeClass.runtimeModifiedFunction), isClassMethod: false)
         // MSHook Check
@@ -68,6 +68,7 @@ internal class ViewController: UIViewController {
         Jailbreak: \(jailbreakStatus.failMessage),
         Run in emulator?: \(IOSSecuritySuite.amIRunInEmulator())
         Debugged?: \(IOSSecuritySuite.amIDebugged())
+        Unexpected Launcher?: \(IOSSecuritySuite.isParentPidUnexpected())
         HasBreakpoint?: \(IOSSecuritySuite.hasBreakpointAt(funcAddr, functionSize: nil))
         Has watchpoint: \(testWatchpoint())
         Reversed?: \(IOSSecuritySuite.amIReverseEngineered())
