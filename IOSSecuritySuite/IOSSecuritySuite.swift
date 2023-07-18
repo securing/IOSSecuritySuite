@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-//swiftlint:disable line_length
+// swiftlint:disable line_length trailing_whitespace
 
 import Foundation
 import MachO
@@ -99,6 +99,19 @@ public class IOSSecuritySuite {
      */
     public static func denyDebugger() {
         return DebuggerChecker.denyDebugger()
+    }
+    
+    /**
+     This method is used to determine if application was launched by something
+     other than LaunchD (i.e. the app was launched by a debugger)
+     
+     Usage example
+     ```
+     let isNotLaunchD: Bool = IOSSecuritySuite.isParentPidUnexpected()
+     ```
+     */
+    public static func isParentPidUnexpected() -> Bool {
+        return DebuggerChecker.isParentPidUnexpected()
     }
     
     /**

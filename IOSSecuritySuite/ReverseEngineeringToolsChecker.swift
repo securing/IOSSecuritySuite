@@ -5,6 +5,7 @@
 //  Created by wregula on 24/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
+// swiftlint:disable trailing_whitespace
 
 import Foundation
 import MachO // dyld
@@ -98,7 +99,9 @@ internal class ReverseEngineeringToolsChecker {
 
         let ports = [
             27042, // default Frida
-            4444 // default Needle
+            4444, // default Needle
+            22, // OpenSSH
+            44 // checkra1n
         ]
 
         for port in ports {

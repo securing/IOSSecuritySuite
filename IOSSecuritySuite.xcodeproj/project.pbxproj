@@ -26,6 +26,7 @@
 		A90FD5FE24528925007212BF /* MSHookFunctionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */; };
 		A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FF24528A94007212BF /* FishHookChecker.swift */; };
 		A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */; };
+		E2814AD72A4E388100AC9E54 /* FileChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2814AD62A4E388100AC9E54 /* FileChecker.swift */; };
 		FF2FF25D2499F7590050D02F /* FishHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF2FF25C2499F7590050D02F /* FishHook.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,7 @@
 		A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSHookFunctionChecker.swift; sourceTree = "<group>"; };
 		A90FD5FF24528A94007212BF /* FishHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishHookChecker.swift; sourceTree = "<group>"; };
 		A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeHookChecker.swift; sourceTree = "<group>"; };
+		E2814AD62A4E388100AC9E54 /* FileChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileChecker.swift; sourceTree = "<group>"; };
 		FF2FF25C2499F7590050D02F /* FishHook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishHook.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -137,6 +139,7 @@
 				A90FD5FF24528A94007212BF /* FishHookChecker.swift */,
 				A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */,
 				70B8E16B257E528D00917097 /* ProxyChecker.swift */,
+				E2814AD62A4E388100AC9E54 /* FileChecker.swift */,
 			);
 			path = IOSSecuritySuite;
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 			files = (
 				70B0BBC9226F3A74000CFB39 /* DebuggerChecker.swift in Sources */,
 				890685F829912FCF00EEC5A6 /* FailedChecks.swift in Sources */,
+				E2814AD72A4E388100AC9E54 /* FileChecker.swift in Sources */,
 				70B0BBCD226F3A90000CFB39 /* EmulatorChecker.swift in Sources */,
 				70B8E16C257E528D00917097 /* ProxyChecker.swift in Sources */,
 				A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */,

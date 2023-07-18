@@ -5,7 +5,7 @@
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
 //  https://github.com/TannerJin/anti-fishhook
-// swiftlint:disable trailing_whitespace control_statement line_length cyclomatic_complexity type_body_length function_body_length
+// swiftlint:disable trailing_whitespace control_statement line_length cyclomatic_complexity type_body_length function_body_length file_length
 import Foundation
 import MachO
 

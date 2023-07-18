@@ -5,7 +5,7 @@
 //  Created by NikoXu on 2020/8/21.
 //  Copyright © 2020 wregula. All rights reserved.
 //
-// swiftlint:disable line_length large_tuple force_cast
+// swiftlint:disable line_length large_tuple force_cast trailing_whitespace
 
 import Foundation
 import MachO
