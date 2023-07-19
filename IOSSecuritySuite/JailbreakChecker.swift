@@ -365,7 +365,7 @@ internal class JailbreakChecker {
     private static func checkSuspiciousObjCClasses() -> CheckResult {
         
         if let shadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
-            let selector = Selector(("isURLSchemeRestricted:"))
+            let selector = Selector(("internalDictionary"))
             if class_getInstanceMethod(shadowRulesetClass, selector) != nil {
                 return (false, "Shadow anti-anti-jailbreak detector detected :-)")
             }
