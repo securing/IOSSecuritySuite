@@ -80,24 +80,28 @@ public class IOSSecuritySuite {
     /**
      This type method is used to determine if application is being debugged
      
+     function marked as @inline additional info could be found here https://swiftrocks.com/the-forbidden-inline-attribute-in-swift
+     
      Usage example
      ```
      let amIDebugged: Bool = IOSSecuritySuite.amIDebugged()
      ```
      */
-    public static func amIDebugged() -> Bool {
+    @inline(__always) public static func amIDebugged() -> Bool {
         return DebuggerChecker.amIDebugged()
     }
 
     /**
      This type method is used to deny debugger and improve the application resillency
      
+     function marked as @inline additional info could be found here https://swiftrocks.com/the-forbidden-inline-attribute-in-swift
+     
      Usage example
      ```
      IOSSecuritySuite.denyDebugger()
      ```
      */
-    public static func denyDebugger() {
+    @inline(__always) public static func denyDebugger() {
         return DebuggerChecker.denyDebugger()
     }
     
@@ -149,6 +153,8 @@ public class IOSSecuritySuite {
     /**
     This type method is used to determine the reverse engineered status with a list of failed checks
 
+     function marked as @inline additional info could be found here https://swiftrocks.com/the-forbidden-inline-attribute-in-swift
+     
      Usage example
      ```
      let reStatus = IOSSecuritySuite.amIReverseEngineeredWithFailedChecks()
@@ -161,7 +167,7 @@ public class IOSSecuritySuite {
      - Returns: Tuple with with the reverse engineered status *Bool* labeled *reverseEngineered* and *[FailedCheck]* labeled *failedChecks*
      for the list of failed checks
      */
-    public static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
+    @inline(__always) public static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
         return ReverseEngineeringToolsChecker.amIReverseEngineeredWithFailedChecks()
     }
       

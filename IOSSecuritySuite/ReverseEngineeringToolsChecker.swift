@@ -22,12 +22,12 @@ internal class ReverseEngineeringToolsChecker {
         return !performChecks().passed
     }
 
-    static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
+    @inline(__always) static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
         let status = performChecks()
         return (!status.passed, status.failedChecks)
     }
   
-    private static func performChecks() -> ReverseEngineeringToolsStatus {
+    @inline(__always) private static func performChecks() -> ReverseEngineeringToolsStatus {
         var passed = true
         var result: CheckResult = (true, "")
         var failedChecks: [FailedCheckType] = []
