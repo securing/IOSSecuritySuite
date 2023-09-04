@@ -26,6 +26,18 @@ public enum FileIntegrityCheck {
     // Compare current hash value(SHA256 hex string) of executable file with a specified (Image Name, Hash Value).
     // Only work on dynamic library and arm64.
     case machO(String, String)
+    
+    // Сhecks a special key in Bundle.infoDictionary that is usually added when the bundle was re-signed
+    case bundleResigned
+
+    // Checks that the application bundle contains a signature
+    case signature
+
+    // Checks that plist was not modified
+    case plistModification
+
+    // Checks that the application bundle encrypted
+    case encryption
 }
 
 extension FileIntegrityCheck: Explainable {
@@ -37,6 +49,14 @@ extension FileIntegrityCheck: Explainable {
             return "The expected hash value of Mobile Provision file was \(expectedSha256Value)"
         case .machO(let imageName, let expectedSha256Value):
             return "The expected hash value of \"__TEXT.__text\" data of \(imageName) Mach-O file was \(expectedSha256Value)"
+        case .bundleResigned:
+            return "App was re-signed"
+        case .signature:
+            return "Signature not exists"
+        case .plistModification:
+            return "Info.plist was modified"
+        case .encryption:
+            return "App bundle not encrypted"
         }
     }
 }
@@ -65,6 +85,26 @@ internal class IntegrityChecker {
                 }
             case .machO(let imageName, let expectedSha256Value):
                 if checkMachO(imageName, with: expectedSha256Value.lowercased()) {
+                    result = true
+                    hitChecks.append(check)
+                }
+            case .bundleResigned:
+                if checkIsBundleResigned() {
+                    result = true
+                    hitChecks.append(check)
+                }
+            case .signature:
+                if !checkSignatureExistence() {
+                    result = true
+                    hitChecks.append(check)
+                }
+            case .plistModification:
+                if checkIsPlistModified() {
+                    result = true
+                    hitChecks.append(check)
+                }
+            case .encryption:
+                if !checkIsBundleEncrypted() {
                     result = true
                     hitChecks.append(check)
                 }
@@ -115,6 +155,76 @@ internal class IntegrityChecker {
         return false
     }
     
+    
+    // This key can be only in a hacked app
+    // https://github.com/olxios/SmartSec_iOS_Security/blob/master/SmartSec/SmartSec/checks/integrity/IntegrityCheck1.m
+    private static func checkIsBundleResigned() -> Bool {
+        // SignerIdentity
+        let key: [UInt8] = [26, 38, 52, 61, 0, 17, 60, 22, 12, 26, 13, 58, 1, 16]
+        return Bundle.main.infoDictionary?[Obfuscator().reveal(key: key)] != nil
+    }
+
+    // Check that signature exists
+    // https://github.com/olxios/SmartSec_iOS_Security/blob/master/SmartSec/SmartSec/checks/integrity/IntegrityCheck1.m
+    private static func checkSignatureExistence() -> Bool {
+        let bundlePath = NSString(string: Bundle.main.bundlePath)
+        // _CodeSignature
+        let pathComponent: [UInt8] = [22, 12, 60, 55, 0, 48, 28, 21, 7, 21, 13, 38, 7, 12]
+        let signaturePath = bundlePath.appendingPathComponent(Obfuscator().reveal(key: pathComponent))
+        return FileManager.default.fileExists(atPath: signaturePath)
+    }
+
+    // Check that plist modified
+    // https://github.com/olxios/SmartSec_iOS_Security/blob/master/SmartSec/SmartSec/checks/integrity/IntegrityCheck1.m
+    private static func checkIsPlistModified() -> Bool {
+        let bundle = Bundle.main
+        let bundlePath = NSString(string: Bundle.main.bundlePath)
+        // Info.plist
+        let pathComponent: [UInt8] = [0, 33, 53, 60, 75, 19, 25, 27, 26, 0]
+
+        let plistPath = bundlePath.appendingPathComponent(Obfuscator().reveal(key: pathComponent))
+        let plistAttributes = try? FileManager.default.attributesOfItem(atPath: plistPath)
+
+        guard let executablePath = bundle.executablePath else {
+            return true
+        }
+        let executableFileAttributes = try? FileManager.default.attributesOfItem(atPath: executablePath)
+
+        if let plistModificationDate = plistAttributes?[.modificationDate] as? Date,
+           let executableModificationDate = executableFileAttributes?[.modificationDate] as? Date,
+           plistModificationDate.timeIntervalSince1970 > executableModificationDate.timeIntervalSince1970 {
+            return true
+        }
+
+        return false
+    }
+
+    // Check is bundle encrypted
+    // https://github.com/olxios/SmartSec_iOS_Security/blob/master/SmartSec/SmartSec/checks/integrity/IntegrityCheck2.m
+    private static func checkIsBundleEncrypted() -> Bool {
+        guard let header = _dyld_get_image_header(0) else {
+            return false
+        }
+
+        guard var curCmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: header)+UInt(MemoryLayout<mach_header_64>.size)) else {
+            return false
+        }
+
+        var segCmd: UnsafeMutablePointer<segment_command_64>!
+
+        for _ in 0..<header.pointee.ncmds {
+            segCmd = curCmd
+            if segCmd.pointee.cmd == LC_ENCRYPTION_INFO_64 {
+                let cryptCmd = UnsafeMutableRawPointer(segCmd).assumingMemoryBound(to: encryption_info_command_64.self)
+
+                return cryptCmd.pointee.cryptid > 0
+            }
+
+            curCmd = UnsafeMutableRawPointer(curCmd).advanced(by: Int(curCmd.pointee.cmdsize)).assumingMemoryBound(to: segment_command_64.self)
+        }
+
+        return false
+    }
 }
 
 #if arch(arm64)
