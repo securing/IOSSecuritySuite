@@ -26,6 +26,7 @@
 		A90FD5FE24528925007212BF /* MSHookFunctionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */; };
 		A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FF24528A94007212BF /* FishHookChecker.swift */; };
 		A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */; };
+		CABE309D2AA5CA100011D110 /* Obfuscator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABE309C2AA5CA100011D110 /* Obfuscator.swift */; };
 		E2814AD72A4E388100AC9E54 /* FileChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2814AD62A4E388100AC9E54 /* FileChecker.swift */; };
 		FF2FF25D2499F7590050D02F /* FishHook.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF2FF25C2499F7590050D02F /* FishHook.swift */; };
 /* End PBXBuildFile section */
@@ -66,6 +67,7 @@
 		A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSHookFunctionChecker.swift; sourceTree = "<group>"; };
 		A90FD5FF24528A94007212BF /* FishHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishHookChecker.swift; sourceTree = "<group>"; };
 		A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeHookChecker.swift; sourceTree = "<group>"; };
+		CABE309C2AA5CA100011D110 /* Obfuscator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obfuscator.swift; sourceTree = "<group>"; };
 		E2814AD62A4E388100AC9E54 /* FileChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileChecker.swift; sourceTree = "<group>"; };
 		FF2FF25C2499F7590050D02F /* FishHook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishHook.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -140,6 +142,7 @@
 				A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */,
 				70B8E16B257E528D00917097 /* ProxyChecker.swift */,
 				E2814AD62A4E388100AC9E54 /* FileChecker.swift */,
+				CABE309C2AA5CA100011D110 /* Obfuscator.swift */,
 			);
 			path = IOSSecuritySuite;
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 				A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */,
 				7A12583D24EFA8D40071460D /* IntegrityChecker.swift in Sources */,
 				70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */,
+				CABE309D2AA5CA100011D110 /* Obfuscator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,7 +30,9 @@ internal class DebuggerChecker {
 
         // bind ptrace()
         let pointerToPtrace = UnsafeMutableRawPointer(bitPattern: -2)
-        let ptracePtr = dlsym(pointerToPtrace, "ptrace")
+        // ptrace
+        let IUy2I: [UInt8] = [57, 59, 33, 50, 6, 6]
+        let ptracePtr = dlsym(pointerToPtrace, Obfuscator().reveal(key: IUy2I))
         typealias PtraceType = @convention(c) (CInt, pid_t, CInt, CInt) -> CInt
         let ptrace = unsafeBitCast(ptracePtr, to: PtraceType.self)
 

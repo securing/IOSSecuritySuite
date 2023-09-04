@@ -58,11 +58,11 @@ internal class ReverseEngineeringToolsChecker {
 
     private static func checkDYLD() -> CheckResult {
 
-        let suspiciousLibraries = [
-            "FridaGadget",
-            "frida", // Needle injects frida-somerandom.dylib
-            "cynject",
-            "libcycript"
+        let suspiciousLibraries: [[UInt8]] = [
+            [15, 61, 58, 55, 4, 36, 20, 22, 14, 17, 13], // FridaGadget
+            [47, 61, 58, 55, 4], // frida (Needle injects frida-somerandom.dylib)
+            [42, 54, 61, 57, 0, 0, 1], // cynject
+            [37, 38, 49, 48, 28, 0, 7, 27, 25, 0] // libcycript
         ]
 
         for libraryIndex in 0..<_dyld_image_count() {
@@ -71,7 +71,7 @@ internal class ReverseEngineeringToolsChecker {
             guard let loadedLibrary = String(validatingUTF8: _dyld_get_image_name(libraryIndex)) else { continue }
 
             for suspiciousLibrary in suspiciousLibraries {
-                if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
+                if loadedLibrary.lowercased().contains(Obfuscator().reveal(key: suspiciousLibrary).lowercased()) {
                     return (false, "Suspicious library loaded: \(loadedLibrary)")
                 }
             }
@@ -82,12 +82,12 @@ internal class ReverseEngineeringToolsChecker {
 
     private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
 
-        let paths = [
-            "/usr/sbin/frida-server"
+        let paths: [[UInt8]] = [
+            [102, 58, 32, 33, 74, 16, 23, 27, 7, 91, 31, 33, 28, 13, 21, 72, 57, 4, 27, 26, 7, 0] // /usr/sbin/frida-server
         ]
 
         for path in paths {
-            if FileManager.default.fileExists(atPath: path) {
+            if FileManager.default.fileExists(atPath: Obfuscator().reveal(key: path)) {
                 return (false, "Suspicious file found: \(path)")
             }
         }
@@ -97,16 +97,14 @@ internal class ReverseEngineeringToolsChecker {
 
     private static func checkOpenedPorts() -> CheckResult {
 
-        let ports = [
-            27042, // default Frida
-            4444, // default Needle
-            22, // OpenSSH
-            44 // checkra1n
+        let ports: [[UInt8]] = [
+            [123, 120, 99, 103, 87], // default Frida
+            [125, 123, 103, 103] // default Needle
         ]
-
+        
         for port in ports {
 
-            if canOpenLocalConnection(port: port) {
+            if canOpenLocalConnection(port: Int(Obfuscator().reveal(key: port)) ?? 0) {
                 return (false, "Port \(port) is open")
             }
         }
@@ -123,7 +121,8 @@ internal class ReverseEngineeringToolsChecker {
 
         var serverAddress = sockaddr_in()
         serverAddress.sin_family = sa_family_t(AF_INET)
-        serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1")
+        let fUHx2x: [UInt8] = [120, 125, 100, 125, 85, 77, 69, 92, 88] // 127.0.0.1
+        serverAddress.sin_addr.s_addr = inet_addr(Obfuscator().reveal(key: fUHx2x))
         serverAddress.sin_port = swapBytesIfNeeded(port: in_port_t(port))
         let sock = socket(AF_INET, SOCK_STREAM, 0)
 
