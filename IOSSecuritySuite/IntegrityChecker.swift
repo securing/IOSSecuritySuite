@@ -32,7 +32,7 @@ extension FileIntegrityCheck: Explainable {
     public var description: String {
         switch self {
         case .bundleID(let exceptedBundleID):
-            return "The expected bundle identify was \(exceptedBundleID)"
+            return "Bundle ID mismatch"
         case .mobileProvision(let expectedSha256Value):
             return "The expected hash value of Mobile Provision file was \(expectedSha256Value)"
         case .machO(let imageName, let expectedSha256Value):
