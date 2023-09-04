@@ -134,7 +134,7 @@ public class IOSSecuritySuite {
     - Parameter checks: The file Integrity checks you want
     - Returns: The file Integrity checker result
     */
-    public static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
+    @inline(__always) public static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
         return IntegrityChecker.amITampered(checks)
     }
 

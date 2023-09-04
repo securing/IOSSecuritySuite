@@ -46,7 +46,7 @@ public typealias FileIntegrityCheckResult = (result: Bool, hitChecks: [FileInteg
 internal class IntegrityChecker {
     
     // Check if the application has been tampered with the specified checks
-    static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
+    @inline(__always) static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
         
         var hitChecks: [FileIntegrityCheck] = []
         var result = false
