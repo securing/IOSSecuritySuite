@@ -58,7 +58,7 @@ internal class ReverseEngineeringToolsChecker {
 
     private static func checkDYLD() -> CheckResult {
 
-        let suspiciousLibraries = [
+        let suspiciousLibraries: Set<String> = [
             "FridaGadget",
             "frida", // Needle injects frida-somerandom.dylib
             "cynject",

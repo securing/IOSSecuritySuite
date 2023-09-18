@@ -318,8 +318,8 @@ internal class JailbreakChecker {
     }
     
     private static func checkDYLD() -> CheckResult {
-        
-        let suspiciousLibraries = [
+
+        let suspiciousLibraries: Set<String> = [
             "SubstrateLoader.dylib",
             "SSLKillSwitch2.dylib",
             "SSLKillSwitch.dylib",
