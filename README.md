@@ -1,6 +1,6 @@
 ## ⭐️ Do you want to become a certified iOS Application Security Engineer? ⭐️
 
-Check out our practical & full online course at: [https://courses.securing.pl/courses/iase](https://courses.securing.pl/courses/iase?utm_source=githubiosss&utm_medium=githubiosss&utm_campaign=githubiosss&utm_id=githubiosss)
+Check out our practical & fully online course at: [https://courses.securing.pl/courses/iase](https://courses.securing.pl/courses/iase?utm_source=githubiosss&utm_medium=githubiosss&utm_campaign=githubiosss&utm_id=githubiosss)
 
 ![iASE logo](./iase_bg.png)
 
