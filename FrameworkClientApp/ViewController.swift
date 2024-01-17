@@ -8,7 +8,7 @@
 // swiftlint:disable all
 
 import UIKit
-import IOSSecuritySuite
+import IOSSecuritySuiteLib
 
 class RuntimeClass {
    @objc dynamic func runtimeModifiedFunction()-> Int {
