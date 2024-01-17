@@ -1,7 +1,15 @@
+## ⭐️ Do you want to become a certified iOS Application Security Engineer? ⭐️
+
+Check out our practical & fully online course at: [https://courses.securing.pl/courses/iase](https://courses.securing.pl/courses/iase?utm_source=githubiosss&utm_medium=githubiosss&utm_campaign=githubiosss&utm_id=githubiosss)
+
+![iASE logo](./iase_bg.png)
+
+
+## ISS Description
+
 ![ISS logo](./logo.png)
 ### by [@_r3ggi](https://twitter.com/_r3ggi)
 
-## ISS Description
 🌏 iOS Security Suite is an advanced and easy-to-use platform security & anti-tampering library written in pure Swift! If you are developing for iOS and you want to protect your app according to the OWASP [MASVS](https://github.com/OWASP/owasp-masvs) standard, chapter v8, then this library could save you a lot of time. 🚀
 
 What ISS detects:
@@ -255,7 +263,6 @@ Before using this and other platform security checkers, you have to understand t
 * Including this tool in your project is not the only thing you should do in order to improve your app security! You can read a general mobile security whitepaper [here](https://www.securing.biz/en/mobile-application-security-best-practices/index.html).
 * Detecting if a device is jailbroken is done locally on the device. It means that every jailbreak detector may be bypassed (even this)! 
 * Swift code is considered to be harder to manipulate dynamically than Objective-C. Since this library was written in pure Swift, the IOSSecuritySuite methods shouldn't be exposed to Objective-C runtime (which makes it more difficult to bypass ✅). You have to know that attacker is still able to MSHookFunction/MSFindSymbol Swift symbols and dynamically change Swift code execution flow.
-* It's also a good idea to obfuscate the whole project code, including this library. See [Swiftshield](https://github.com/rockbruno/swiftshield)
 
 ## Contribution ❤️
 Yes, please! If you have a better idea or you just want to improve this project, please text me on [Twitter](https://twitter.com/_r3ggi) or [Linkedin](https://www.linkedin.com/in/wojciech-regula/). Pull requests are more than welcome!
@@ -276,6 +283,9 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [Ant-tree](https://github.com/Ant-tree) for improving hooking resistence
 * [izmcm](https://github.com/izmcm) for implementing the `amIReverseEngineeredWithFailedChecks()` method
 * [sanu](https://github.com/sanu) for new providing new file checks
+* [marsepu](https://github.com/marsepu) for a well-done PR with new improvements
+* [mkj-is](https://github.com/mkj-is) for a PR improving ISS performance 🚄
+
 
 ## TODO
 

@@ -99,7 +99,6 @@ internal class JailbreakChecker {
     // "cydia://" URL scheme has been removed. Turns out there is app in the official App Store
     // that has the cydia:// URL scheme registered, so it may cause false positive
     private static func checkURLSchemes() -> CheckResult {
-        var flag: (passed: Bool, failMessage: String) = (true, "")
         let urlSchemes = [
             "undecimus://",
             "sileo://",
@@ -107,18 +106,7 @@ internal class JailbreakChecker {
             "filza://",
             "activator://"
         ]
-        
-        if Thread.isMainThread {
-            flag = canOpenUrlFromList(urlSchemes: urlSchemes)
-        } else {
-            let semaphore = DispatchSemaphore(value: 0)
-            DispatchQueue.main.async {
-                flag = canOpenUrlFromList(urlSchemes: urlSchemes)
-                semaphore.signal()
-            }
-            semaphore.wait()
-        }
-        return flag
+        return canOpenUrlFromList(urlSchemes: urlSchemes)
     }
     
     private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
@@ -330,8 +318,8 @@ internal class JailbreakChecker {
     }
     
     private static func checkDYLD() -> CheckResult {
-        
-        let suspiciousLibraries = [
+
+        let suspiciousLibraries: Set<String> = [
             "SubstrateLoader.dylib",
             "SSLKillSwitch2.dylib",
             "SSLKillSwitch.dylib",
@@ -359,25 +347,23 @@ internal class JailbreakChecker {
             "libcycript"
         ]
         
-        for libraryIndex in 0..<_dyld_image_count() {
-            
-            // _dyld_get_image_name returns const char * that needs to be casted to Swift String
-            guard let loadedLibrary = String(validatingUTF8: _dyld_get_image_name(libraryIndex)) else { continue }
-            
-            for suspiciousLibrary in suspiciousLibraries {
-                if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
-                    return (false, "Suspicious library loaded: \(loadedLibrary)")
-                }
+        for index in 0..<_dyld_image_count() {
+
+            let imageName = String(cString: _dyld_get_image_name(index))
+
+            // The fastest case insensitive contains check.
+            for library in suspiciousLibraries where imageName.localizedCaseInsensitiveContains(library) {
+                return (false, "Suspicious library loaded: \(imageName)")
             }
         }
-        
+
         return (true, "")
     }
     
     private static func checkSuspiciousObjCClasses() -> CheckResult {
         
         if let shadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
-            let selector = Selector(("isURLSchemeRestricted:"))
+            let selector = Selector(("internalDictionary"))
             if class_getInstanceMethod(shadowRulesetClass, selector) != nil {
                 return (false, "Shadow anti-anti-jailbreak detector detected :-)")
             }
