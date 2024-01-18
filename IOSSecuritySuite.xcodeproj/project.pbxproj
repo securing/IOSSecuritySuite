@@ -13,8 +13,8 @@
 		706B0E2F226F445D0059AEA9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 706B0E2D226F445D0059AEA9 /* Main.storyboard */; };
 		706B0E31226F445F0059AEA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 706B0E30226F445F0059AEA9 /* Assets.xcassets */; };
 		706B0E34226F445F0059AEA9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 706B0E32226F445F0059AEA9 /* LaunchScreen.storyboard */; };
-		706B0E39226F44830059AEA9 /* IOSSecuritySuite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */; };
-		706B0E3B226F59AA0059AEA9 /* IOSSecuritySuite.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		706B0E39226F44830059AEA9 /* IOSSecuritySuiteLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuiteLib.framework */; };
+		706B0E3B226F59AA0059AEA9 /* IOSSecuritySuiteLib.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuiteLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		70B0BBC1226F3A4D000CFB39 /* IOSSecuritySuite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70B0BBBF226F3A4D000CFB39 /* IOSSecuritySuite.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		70B0BBC9226F3A74000CFB39 /* DebuggerChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */; };
 		70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */; };
@@ -37,7 +37,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				706B0E3B226F59AA0059AEA9 /* IOSSecuritySuite.framework in CopyFiles */,
+				706B0E3B226F59AA0059AEA9 /* IOSSecuritySuiteLib.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +52,7 @@
 		706B0E30226F445F0059AEA9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		706B0E33226F445F0059AEA9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		706B0E35226F445F0059AEA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IOSSecuritySuite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuiteLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IOSSecuritySuiteLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B0BBBF226F3A4D000CFB39 /* IOSSecuritySuite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSSecuritySuite.h; sourceTree = "<group>"; };
 		70B0BBC0226F3A4D000CFB39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerChecker.swift; sourceTree = "<group>"; };
@@ -75,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				706B0E39226F44830059AEA9 /* IOSSecuritySuite.framework in Frameworks */,
+				706B0E39226F44830059AEA9 /* IOSSecuritySuiteLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +117,7 @@
 		70B0BBBD226F3A4D000CFB39 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */,
+				70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuiteLib.framework */,
 				706B0E27226F445D0059AEA9 /* FrameworkClientApp.app */,
 			);
 			name = Products;
@@ -183,9 +183,9 @@
 			productReference = 706B0E27226F445D0059AEA9 /* FrameworkClientApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		70B0BBBB226F3A4D000CFB39 /* IOSSecuritySuite */ = {
+		70B0BBBB226F3A4D000CFB39 /* IOSSecuritySuiteLib */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 70B0BBC4226F3A4D000CFB39 /* Build configuration list for PBXNativeTarget "IOSSecuritySuite" */;
+			buildConfigurationList = 70B0BBC4226F3A4D000CFB39 /* Build configuration list for PBXNativeTarget "IOSSecuritySuiteLib" */;
 			buildPhases = (
 				70B0BBB7226F3A4D000CFB39 /* Headers */,
 				70B0BBB8226F3A4D000CFB39 /* Sources */,
@@ -197,9 +197,9 @@
 			);
 			dependencies = (
 			);
-			name = IOSSecuritySuite;
+			name = IOSSecuritySuiteLib;
 			productName = IOSSecuritySuite;
-			productReference = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */;
+			productReference = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuiteLib.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -240,7 +240,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				70B0BBBB226F3A4D000CFB39 /* IOSSecuritySuite */,
+				70B0BBBB226F3A4D000CFB39 /* IOSSecuritySuiteLib */,
 				706B0E26226F445D0059AEA9 /* FrameworkClientApp */,
 			);
 		};
@@ -526,7 +526,6 @@
 				);
 				OTHER_SWIFT_FLAGS = "-verify-emitted-module-interface";
 				PRODUCT_BUNDLE_IDENTIFIER = biz.securing.IOSSecuritySuite;
-				PRODUCT_MODULE_NAME = IOSSecuritySuiteLib;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -560,7 +559,6 @@
 				);
 				OTHER_SWIFT_FLAGS = "-verify-emitted-module-interface";
 				PRODUCT_BUNDLE_IDENTIFIER = biz.securing.IOSSecuritySuite;
-				PRODUCT_MODULE_NAME = IOSSecuritySuiteLib;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -591,7 +589,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		70B0BBC4226F3A4D000CFB39 /* Build configuration list for PBXNativeTarget "IOSSecuritySuite" */ = {
+		70B0BBC4226F3A4D000CFB39 /* Build configuration list for PBXNativeTarget "IOSSecuritySuiteLib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				70B0BBC5226F3A4D000CFB39 /* Debug */,

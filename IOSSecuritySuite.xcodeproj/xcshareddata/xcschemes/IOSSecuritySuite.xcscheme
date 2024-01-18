@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "70B0BBBB226F3A4D000CFB39"
-               BuildableName = "IOSSecuritySuite.framework"
-               BlueprintName = "IOSSecuritySuite"
+               BuildableName = "IOSSecuritySuiteLib.framework"
+               BlueprintName = "IOSSecuritySuiteLib"
                ReferencedContainer = "container:IOSSecuritySuite.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,8 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -46,13 +44,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70B0BBBB226F3A4D000CFB39"
-            BuildableName = "IOSSecuritySuite.framework"
-            BlueprintName = "IOSSecuritySuite"
+            BuildableName = "IOSSecuritySuiteLib.framework"
+            BlueprintName = "IOSSecuritySuiteLib"
             ReferencedContainer = "container:IOSSecuritySuite.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -64,8 +60,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70B0BBBB226F3A4D000CFB39"
-            BuildableName = "IOSSecuritySuite.framework"
-            BlueprintName = "IOSSecuritySuite"
+            BuildableName = "IOSSecuritySuiteLib.framework"
+            BlueprintName = "IOSSecuritySuiteLib"
             ReferencedContainer = "container:IOSSecuritySuite.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
