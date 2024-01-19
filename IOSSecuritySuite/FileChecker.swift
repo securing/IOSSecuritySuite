@@ -5,7 +5,6 @@
 //  Created by Mario Sepulveda on 6/29/23.
 //  Copyright © 2023 wregula. All rights reserved.
 //
-// swiftlint:disable trailing_whitespace
 
 import Foundation
 
@@ -36,8 +35,10 @@ internal class FileChecker {
    - path: path is the pathname of any file within the mounted file system.
    - Returns: Returns nil, if statfs() gives a non-zero result.
    */
-  private static func getMountedVolumeInfoViaStatfs(path: String,
-                                                    encoding: String.Encoding = .utf8) -> MountedVolumeInfo? {
+  private static func getMountedVolumeInfoViaStatfs(
+    path: String,
+    encoding: String.Encoding = .utf8
+  ) -> MountedVolumeInfo? {
     guard let path: [CChar] = path.cString(using: encoding) else {
       assertionFailure("Failed to create a cString with path=\(path) encoding=\(encoding)")
       return nil
@@ -118,7 +119,9 @@ internal class FileChecker {
       
       return result
     } else {
-      assertionFailure("getfsstat() failed. resultCode=\(resultCode), expected count=\(count) filesystems.")
+      assertionFailure(
+        "getfsstat() failed. resultCode=\(resultCode), expected count=\(count) filesystems."
+      )
       return nil
     }
   }
@@ -184,9 +187,14 @@ internal class FileChecker {
    - mode: Determines if the file will be accessed in Write mode or Read-Only mode.
    - returns: Returns nil, if access() returns a non-zero result code.
    */
-  static func checkExistenceOfSuspiciousFilesViaAccess(path: String,
-                                                       mode: FileMode) -> CheckResult? {
-    let resultCode = access((path as NSString).fileSystemRepresentation, FileMode.writable == mode ? W_OK : R_OK)
+  static func checkExistenceOfSuspiciousFilesViaAccess(
+    path: String,
+    mode: FileMode
+  ) -> CheckResult? {
+    let resultCode = access(
+      (path as NSString).fileSystemRepresentation,
+      FileMode.writable == mode ? W_OK : R_OK
+    )
     
     if resultCode == 0 {
       return (false, "Suspicious file exists: \(path)")
@@ -199,8 +207,10 @@ internal class FileChecker {
    Checks if statvfs() considers the given path to be Read-Only.
    - Returns: Returns nil, if statvfs() gives a non-zero result.
    */
-  static func checkRestrictedPathIsReadonlyViaStatvfs(path: String,
-                                                      encoding: String.Encoding = .utf8) -> Bool? {
+  static func checkRestrictedPathIsReadonlyViaStatvfs(
+    path: String,
+    encoding: String.Encoding = .utf8
+  ) -> Bool? {
     guard let path: [CChar] = path.cString(using: encoding) else {
       assertionFailure("Failed to create a cString with path=\(path) encoding=\(encoding)")
       return nil
@@ -220,8 +230,10 @@ internal class FileChecker {
    Checks if statvs() considers the volume associated with given path to be Read-Only.
    - Returns: Returns nil, if statfs() does not find the mounted volume.
    */
-  static func checkRestrictedPathIsReadonlyViaStatfs(path: String,
-                                                     encoding: String.Encoding = .utf8) -> Bool? {
+  static func checkRestrictedPathIsReadonlyViaStatfs(
+    path: String,
+    encoding: String.Encoding = .utf8
+  ) -> Bool? {
     return getMountedVolumeInfoViaStatfs(path: path, encoding: encoding)?.isReadOnly
   }
   
@@ -235,4 +247,3 @@ internal class FileChecker {
     return self.getMountedVolumesViaGetfsstat(withName: name)?.isReadOnly
   }
 }
-// swiftlint:enable trailing_whitespace

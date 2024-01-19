@@ -5,6 +5,7 @@
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
 //  https://github.com/TannerJin/anti-fishhook
+
 // swiftlint:disable all
 
 import Foundation

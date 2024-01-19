@@ -5,20 +5,23 @@
 //  Created by jintao on 2020/4/24.
 //  Copyright © 2020 wregula. All rights reserved.
 //
-// swiftlint:disable line_length trailing_whitespace
 
 import Foundation
 import MachO
 
 internal class RuntimeHookChecker {
-  
   static private let swiftOnceDenyFishHooK: Void = {
 #if arch(arm64)
     FishHookChecker.denyFishHook("dladdr")
 #endif
   }()
   
-  static func amIRuntimeHook(dyldAllowList: [String], detectionClass: AnyClass, selector: Selector, isClassMethod: Bool) -> Bool {
+  static func amIRuntimeHook(
+    dyldAllowList: [String],
+    detectionClass: AnyClass,
+    selector: Selector,
+    isClassMethod: Bool
+  ) -> Bool {
     var method: Method?
     if isClassMethod {
       method = class_getClassMethod(detectionClass, selector)
@@ -26,12 +29,12 @@ internal class RuntimeHookChecker {
       method = class_getInstanceMethod(detectionClass, selector)
     }
     
-    if method == nil {
+    guard let method = method else {
       // method not found
       return true
     }
     
-    let imp = method_getImplementation(method!)
+    let imp = method_getImplementation(method)
     var info = Dl_info()
     
     _ = swiftOnceDenyFishHooK
@@ -63,4 +66,3 @@ internal class RuntimeHookChecker {
     return true
   }
 }
-// swiftlint:enable line_length trailing_whitespace

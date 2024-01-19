@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-// swiftlint:disable cyclomatic_complexity function_body_length type_body_length trailing_whitespace
+// swiftlint:disable function_body_length type_body_length
 
 import Foundation
 import UIKit
@@ -31,7 +31,8 @@ internal class JailbreakChecker {
     return (!status.passed, status.failMessage)
   }
   
-  static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool, failedChecks: [FailedCheckType]) {
+  static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool,
+                                                  failedChecks: [FailedCheckType]) {
     let status = performChecks()
     return (!status.passed, status.failedChecks)
   }
@@ -39,35 +40,10 @@ internal class JailbreakChecker {
   private static func performChecks() -> JailbreakStatus {
     var passed = true
     var failMessage = ""
-    var result: CheckResult = (true, "")
     var failedChecks: [FailedCheckType] = []
     
     for check in FailedCheck.allCases {
-      switch check {
-      case .urlSchemes:
-        result = checkURLSchemes()
-      case .existenceOfSuspiciousFiles:
-        result = checkExistenceOfSuspiciousFiles()
-      case .suspiciousFilesCanBeOpened:
-        result = checkSuspiciousFilesCanBeOpened()
-      case .restrictedDirectoriesWriteable:
-        result = checkRestrictedDirectoriesWriteable()
-      case .fork:
-        if !EmulatorChecker.amIRunInEmulator() {
-          result = checkFork()
-        } else {
-          print("App run in the emulator, skipping the fork check.")
-          result = (true, "")
-        }
-      case .symbolicLinks:
-        result = checkSymbolicLinks()
-      case .dyld:
-        result = checkDYLD()
-      case .suspiciousObjCClasses:
-        result = checkSuspiciousObjCClasses()
-      default:
-        continue
-      }
+      let result = getResult(from: check)
       
       passed = passed && result.passed
       
@@ -83,6 +59,34 @@ internal class JailbreakChecker {
     }
     
     return JailbreakStatus(passed: passed, failMessage: failMessage, failedChecks: failedChecks)
+    
+    func getResult(from check: FailedCheck) -> CheckResult {
+      switch check {
+      case .urlSchemes:
+        return checkURLSchemes()
+      case .existenceOfSuspiciousFiles:
+        return checkExistenceOfSuspiciousFiles()
+      case .suspiciousFilesCanBeOpened:
+        return checkSuspiciousFilesCanBeOpened()
+      case .restrictedDirectoriesWriteable:
+        return checkRestrictedDirectoriesWriteable()
+      case .fork:
+        if !EmulatorChecker.amIRunInEmulator() {
+          return checkFork()
+        } else {
+          print("App run in the emulator, skipping the fork check.")
+          return (true, "")
+        }
+      case .symbolicLinks:
+        return checkSymbolicLinks()
+      case .dyld:
+        return checkDYLD()
+      case .suspiciousObjCClasses:
+        return checkSuspiciousObjCClasses()
+      default:
+        return (true, "")
+      }
+    }
   }
   
   private static func canOpenUrlFromList(urlSchemes: [String]) -> CheckResult {
@@ -199,9 +203,15 @@ internal class JailbreakChecker {
         return (false, "Suspicious file exists: \(path)")
       } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaStat(path: path) {
         return result
-      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaFOpen(path: path, mode: .readable) {
+      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaFOpen(
+        path: path,
+        mode: .readable
+      ) {
         return result
-      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaAccess(path: path, mode: .readable) {
+      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaAccess(
+        path: path,
+        mode: .readable
+      ) {
         return result
       }
     }
@@ -210,7 +220,6 @@ internal class JailbreakChecker {
   }
   
   private static func checkSuspiciousFilesCanBeOpened() -> CheckResult {
-    
     var paths = [
       "/.installed_unc0ver",
       "/.bootstrapped_electra",
@@ -230,12 +239,17 @@ internal class JailbreakChecker {
     }
     
     for path in paths {
-      
       if FileManager.default.isReadableFile(atPath: path) {
         return (false, "Suspicious file can be opened: \(path)")
-      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaFOpen(path: path, mode: .writable) {
+      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaFOpen(
+        path: path,
+        mode: .writable
+      ) {
         return result
-      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaAccess(path: path, mode: .writable) {
+      } else if let result = FileChecker.checkExistenceOfSuspiciousFilesViaAccess(
+        path: path,
+        mode: .writable
+      ) {
         return result
       }
     }
@@ -244,7 +258,6 @@ internal class JailbreakChecker {
   }
   
   private static func checkRestrictedDirectoriesWriteable() -> CheckResult {
-    
     let paths = [
       "/",
       "/root/",
@@ -264,9 +277,14 @@ internal class JailbreakChecker {
     // because of catch{} statement
     for path in paths {
       do {
-        let pathWithSomeRandom = path+UUID().uuidString
-        try "AmIJailbroken?".write(toFile: pathWithSomeRandom, atomically: true, encoding: String.Encoding.utf8)
-        try FileManager.default.removeItem(atPath: pathWithSomeRandom) // clean if succesfully written
+        let pathWithSomeRandom = path + UUID().uuidString
+        try "AmIJailbroken?".write(
+          toFile: pathWithSomeRandom,
+          atomically: true,
+          encoding: String.Encoding.utf8
+        )
+        // clean if succesfully written
+        try FileManager.default.removeItem(atPath: pathWithSomeRandom)
         return (false, "Wrote to restricted path: \(path)")
       } catch {}
     }
@@ -275,7 +293,6 @@ internal class JailbreakChecker {
   }
   
   private static func checkFork() -> CheckResult {
-    
     let pointerToFork = UnsafeMutableRawPointer(bitPattern: -2)
     let forkPtr = dlsym(pointerToFork, "fork")
     typealias ForkType = @convention(c) () -> pid_t
@@ -293,7 +310,6 @@ internal class JailbreakChecker {
   }
   
   private static func checkSymbolicLinks() -> CheckResult {
-    
     let paths = [
       "/var/lib/undecimus/apt", // unc0ver
       "/Applications",
@@ -318,7 +334,6 @@ internal class JailbreakChecker {
   }
   
   private static func checkDYLD() -> CheckResult {
-    
     let suspiciousLibraries: Set<String> = [
       "SubstrateLoader.dylib",
       "SSLKillSwitch2.dylib",
@@ -348,7 +363,6 @@ internal class JailbreakChecker {
     ]
     
     for index in 0..<_dyld_image_count() {
-      
       let imageName = String(cString: _dyld_get_image_name(index))
       
       // The fastest case insensitive contains check.
@@ -361,7 +375,6 @@ internal class JailbreakChecker {
   }
   
   private static func checkSuspiciousObjCClasses() -> CheckResult {
-    
     if let shadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
       let selector = Selector(("internalDictionary"))
       if class_getInstanceMethod(shadowRulesetClass, selector) != nil {
@@ -371,4 +384,4 @@ internal class JailbreakChecker {
     return (true, "")
   }
 }
-// swiftlint:enable cyclomatic_complexity function_body_length type_body_length trailing_whitespace
+// swiftlint:enable function_body_length type_body_length

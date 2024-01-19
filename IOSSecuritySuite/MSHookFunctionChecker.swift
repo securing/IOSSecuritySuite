@@ -7,7 +7,8 @@
 //
 //  Copyright © 2020 wregula. All rights reserved.
 //  https://github.com/TannerJin/AntiMSHookFunction
-// swiftlint:disable cyclomatic_complexity function_body_length trailing_whitespace identifier_name line_length
+
+// swiftlint:disable cyclomatic_complexity function_body_length identifier_name
 
 import Foundation
 
@@ -78,7 +79,9 @@ internal class MSHookFunctionChecker {
     case br_x17
     
     @inline(__always)
-    static fileprivate func translateInstruction(at functionAddr: UnsafeMutableRawPointer) -> MSHookInstruction? {
+    static fileprivate func translateInstruction(
+      at functionAddr: UnsafeMutableRawPointer
+    ) -> MSHookInstruction? {
       let arm = functionAddr.assumingMemoryBound(to: UInt32.self).pointee
       // ldr xt, #imm  (C4.4.5 and C6.2.84)
       let ldr_register_litetal = (arm & (255 << 24)) >> 24
@@ -117,7 +120,7 @@ internal class MSHookFunctionChecker {
       if add == 0b10010001 {      // 32-bit: 0b00010001
         let add_rn = (arm & (31 << 5)) >> 5
         let add_rd = arm & 31
-        let add_imm12 = UInt32((arm & ((1 << 12-1) << 10)) >> 10)
+        let add_imm12 = UInt32((arm & ((1 << 12 - 1) << 10)) >> 10)
         var imm = UInt64(add_imm12)
         let shift = (arm & (3 << 22)) >> 22
         if shift == 0 {
@@ -142,9 +145,9 @@ internal class MSHookFunctionChecker {
       let arm = functionAddr.assumingMemoryBound(to: UInt32.self).pointee
       func singExtend(_ value: Int64) -> Int64 {
         var result = value
-        let sing = value >> (33-1) == 1
+        let sing = value >> (33 - 1) == 1
         if sing {
-          result = ((1<<31-1) << 33) | value
+          result = ((1 << 31 - 1) << 33) | value
         }
         return result
       }
@@ -242,7 +245,7 @@ internal class MSHookFunctionChecker {
       )
       
       // vm region of code
-      if regionInfo.pointee.protection != (VM_PROT_READ|VM_PROT_EXECUTE) {
+      if regionInfo.pointee.protection != (VM_PROT_READ | VM_PROT_EXECUTE) {
         // Memory protection level of executable region is always READ + EXECUTE
         vmRegionAddress += vmRegionSize
         continue
@@ -250,7 +253,6 @@ internal class MSHookFunctionChecker {
       
       // ldr (Mobile Substrate)
       if case .ldr_x16 = firstInstruction {
-        
         // Current vm region instruction address
         var vmRegionProcedureAddr = vmRegionAddress
         // Current vm region instruction address
@@ -288,19 +290,26 @@ internal class MSHookFunctionChecker {
       if case .adrp_x17 = firstInstruction {
         // 20: max_buffer_insered_Instruction
         for i in 3..<20 {
-          if let instructionAddr = UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress) + i * 4),
-             case let .adrp_x17(pageBase: pageBase) = MSHookInstruction.translateInstruction(at: instructionAddr),
-             case let .add_x17(pageOffset: pageOffset) = MSHookInstruction.translateInstruction(at: instructionAddr + 4),
-             case .br_x17 = MSHookInstruction.translateInstruction(at: instructionAddr + 8),
-             pageBase+pageOffset == UInt(bitPattern: origFunctionBeginAddr) {
+          if let instructionAddr = UnsafeMutableRawPointer(
+            bitPattern: Int(vmRegionAddress) + i * 4
+          ), case let .adrp_x17(
+            pageBase: pageBase
+          ) = MSHookInstruction.translateInstruction(
+            at: instructionAddr
+          ), case let .add_x17(
+            pageOffset: pageOffset
+          ) = MSHookInstruction.translateInstruction(
+            at: instructionAddr + 4
+          ), case .br_x17 = MSHookInstruction.translateInstruction(
+            at: instructionAddr + 8
+          ), pageBase + pageOffset == UInt(bitPattern: origFunctionBeginAddr) {
             return UnsafeMutableRawPointer(bitPattern: Int(vmRegionAddress))
           }
         }
       }
       vmRegionAddress += vmRegionSize
-      
     }
   }
 }
 #endif
-// swiftlint:enable cyclomatic_complexity function_body_length trailing_whitespace identifier_name line_length
+// swiftlint:enable cyclomatic_complexity function_body_length identifier_name

@@ -43,7 +43,9 @@ internal class ViewController: UIViewController {
         Run in emulator? \(IOSSecuritySuite.amIRunInEmulator())
         Debugged? \(IOSSecuritySuite.amIDebugged())
         Unexpected Launcher? \(IOSSecuritySuite.isParentPidUnexpected())
-        Am I tempered with? \(IOSSecuritySuite.amITampered([.bundleID("biz.securing.FrameworkClientApp")]))
+        Am I tempered with? \(IOSSecuritySuite.amITampered(
+        [.bundleID("biz.securing.FrameworkClientApp")])
+        )
         Reversed? \(IOSSecuritySuite.amIReverseEngineered())
         Reversed with failedChecks? \(IOSSecuritySuite.amIReverseEngineeredWithFailedChecks())
         Am I runtime hooked? \(amIRuntimeHooked)

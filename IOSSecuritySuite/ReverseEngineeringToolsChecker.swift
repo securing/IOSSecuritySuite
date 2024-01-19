@@ -5,7 +5,6 @@
 //  Created by wregula on 24/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-// swiftlint:disable trailing_whitespace
 
 import Foundation
 import MachO // dyld
@@ -22,7 +21,8 @@ internal class ReverseEngineeringToolsChecker {
     return !performChecks().passed
   }
   
-  static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool, failedChecks: [FailedCheckType]) {
+  static func amIReverseEngineeredWithFailedChecks() -> (reverseEngineered: Bool,
+                                                         failedChecks: [FailedCheckType]) {
     let status = performChecks()
     return (!status.passed, status.failedChecks)
   }
@@ -65,7 +65,6 @@ internal class ReverseEngineeringToolsChecker {
     ]
     
     for index in 0..<_dyld_image_count() {
-      
       let imageName = String(cString: _dyld_get_image_name(index))
       
       // The fastest case insensitive contains check.
@@ -90,7 +89,6 @@ internal class ReverseEngineeringToolsChecker {
   }
   
   private static func checkOpenedPorts() -> CheckResult {
-    
     let ports = [
       27042, // default Frida
       4444, // default Needle
@@ -100,14 +98,12 @@ internal class ReverseEngineeringToolsChecker {
     
     for port in ports where canOpenLocalConnection(port: port) {
       return (false, "Port \(port) is open")
-      
     }
     
     return (true, "")
   }
   
   private static func canOpenLocalConnection(port: Int) -> Bool {
-    
     func swapBytesIfNeeded(port: in_port_t) -> in_port_t {
       let littleEndian = Int(OSHostByteOrder()) == OSLittleEndian
       return littleEndian ? _OSSwapInt16(port) : port
@@ -154,4 +150,3 @@ internal class ReverseEngineeringToolsChecker {
     return (true, "")
   }
 }
-// swiftlint:enable trailing_whitespace

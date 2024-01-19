@@ -5,7 +5,7 @@
 //  Created by NikoXu on 2020/8/21.
 //  Copyright © 2020 wregula. All rights reserved.
 //
-// swiftlint:disable line_length large_tuple force_cast trailing_whitespace
+// swiftlint:disable line_length large_tuple force_cast
 
 import Foundation
 import MachO
@@ -15,16 +15,17 @@ protocol Explainable {
   var description: String { get }
 }
 
+/// Possible checks made during ``amITampered`` analysis
 public enum FileIntegrityCheck {
-  // Compare current bundleID with a specified bundleID.
+  /// Compare current bundleID with a specified bundleID.
   case bundleID(String)
   
-  // Compare current hash value(SHA256 hex string) of `embedded.mobileprovision` with a specified hash value.
-  // Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get SHA256 value on your macOS.
+  /// Compare current hash value(SHA256 hex string) of `embedded.mobileprovision` with a specified hash value.
+  /// Use command `"shasum -a 256 /path/to/embedded.mobileprovision"` to get SHA256 value on your macOS.
   case mobileProvision(String)
   
-  // Compare current hash value(SHA256 hex string) of executable file with a specified (Image Name, Hash Value).
-  // Only work on dynamic library and arm64.
+  /// Compare current hash value(SHA256 hex string) of executable file with a specified (Image Name, Hash Value).
+  /// Only work on dynamic library and arm64.
   case machO(String, String)
 }
 
@@ -41,13 +42,12 @@ extension FileIntegrityCheck: Explainable {
   }
 }
 
+/// Tuple with the result of integrity checks and a list of failed checks
 public typealias FileIntegrityCheckResult = (result: Bool, hitChecks: [FileIntegrityCheck])
 
 internal class IntegrityChecker {
-  
   // Check if the application has been tampered with the specified checks
   static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
-    
     var hitChecks: [FileIntegrityCheck] = []
     var result = false
     
@@ -83,14 +83,16 @@ internal class IntegrityChecker {
   }
   
   private static func checkMobileProvision(_ expectedSha256Value: String) -> Bool {
-    
-    guard let path = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else { return false }
+    guard let path = Bundle.main.path(
+      forResource: "embedded", ofType: "mobileprovision"
+    ) else {
+      return false
+    }
     
     let url = URL(fileURLWithPath: path)
     
     if FileManager.default.fileExists(atPath: url.path) {
       if let data = FileManager.default.contents(atPath: url.path) {
-        
         // Hash: SHA256
         var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
         data.withUnsafeBytes {
@@ -114,21 +116,19 @@ internal class IntegrityChecker {
 #endif
     return false
   }
-  
 }
 
 #if arch(arm64)
-
+/// Possible target images that will be checked by IntegrityChecker
 public enum IntegrityCheckerImageTarget {
-  // Default image
+  /// Default image
   case `default`
   
-  // Custom image with a specified name
+  /// Custom image with a specified name
   case custom(String)
 }
 
 extension IntegrityChecker {
-  
   // Get hash value of Mach-O "__TEXT.__text" data with a specified image target
   static func getMachOFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
     switch target {
@@ -151,7 +151,6 @@ extension IntegrityChecker {
 }
 
 // MARK: - MachOParse
-
 private struct SectionInfo {
   var section: UnsafePointer<section_64>
   var addr: UInt64
@@ -189,9 +188,9 @@ private class MachOParse {
   init(imageName: String) {
     for index in 0..<_dyld_image_count() {
       if let cImgName = _dyld_get_image_name(index), String(cString: cImgName).contains(imageName),
-         let header  = _dyld_get_image_header(index) {
-        self.base   = header
-        self.slide  = _dyld_get_image_vmaddr_slide(index)
+         let header = _dyld_get_image_header(index) {
+        self.base = header
+        self.slide = _dyld_get_image_vmaddr_slide(index)
       }
     }
   }
@@ -237,7 +236,9 @@ private class MachOParse {
       return nil
     }
     
-    guard var curCmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: header)+UInt(MemoryLayout<mach_header_64>.size)) else {
+    guard var curCmd = UnsafeMutablePointer<segment_command_64>(
+      bitPattern: UInt(bitPattern: header) + UInt(MemoryLayout<mach_header_64>.size)
+    ) else {
       return nil
     }
     
@@ -266,7 +267,9 @@ private class MachOParse {
       return nil
     }
     
-    guard var curCmd = UnsafeMutablePointer<segment_command_64>(bitPattern: UInt(bitPattern: header)+UInt(MemoryLayout<mach_header_64>.size)) else {
+    guard var curCmd = UnsafeMutablePointer<segment_command_64>(
+      bitPattern: UInt(bitPattern: header) + UInt(MemoryLayout<mach_header_64>.size)
+    ) else {
       return nil
     }
     
@@ -279,7 +282,13 @@ private class MachOParse {
         
         if segname == segName {
           for sectionID in 0..<segCmd.pointee.nsects {
-            guard let sect = UnsafeMutablePointer<section_64>(bitPattern: UInt(bitPattern: curCmd) + UInt(MemoryLayout<segment_command_64>.size) + UInt(sectionID)) else {
+            guard let sect = UnsafeMutablePointer<section_64>(
+              bitPattern: UInt(
+                bitPattern: curCmd
+              ) + UInt(
+                MemoryLayout<segment_command_64>.size
+              ) + UInt(sectionID)
+            ) else {
               return nil
             }
             
@@ -326,4 +335,4 @@ extension Data {
     return map { String(format: "%02hhx", $0) }.joined()
   }
 }
-// swiftlint:enable line_length large_tuple force_cast trailing_whitespace
+// swiftlint:enable line_length large_tuple force_cast
