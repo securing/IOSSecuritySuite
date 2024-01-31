@@ -96,7 +96,7 @@ extension ViewController {
   func executeAntiHook() {
     typealias MyPrint = @convention(thin) (Any..., String, String) -> Void
     func myPrint(_ items: Any..., separator: String = " ", terminator: String = "\n") {
-      NSLog("print has been hooked")
+      print("print has been hooked")
     }
     
     let myprint: MyPrint = myPrint
