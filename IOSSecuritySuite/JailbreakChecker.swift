@@ -102,13 +102,13 @@ internal class JailbreakChecker {
   
   // "cydia://" URL scheme has been removed. Turns out there is app in the official App Store
   // that has the cydia:// URL scheme registered, so it may cause false positive
+  // "activator://" URL scheme has been removed for the same reason.
   private static func checkURLSchemes() -> CheckResult {
     let urlSchemes = [
       "undecimus://",
       "sileo://",
       "zbra://",
-      "filza://",
-      "activator://"
+      "filza://"
     ]
     return canOpenUrlFromList(urlSchemes: urlSchemes)
   }
