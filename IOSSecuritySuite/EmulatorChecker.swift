@@ -14,7 +14,7 @@ internal class EmulatorChecker {
   }
 
   private static func checkRuntime() -> Bool {
-    return ProcessInfo().environment["SIMULATOR_DEVICE_NAME"] != nil
+    return ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
   }
 
   private static func checkCompile() -> Bool {
