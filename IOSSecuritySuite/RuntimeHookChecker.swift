@@ -39,7 +39,8 @@ internal class RuntimeHookChecker {
     
     _ = swiftOnceDenyFishHooK
     
-    // dladdr will look through vm range of allImages for vm range of an Image that contains pointer of method and return info of the Image
+    // dladdr will look through vm range of allImages for vm range of an Image that contains pointer 
+    // of method and return info of the Image
     if dladdr(UnsafeRawPointer(imp), &info) != 1 {
       return false
     }
