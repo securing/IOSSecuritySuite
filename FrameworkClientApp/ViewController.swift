@@ -86,12 +86,14 @@ extension ViewController {
   }
   
   func testWatchpoint() -> Bool {
-    var ptr = malloc(9)
-    var count = 3
+    
+//    Uncomment these \/ and set a watch point to check the feature
+//    var ptr = malloc(9)
+//    var count = 3
     return IOSSecuritySuite.hasWatchpoint()
   }
   
-  func executeAntiHook() -> String {
+  func executeAntiHook() {
     typealias MyPrint = @convention(thin) (Any..., String, String) -> Void
     func myPrint(_ items: Any..., separator: String = " ", terminator: String = "\n") {
       NSLog("print has been hooked")

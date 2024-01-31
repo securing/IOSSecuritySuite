@@ -19,7 +19,7 @@ public func replaceSymbol(
 ) {
   for idx in 0..<_dyld_image_count() {
     if let image = _dyld_get_image_header(idx) {
-      replaceSymbol(symbol, at: image, imageSlide: _dyld_get_image_vmaddr_slide(i), newMethod: newMethod, oldMethod: &oldMethod)
+      replaceSymbol(symbol, at: image, imageSlide: _dyld_get_image_vmaddr_slide(idx), newMethod: newMethod, oldMethod: &oldMethod)
     }
   }
 }
