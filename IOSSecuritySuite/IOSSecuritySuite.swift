@@ -232,6 +232,18 @@ public class IOSSecuritySuite {
   public static func amIProxied() -> Bool {
     return ProxyChecker.amIProxied()
   }
+  
+  /// This type method is used to determine if the iDevice has lockdown mode turned on.
+  ///
+  /// Usage example
+  /// ```swift
+  /// let amIInLockdownMode: Bool = IOSSecuritySuite.amIInLockdownMode()
+  /// ```
+  /// - Returns: Bool indicating if the device has lockdown mode turned on (true) or not (false)
+  @available(iOS 16, *)
+  public static func amIInLockdownMode() -> Bool {
+    return ModesChecker.amIInLockdownMode()
+  }
 }
 
 #if arch(arm64)

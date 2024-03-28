@@ -14,6 +14,7 @@
 		706B0E34226F445F0059AEA9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 706B0E32226F445F0059AEA9 /* LaunchScreen.storyboard */; };
 		706B0E39226F44830059AEA9 /* IOSSecuritySuite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */; };
 		706B0E3B226F59AA0059AEA9 /* IOSSecuritySuite.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		70AB2CBB2BB59BA900511093 /* ModesChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AB2CBA2BB59BA900511093 /* ModesChecker.swift */; };
 		70B0BBC1226F3A4D000CFB39 /* IOSSecuritySuite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70B0BBBF226F3A4D000CFB39 /* IOSSecuritySuite.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		70B0BBC9226F3A74000CFB39 /* DebuggerChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */; };
 		70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */; };
@@ -51,6 +52,7 @@
 		706B0E30226F445F0059AEA9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		706B0E33226F445F0059AEA9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		706B0E35226F445F0059AEA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		70AB2CBA2BB59BA900511093 /* ModesChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModesChecker.swift; sourceTree = "<group>"; };
 		70B0BBBC226F3A4D000CFB39 /* IOSSecuritySuite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IOSSecuritySuite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B0BBBF226F3A4D000CFB39 /* IOSSecuritySuite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSSecuritySuite.h; sourceTree = "<group>"; };
 		70B0BBC0226F3A4D000CFB39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 				A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */,
 				70B8E16B257E528D00917097 /* ProxyChecker.swift */,
 				E2814AD62A4E388100AC9E54 /* FileChecker.swift */,
+				70AB2CBA2BB59BA900511093 /* ModesChecker.swift */,
 			);
 			indentWidth = 2;
 			path = IOSSecuritySuite;
@@ -317,6 +320,7 @@
 				70B0BBCF226F3AB2000CFB39 /* IOSSecuritySuite.swift in Sources */,
 				703F74E222704E0F000635D8 /* ReverseEngineeringToolsChecker.swift in Sources */,
 				A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */,
+				70AB2CBB2BB59BA900511093 /* ModesChecker.swift in Sources */,
 				7A12583D24EFA8D40071460D /* IntegrityChecker.swift in Sources */,
 				70B0BBCB226F3A86000CFB39 /* JailbreakChecker.swift in Sources */,
 			);
