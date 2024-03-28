@@ -133,6 +133,11 @@ if reverseStatus.reverseEngineered {
 let amIProxied: Bool = IOSSecuritySuite.amIProxied()
 ```
 
+### Lockdown mode detector module
+```Swift
+let amIInLockdownMode: Bool = IOSSecuritySuite.amIInLockdownMode()
+```
+
 ## Experimental features
 
 ### Runtime hook detector module
