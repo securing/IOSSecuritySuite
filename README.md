@@ -58,6 +58,7 @@ If your company employs:
 * 0-99 people - **free to use**
 * 100-1000 - 3k EUR/year
 * 1000+ - 10k EUR/year
+
 If you want to sell a module that uses the iOS Security Suite (it is not used directly in your app) - 10k EUR/year
 
 ### Notice
