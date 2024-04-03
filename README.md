@@ -49,6 +49,17 @@ After adding ISS to your project, you will also need to update your main Info.pl
 </array>
 ```
 
+### Pricing
+
+Check our EULA license for the details.
+
+TLDR:
+If your company employs:
+* 0-99 people - **free to use**
+* 100-1000 - 3k EUR/year
+* 1000+ - 10k EUR/year
+If you want to sell a module that uses the iOS Security Suite (it is not used directly in your app) - 10k EUR/year
+
 ### Notice
 
 iOS Security Suite is meant to be used on iOS/iPadOS. It should not be used on Macs with Apple Silicon.
