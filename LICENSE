@@ -1,25 +1,43 @@
-BSD 2-Clause License
+IOSSecuritySuite v.2.0
+End-user license agreement (EULA) 
 
-Copyright (c) 2019, SecuRing spółka z ograniczoną odpowiedzialnością spółka jawna (created by Wojciech Reguła (_r3ggi))
-All rights reserved.
+I. General Provisions.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+1. This End-User License Agreement (“EULA” ; “License”) is a legal agreement between “you” (either as an individual or on behalf of an entity) and SecuRing spółka z ograniczoną odpowiedzialnością, general partnership with its registered office at ul. Kalwaryjska 65/6, 30-504 Kraków (“SecuRing”), regarding your use of  IOSSecuritySuite v.2.0 (the "Software"). IF YOU DO NOT AGREE TO ALL OF THE TERMS OF THIS EULA, DO NOT USE OR COPY THE SOFTWARE.
+2. This Software is provided "as-is" with no warranties, and you agree that SecuRing is not liable for anything you do with it.
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
+II.	The License
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+1. The License applies to corrections and patches. The license does not apply to (a) updates made available by SecuRing; (b) new versions (upgrades) of the Software. The appropriate license terms described with the new version apply.
+2. Securing grants a non-exclusive license to you on the following terms: (a) You may use the Software free of charge and without territorial restrictions under the "Free" plan, provided that the Software is used or is part of a program used by a company that employs no more than 100 people in a given year of use of the Software. Under this permission, you may not sell a solution that includes the Software or charge fees for the use of such a program that includes the Software. You may implement the Software as part of another program, for which no fees may be charged by you or your company; (b) You may use the Software for a fee and without territorial restrictions under the "Standard" plan, provided that the Software is used or is part of a program used by a company that employs between 100 and 1 000 people in a given year of use of the Software. Under this permission, you may not sell a solution that includes the Software or charge fees for the use of such a program that includes the Software. You may implement the Software as part of another program, for which no fees may be charged by you or your company; (c) You may use the Software for a fee and without territorial restrictions under the "Standard +" plan, provided that the Software is used or is part of a program used by a company that employs more than 1 000 people in a given year of use of the Software. Under this permission, you may not sell a solution that includes the Software or charge fees for the use of such a program that includes the Software. You may implement the Software as part of another program, for which no fees may be charged by you or your company; (d) You may use the Software for a fee and without territorial restrictions under the “Enterprise” plan for the purposes of using the Software to create your own programs that are then commercialized and distributed to customers. Under this permission, you may sell solutions that include the Software or charge fees for the use of such a program that includes the Software. You may implement the Software as part of another program, for which fees may be charged by you or your company.
+3. The "Free" license is granted automatically for a period of one (1) year from the date you download the Software. You can use the Software, but remember to check after one year whether you are still subject to the license terms of the Free plan. The license is automatically extended if you meet the conditions. If you do not meet the conditions, the license is revoked. We have the right to write information if we verify a violation of the License Terms.
+4. A paid license in the "Standard" or "Standard +" or "Enterprise" plan is granted for a period of one (1) year from the date of payment. After payment, you will receive an e-mail confirmation with a document confirming that the license has been granted to you/your company for a specific period and plan. If you want the License to be renewed and granted for another year, you must complete the form again and pay the appropriate fee. Before choosing the appropriate plan, verify the number of people employed in your company in a given year and the way you want to use the Software).
+5. The price list and payment are made on the website available at the following URL: 
+* “Standard": https://iss-under-1k.securing.pl
+* “Standard +”: https://iss.over-1k.securing.pl
+* “Enterprise”: https://iss.over-1k.securing.pl
+6. The paid license is granted for a period of 1 year and automatically renews for another year if you have agreed to the subscription, i.e. renewing the payment. Renewing your payments means you will be charged once a year. If the amount of fees is to change, you will be informed at least 30 days in advance so that you can give your consent. If you do not agree to the new prices, the subscription will be automatically canceled. Payments are processed by Stripe Inc. in accordance with the regulations: https://stripe.com/en-pl/legal/consumer. SecuRing does not have access to card data and is not a payment processor.
+7. The License does not authorize you and you may not do this, i.e. (a) use the Software for implementation purposes in infringing programs; (b) transfer your or your company's rights to use the Software in accordance with a given License plan to a third party (assignment prohibited).
+8. The License may be revoked for you or your company at any time if SecuRing finds that you are violating the terms of the License. You and your company for which the License is granted are not entitled to any compensation for lost profits or damages incurred in connection with this.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+III. Miscellanea
+
+1. The Software is licensed, it is not sold, i.e. no copyrights or ownership of media are transferred.
+2. If you want to develop the Software and introduce a correction, supplement or patch, please contact SecuRing.
+3. You must comply with all domestic and international export laws and regulations as they apply to your program or your company's program of which the Software is a component. You make the assessment yourself, provided that you make the assessment yourself.
+
+IV. Applicable law and disputes
+
+1. If you use the Software in connection with your business or profession or the License is granted to a company, the interpretation of the License is subject to the law applicable to the Republic of Poland. The court competent to resolve disputes is the court having jurisdiction over the seat of SecuRing.
+2. If you use the Software as a consumer, the interpretation of the License is subject to the law applicable to the Republic of Poland. The court competent to resolve disputes is the court having jurisdiction over the consumer's place of residence. If the provisions of consumer law, due to his place of residence, provide further guarantees and protection, these provisions shall apply.
+
+V. Disclaimers and Limitations on Liability 
+
+1. YOU ASSUME THE FULL RISK AS TO THE RESULTS AND PERFORMANCE OF THE SOFTWARE. YOU EXPRESSLY UNDERSTAND AND AGREE THAT SECURING SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA OR OTHER INTANGIBLE LOSSES (EVEN IF SECURING HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES) RELATED TO THE SOFTWARE, including, for example: (i) the use or the inability to use the Software; (ii) the cost of procurement of substitute goods and services resulting from any goods, data, information or services purchased or obtained or messages received or transactions entered into through or from the Software; (iii) unauthorized access to or alteration of your transmissions or data; (iv) statements or conduct of any third-party on the Software; (v) or any other matter relating to the Software.
+2. All warranties are disclaimed to the fullest extent permitted by law. SecuRing does not provide you with any guarantees or assurances that the Software will meet your expectations.
+3. IN NO EVENT WILL SECURING BE LIABLE TO YOU FOR ANY EXTRAORDINARY, CONSEQUENTIAL, INCIDENTAL OR INDIRECT DAMAGES, INCLUDING, BUT NOT LIMITED TO, IN TORT OR IN CONTRACT. FOR LOSS OF INCOME OR PROFIT, LOSS OR DAMAGE DATA OR FILES, FAILURES OR MALFUNCTION OF DEVICES, PROGRAMS OR APPLICATIONS, OR OTHER COMMERCIAL OR ECONOMIC LOSSES RESULTING FROM THE USE OR INABILITY TO USE SOFTWARE OR THIRD-PARTY SERVICES.
+4. Some jurisdictions do not allow the limitation or exclusion of liability, so the above limitation or exclusion may not apply to you, or may only apply in part. None of the provisions listed above affect your statutory rights.
+
+VI. Final Provisions.
+
+1. After the expiration of the License, you are obliged to remove the Software from your resources no later than on the date of expiration of the License. Remember to extend the License if you want to continue using the Software. SecuRing has the right to supervise whether you continue to use the Software despite the expiration of the License. If SecuRing finds that you are using the Software without the required License or fee, it has the right to send you information or a request for payment and an appropriate proforma invoice. If, despite three contact attempts, you do not legally regulate the use of the Software and you continue to actually use it, SecuRing has the right to publicly present such information and demand compensation for the damage from you or your company in court.
