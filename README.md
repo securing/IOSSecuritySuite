@@ -301,6 +301,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [sanu](https://github.com/sanu) for new providing new file checks
 * [marsepu](https://github.com/marsepu) for a well-done PR with new improvements
 * [mkj-is](https://github.com/mkj-is) for a PR improving ISS performance 🚄
+* [LongXiangGuo](https://github.com/LongXiangGuo) for a PR adding the privacy manifest
 
 
 ## TODO
