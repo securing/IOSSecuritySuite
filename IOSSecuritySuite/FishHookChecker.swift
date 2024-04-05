@@ -673,7 +673,16 @@ private class FishHook {
       
       if String(cString: curSymbolName) == symbolName {
         oldMethod = sectionVmAddr!.advanced(by: tmp).pointee
-        sectionVmAddr!.advanced(by: tmp).initialize(to: newMethod)
+        let err = vm_protect(
+          mach_task_self_,
+          .init(bitPattern: sectionVmAddr),
+          numericCast(section.pointee.size),
+          0,
+          VM_PROT_READ | VM_PROT_WRITE | VM_PROT_COPY
+        )
+        if err == KERN_SUCCESS {
+          sectionVmAddr!.advanced(by: tmp).initialize(to: newMethod)
+        }
         break
       }
     }
