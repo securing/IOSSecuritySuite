@@ -24,6 +24,7 @@
 		7A12583D24EFA8D40071460D /* IntegrityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A12583C24EFA8D40071460D /* IntegrityChecker.swift */; };
 		890685F829912FCF00EEC5A6 /* FailedChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890685F729912FCF00EEC5A6 /* FailedChecks.swift */; };
 		89FDACDF2B5ACDAD00809636 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FDACDE2B5ACDAD00809636 /* ViewController.swift */; };
+		A140C7EB2BC80E9C0054A4C9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A140C7EA2BC80E9C0054A4C9 /* PrivacyInfo.xcprivacy */; };
 		A90FD5FE24528925007212BF /* MSHookFunctionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */; };
 		A90FD60024528A94007212BF /* FishHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD5FF24528A94007212BF /* FishHookChecker.swift */; };
 		A90FD60224528FD1007212BF /* RuntimeHookChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */; };
@@ -65,6 +66,7 @@
 		7A12583C24EFA8D40071460D /* IntegrityChecker.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = IntegrityChecker.swift; sourceTree = "<group>"; tabWidth = 2; };
 		890685F729912FCF00EEC5A6 /* FailedChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedChecks.swift; sourceTree = "<group>"; };
 		89FDACDE2B5ACDAD00809636 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A140C7EA2BC80E9C0054A4C9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A90FD5FD24528925007212BF /* MSHookFunctionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSHookFunctionChecker.swift; sourceTree = "<group>"; };
 		A90FD5FF24528A94007212BF /* FishHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishHookChecker.swift; sourceTree = "<group>"; };
 		A90FD60124528FD1007212BF /* RuntimeHookChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeHookChecker.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				70B0BBBF226F3A4D000CFB39 /* IOSSecuritySuite.h */,
 				70B0BBC0226F3A4D000CFB39 /* Info.plist */,
 				70B0BBC8226F3A74000CFB39 /* DebuggerChecker.swift */,
+				A140C7EA2BC80E9C0054A4C9 /* PrivacyInfo.xcprivacy */,
 				70B0BBCA226F3A86000CFB39 /* JailbreakChecker.swift */,
 				890685F729912FCF00EEC5A6 /* FailedChecks.swift */,
 				70B0BBCC226F3A90000CFB39 /* EmulatorChecker.swift */,
@@ -269,6 +272,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A140C7EB2BC80E9C0054A4C9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
