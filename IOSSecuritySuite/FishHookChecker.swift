@@ -587,6 +587,7 @@ private class FishHook {
                                            oldMethod: inout UnsafeMutableRawPointer?) {
     var linkeditCmd: UnsafeMutablePointer<segment_command_64>!
     var dataCmd: UnsafeMutablePointer<segment_command_64>!
+    var dataConstCmd: UnsafeMutablePointer<segment_command_64>!
     var symtabCmd: UnsafeMutablePointer<symtab_command>!
     var dynamicSymtabCmd: UnsafeMutablePointer<dysymtab_command>!
     
@@ -599,10 +600,14 @@ private class FishHook {
         let curCmdNameOffset = MemoryLayout.size(ofValue: curCmd.pointee.cmd) + MemoryLayout.size(ofValue: curCmd.pointee.cmdsize)
         let curCmdNamePointer = curCmdPointer.advanced(by: curCmdNameOffset).assumingMemoryBound(to: Int8.self)
         let curCmdName = String(cString: curCmdNamePointer)
-        if (curCmdName == SEG_LINKEDIT) {
+        switch curCmdName {
+        case SEG_LINKEDIT:
           linkeditCmd = curCmd
-        } else if (curCmdName == SEG_DATA) {
+        case SEG_DATA:
           dataCmd = curCmd
+        case "__DATA_CONST":
+          dataConstCmd = curCmd
+        default: break
         }
       } else if curCmd.pointee.cmd == LC_SYMTAB {
         symtabCmd = UnsafeMutablePointer<symtab_command>(OpaquePointer(curCmd))
@@ -613,7 +618,7 @@ private class FishHook {
       curCmdPointer += Int(curCmd.pointee.cmdsize)
     }
     
-    if linkeditCmd == nil || symtabCmd == nil || dynamicSymtabCmd == nil || dataCmd == nil {
+    if linkeditCmd == nil || symtabCmd == nil || dynamicSymtabCmd == nil || (dataCmd == nil && dataConstCmd == nil) {
       return
     }
     
@@ -626,15 +631,18 @@ private class FishHook {
       return
     }
     
-    for tmp in 0..<dataCmd.pointee.nsects {
-      let curSection = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
-      
-      // symbol_pointers sections
-      if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
-        replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
-      }
-      if curSection.pointee.flags == S_NON_LAZY_SYMBOL_POINTERS {
-        replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
+    for segment in [dataCmd, dataConstCmd] {
+      guard let segment else { continue }
+      for tmp in 0..<segment.pointee.nsects {
+        let curSection = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
+
+        // symbol_pointers sections
+        if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
+          replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
+        }
+        if curSection.pointee.flags == S_NON_LAZY_SYMBOL_POINTERS {
+          replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
+        }
       }
     }
   }
@@ -665,7 +673,16 @@ private class FishHook {
       
       if String(cString: curSymbolName) == symbolName {
         oldMethod = sectionVmAddr!.advanced(by: tmp).pointee
-        sectionVmAddr!.advanced(by: tmp).initialize(to: newMethod)
+        let err = vm_protect(
+          mach_task_self_,
+          .init(bitPattern: sectionVmAddr),
+          numericCast(section.pointee.size),
+          0,
+          VM_PROT_READ | VM_PROT_WRITE | VM_PROT_COPY
+        )
+        if err == KERN_SUCCESS {
+          sectionVmAddr!.advanced(by: tmp).initialize(to: newMethod)
+        }
         break
       }
     }
