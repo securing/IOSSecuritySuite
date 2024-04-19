@@ -765,7 +765,7 @@ private class FishHook {
     
     for tmp in 0..<Int(section.pointee.size)/MemoryLayout<UnsafeMutableRawPointer>.size {
       let curIndirectSym = indirectSymVmAddr.advanced(by: tmp)
-      if curIndirectSym.pointee == INDIRECT_SYMBOL_ABS || curIndirectSym.pointee == INDIRECT_SYMBOL_LOCAL {
+      if curIndirectSym.pointee & UInt32(INDIRECT_SYMBOL_ABS) != 0 || curIndirectSym.pointee & ~UInt32(INDIRECT_SYMBOL_ABS) == INDIRECT_SYMBOL_LOCAL {
         continue
       }
       let curStrTabOff = symtab.advanced(by: Int(curIndirectSym.pointee)).pointee.n_un.n_strx
