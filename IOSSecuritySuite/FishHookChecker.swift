@@ -542,7 +542,7 @@ internal class SymbolFound {
         terminalSize = readUleb128(ptr: &ptr, end: end)
       }
       if terminalSize != 0 {
-        return currentSymbol == targetSymbol ? ptr : nil
+        return currentSymbol == "_" + targetSymbol ? ptr : nil
       }
       
       // children
@@ -568,7 +568,7 @@ internal class SymbolFound {
         // node
         if let nodeSymbol = String(cString: nodeLabel, encoding: .utf8) {
           let tmpCurrentSymbol = currentSymbol + nodeSymbol
-          if !targetSymbol.contains(tmpCurrentSymbol) {
+          if !("_" + targetSymbol).contains(tmpCurrentSymbol) {
             continue
           }
           if nodeOffset != 0 && (start + nodeOffset <= end) {
