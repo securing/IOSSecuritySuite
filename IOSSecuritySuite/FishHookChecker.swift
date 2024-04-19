@@ -734,7 +734,7 @@ private class FishHook {
     for segment in [dataCmd, dataConstCmd] {
       guard let segment else { continue }
       for tmp in 0..<segment.pointee.nsects {
-        let curSection = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
+        let curSection = UnsafeMutableRawPointer(segment).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
 
         // symbol_pointers sections
         if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
