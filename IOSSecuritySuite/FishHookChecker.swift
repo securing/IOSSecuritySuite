@@ -184,7 +184,7 @@ internal class SymbolFound {
     let lazyBindSize = Int(dyldInfoCmd.pointee.lazy_bind_size)
     if (lazyBindSize > 0) {
       if let lazyBindInfoCmd = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldInfoCmd.pointee.lazy_bind_off))),
-         lookLazyBindSymbol(symbol, symbolAddr: &symbolAddress, lazyBindInfoCmd: lazyBindInfoCmd, lazyBindInfoSize: lazyBindSize, allLoadDylds: allLoadDylds) {
+         lookLazyBindSymbol(symbol, symbolAddr: &symbolAddress, lazyBindInfoCmd: lazyBindInfoCmd, lazyBindInfoSize: lazyBindSize, imageSlide: slide, allLoadDylds: allLoadDylds) {
         return true
       }
     }
@@ -193,7 +193,7 @@ internal class SymbolFound {
     let bindSize = Int(dyldInfoCmd.pointee.bind_size)
     if (bindSize > 0) {
       if let bindCmd = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldInfoCmd.pointee.bind_off))),
-         lookBindSymbol(symbol, symbolAddr: &symbolAddress, bindInfoCmd: bindCmd, bindInfoSize: bindSize, allLoadDylds: allLoadDylds) {
+         lookBindSymbol(symbol, symbolAddr: &symbolAddress, bindInfoCmd: bindCmd, bindInfoSize: bindSize, imageSlide: slide, allLoadDylds: allLoadDylds) {
         return true
       }
     }
@@ -203,7 +203,7 @@ internal class SymbolFound {
   
   // LazySymbolBindInfo
   @inline(__always)
-  private static func lookLazyBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, lazyBindInfoCmd: UnsafeMutablePointer<UInt8>, lazyBindInfoSize: Int, allLoadDylds: [String]) -> Bool {
+  private static func lookLazyBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, lazyBindInfoCmd: UnsafeMutablePointer<UInt8>, lazyBindInfoSize: Int, imageSlide slide: Int, allLoadDylds: [String]) -> Bool {
     var ptr = lazyBindInfoCmd
     let lazyBindingInfoEnd = lazyBindInfoCmd.advanced(by: Int(lazyBindInfoSize))
     var ordinal: Int = -1
@@ -265,7 +265,15 @@ internal class SymbolFound {
     assert(ordinal <= allLoadDylds.count)
     
     if (foundSymbol && ordinal >= 0 && allLoadDylds.count > 0), ordinal <= allLoadDylds.count, type != BindTypeThreadedRebase {
-      let imageName = allLoadDylds[ordinal-1]
+      let imageName: String
+      if ordinal == SELF_LIBRARY_ORDINAL {
+        guard let selfImageName = Self.imageName(for: slide) else {
+          fatalError()
+        }
+        imageName = selfImageName
+      } else {
+        imageName = allLoadDylds[ordinal-1]
+      }
       var tmpSymbolAddress: UnsafeMutableRawPointer?
       if lookExportedSymbol(symbol, exportImageName: imageName, symbolAddress: &tmpSymbolAddress), let symbolPointer = tmpSymbolAddress {
         symbolAddr = symbolPointer + addend
@@ -278,7 +286,7 @@ internal class SymbolFound {
   
   // NonLazySymbolBindInfo
   @inline(__always)
-  private static func lookBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, bindInfoCmd: UnsafeMutablePointer<UInt8>, bindInfoSize: Int, allLoadDylds: [String]) -> Bool {
+  private static func lookBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, bindInfoCmd: UnsafeMutablePointer<UInt8>, bindInfoSize: Int, imageSlide slide: Int, allLoadDylds: [String]) -> Bool {
     var ptr = bindInfoCmd
     let bindingInfoEnd = bindInfoCmd.advanced(by: Int(bindInfoSize))
     var ordinal: Int = -1
@@ -365,7 +373,15 @@ internal class SymbolFound {
     
     assert(ordinal <= allLoadDylds.count)
     if (foundSymbol && ordinal >= 0 && allLoadDylds.count > 0), ordinal <= allLoadDylds.count, type != BindTypeThreadedRebase {
-      let imageName = allLoadDylds[ordinal-1]
+      let imageName: String
+      if ordinal == SELF_LIBRARY_ORDINAL {
+        guard let selfImageName = Self.imageName(for: slide) else {
+          fatalError()
+        }
+        imageName = selfImageName
+      } else {
+        imageName = allLoadDylds[ordinal-1]
+      }
       var tmpSymbolAddress: UnsafeMutableRawPointer?
       if lookExportedSymbol(symbol, exportImageName: imageName, symbolAddress: &tmpSymbolAddress), let symbolPointer = tmpSymbolAddress {
         symbolAddr = symbolPointer + addend
@@ -562,6 +578,15 @@ internal class SymbolFound {
             }
           }
         }
+      }
+    }
+    return nil
+  }
+
+  static private func imageName(for slide: Int) -> String? {
+    for index in 0..<_dyld_image_count() {
+      if _dyld_get_image_vmaddr_slide(index) == slide {
+        return String(cString: _dyld_get_image_name(index))
       }
     }
     return nil
