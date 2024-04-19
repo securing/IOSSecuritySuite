@@ -444,7 +444,6 @@ internal class SymbolFound {
         .advanced(by: `import`.nameOffset)
         .assumingMemoryBound(to: CChar.self)
       let name = String(cString: namePtr + 1)
-      print(`import`.libraryOrdinal, name)
       if name == symbol {
         let ordinal = `import`.libraryOrdinal
         assert(ordinal <= allLoadDylds.count)
