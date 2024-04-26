@@ -110,8 +110,6 @@ internal class JailbreakChecker {
       "xina://",
       "ssh://",
       "apt-repo://",
-      "cydia://",
-      "activator://",
       "postbox://",
       "undecimus://",
       "sileo://",

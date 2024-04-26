@@ -26,6 +26,12 @@
 		<string>sileo</string>
 		<string>filza</string>
 		<string>activator</string>
+		<string>santander</string>
+		<string>icleaner</string>
+		<string>xina</string>
+		<string>ssh</string>
+		<string>apt-repo</string>
+		<string>postbox</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
