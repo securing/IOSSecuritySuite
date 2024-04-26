@@ -105,6 +105,14 @@ internal class JailbreakChecker {
   // "activator://" URL scheme has been removed for the same reason.
   private static func checkURLSchemes() -> CheckResult {
     let urlSchemes = [
+      "santander://",
+      "icleaner://",
+      "xina://",
+      "ssh://",
+      "apt-repo://",
+      "cydia://",
+      "activator://",
+      "postbox://",
       "undecimus://",
       "sileo://",
       "zbra://",
