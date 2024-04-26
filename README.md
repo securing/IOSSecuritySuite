@@ -46,6 +46,12 @@ After adding ISS to your project, you will also need to update your main Info.pl
     <string>sileo</string>
     <string>zbra</string>
     <string>filza</string>
+    <string>santander</string>
+    <string>icleaner</string>
+    <string>xina</string>
+    <string>ssh</string>
+    <string>apt-repo</string>
+    <string>postbox</string>
 </array>
 ```
 
