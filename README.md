@@ -141,8 +141,10 @@ if reverseStatus.reverseEngineered {
 ```
 
 ### System proxy detector module
+
+Now you can also detect if an app is connected to VPN
 ```Swift
-let amIProxied: Bool = IOSSecuritySuite.amIProxied()
+let amIProxied: Bool = IOSSecuritySuite.amIProxied(considerVPNConnectionAsProxy: true)
 ```
 
 ### Lockdown mode detector module
