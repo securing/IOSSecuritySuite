@@ -138,7 +138,6 @@ internal class JailbreakChecker {
       "/var/lib/cydia",
       "/etc/apt",
       "/private/var/lib/apt",
-      "/private/var/Users/",
       "/var/log/apt",
       "/Applications/Cydia.app",
       "/private/var/stash",
