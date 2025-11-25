@@ -5,7 +5,6 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-// swiftlint:disable function_body_length type_body_length line_length
 
 import Foundation
 import UIKit
@@ -13,53 +12,54 @@ import Darwin // fork
 import MachO // dyld
 import ObjectiveC // NSObject and Selector
 
+// swiftlint:disable:next type_body_length
 internal class JailbreakChecker {
   typealias CheckResult = (passed: Bool, failMessage: String)
-  
+
   struct JailbreakStatus {
     let passed: Bool
     let failMessage: String // Added for backwards compatibility
     let failedChecks: [FailedCheckType]
   }
-  
+
   static func amIJailbroken() -> Bool {
     return !performChecks().passed
   }
-  
+
   static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
     let status = performChecks()
     return (!status.passed, status.failMessage)
   }
-  
+
   static func amIJailbrokenWithFailedChecks() -> (jailbroken: Bool,
                                                   failedChecks: [FailedCheckType]) {
     let status = performChecks()
     return (!status.passed, status.failedChecks)
   }
-  
+
   private static func performChecks() -> JailbreakStatus {
     var passed = true
     var failMessage = ""
     var failedChecks: [FailedCheckType] = []
-    
+
     for check in FailedCheck.allCases {
       let result = getResult(from: check)
-      
+
       passed = passed && result.passed
-      
+
       if !result.passed {
         failedChecks.append((check: check, failMessage: result.failMessage))
-        
+
         if !failMessage.isEmpty {
           failMessage += ", "
         }
       }
-      
+
       failMessage += result.failMessage
     }
-    
+
     return JailbreakStatus(passed: passed, failMessage: failMessage, failedChecks: failedChecks)
-    
+
     func getResult(from check: FailedCheck) -> CheckResult {
       switch check {
       case .urlSchemes:
@@ -88,7 +88,7 @@ internal class JailbreakChecker {
       }
     }
   }
-  
+
   private static func canOpenUrlFromList(urlSchemes: [String]) -> CheckResult {
     for urlScheme in urlSchemes {
       if let url = URL(string: urlScheme) {
@@ -99,7 +99,7 @@ internal class JailbreakChecker {
     }
     return (true, "")
   }
-  
+
   // "cydia://" URL scheme has been removed. Turns out there is app in the official App Store
   // that has the cydia:// URL scheme registered, so it may cause false positive
   // "activator://" URL scheme has been removed for the same reason.
@@ -112,7 +112,8 @@ internal class JailbreakChecker {
     ]
     return canOpenUrlFromList(urlSchemes: urlSchemes)
   }
-  
+
+  // swiftlint:disable:next function_body_length
   private static func checkExistenceOfSuspiciousFiles() -> CheckResult {
     var paths = [
       "/var/mobile/Library/Preferences/ABPattern", // A-Bypass
@@ -183,7 +184,7 @@ internal class JailbreakChecker {
       "/Library/MobileSubstrate/DynamicLibraries", // DynamicLibraries directory in general
       "/var/mobile/Library/Preferences/me.jjolano.shadow.plist"
     ]
-    
+
     // These files can give false positive in the emulator
     if !EmulatorChecker.amIRunInEmulator() {
       paths += [
@@ -196,7 +197,7 @@ internal class JailbreakChecker {
         "/usr/bin/ssh"
       ]
     }
-    
+
     for path in paths {
       if FileManager.default.fileExists(atPath: path) {
         return (false, "Suspicious file exists: \(path)")
@@ -214,10 +215,10 @@ internal class JailbreakChecker {
         return result
       }
     }
-    
+
     return (true, "")
   }
-  
+
   private static func checkSuspiciousFilesCanBeOpened() -> CheckResult {
     var paths = [
       "/.installed_unc0ver",
@@ -227,7 +228,7 @@ internal class JailbreakChecker {
       "/etc/apt",
       "/var/log/apt"
     ]
-    
+
     // These files can give false positive in the emulator
     if !EmulatorChecker.amIRunInEmulator() {
       paths += [
@@ -236,7 +237,7 @@ internal class JailbreakChecker {
         "/usr/bin/ssh"
       ]
     }
-    
+
     for path in paths {
       if FileManager.default.isReadableFile(atPath: path) {
         return (false, "Suspicious file can be opened: \(path)")
@@ -252,10 +253,10 @@ internal class JailbreakChecker {
         return result
       }
     }
-    
+
     return (true, "")
   }
-  
+
   private static func checkRestrictedDirectoriesWriteable() -> CheckResult {
     let paths = [
       "/",
@@ -263,7 +264,7 @@ internal class JailbreakChecker {
       "/private/",
       "/jb/"
     ]
-    
+
     if FileChecker.checkRestrictedPathIsReadonlyViaStatvfs(path: "/") == false {
       return (false, "Restricted path '/' is not Read-Only")
     } else if FileChecker.checkRestrictedPathIsReadonlyViaStatfs(path: "/") == false {
@@ -271,7 +272,7 @@ internal class JailbreakChecker {
     } else if FileChecker.checkRestrictedPathIsReadonlyViaGetfsstat(name: "/") == false {
       return (false, "Restricted path '/' is not Read-Only")
     }
-    
+
     // If library won't be able to write to any restricted directory the return(false, ...) is never reached
     // because of catch{} statement
     for path in paths {
@@ -287,27 +288,27 @@ internal class JailbreakChecker {
         return (false, "Wrote to restricted path: \(path)")
       } catch {}
     }
-    
+
     return (true, "")
   }
-  
+
   private static func checkFork() -> CheckResult {
     let pointerToFork = UnsafeMutableRawPointer(bitPattern: -2)
     let forkPtr = dlsym(pointerToFork, "fork")
     typealias ForkType = @convention(c) () -> pid_t
     let fork = unsafeBitCast(forkPtr, to: ForkType.self)
     let forkResult = fork()
-    
+
     if forkResult >= 0 {
       if forkResult > 0 {
         kill(forkResult, SIGTERM)
       }
       return (false, "Fork was able to create a new process (sandbox violation)")
     }
-    
+
     return (true, "")
   }
-  
+
   private static func checkSymbolicLinks() -> CheckResult {
     let paths = [
       "/var/lib/undecimus/apt", // unc0ver
@@ -319,7 +320,7 @@ internal class JailbreakChecker {
       "/usr/libexec",
       "/usr/share"
     ]
-    
+
     for path in paths {
       do {
         let result = try FileManager.default.destinationOfSymbolicLink(atPath: path)
@@ -328,11 +329,12 @@ internal class JailbreakChecker {
         }
       } catch {}
     }
-    
+
     return (true, "")
   }
-  
+
   private static func checkDYLD() -> CheckResult {
+    // swiftlint:disable line_length
     let suspiciousLibraries: Set<String> = [
       "systemhook.dylib", // Dopamine - hide jailbreak detection https://github.com/opa334/Dopamine/blob/dc1a1a3486bb5d74b8f2ea6ada782acdc2f34d0a/Application/Dopamine/Jailbreak/DOEnvironmentManager.m#L498
       "roothideinit.dylib",
@@ -362,19 +364,20 @@ internal class JailbreakChecker {
       "frida",
       "libcycript"
     ]
-    
+    // swiftlint:enable line_length
+
     for index in 0..<_dyld_image_count() {
       let imageName = String(cString: _dyld_get_image_name(index))
-      
+
       // The fastest case insensitive contains check.
       for library in suspiciousLibraries where imageName.localizedCaseInsensitiveContains(library) {
         return (false, "Suspicious library loaded: \(imageName)")
       }
     }
-    
+
     return (true, "")
   }
-  
+
   private static func checkSuspiciousObjCClasses() -> CheckResult {
     if let shadowRulesetClass = objc_getClass("ShadowRuleset") as? NSObject.Type {
       let selector = Selector(("internalDictionary"))
@@ -385,4 +388,3 @@ internal class JailbreakChecker {
     return (true, "")
   }
 }
-// swiftlint:enable function_body_length type_body_length
