@@ -1,5 +1,5 @@
 //
-//  MSHookFunctionCherker.swift
+//  MSHookFunctionChecker.swift
 //  IOSSecuritySuite
 //
 //  Created by jintao on 2020/4/24.

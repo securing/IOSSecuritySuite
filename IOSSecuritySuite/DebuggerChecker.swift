@@ -17,7 +17,7 @@ internal class DebuggerChecker {
     let sysctlRet = sysctl(&mib, UInt32(mib.count), &kinfo, &size, nil, 0)
     
     if sysctlRet != 0 {
-      print("Error occured when calling sysctl(). The debugger check may not be reliable")
+      print("Error occurred when calling sysctl(). The debugger check may not be reliable")
     }
     
     return (kinfo.kp_proc.p_flag & P_TRACED) != 0

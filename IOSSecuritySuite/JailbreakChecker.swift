@@ -282,7 +282,7 @@ internal class JailbreakChecker {
           atomically: true,
           encoding: String.Encoding.utf8
         )
-        // clean if succesfully written
+        // clean if successfully written
         try FileManager.default.removeItem(atPath: pathWithSomeRandom)
         return (false, "Wrote to restricted path: \(path)")
       } catch {}
