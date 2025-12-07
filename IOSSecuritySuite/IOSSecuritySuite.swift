@@ -82,7 +82,7 @@ public class IOSSecuritySuite {
     return DebuggerChecker.amIDebugged()
   }
   
-  /// This type method is used to deny debugger and improve the application resillency
+  /// This type method is used to deny debugger and improve the application resiliency
   ///
   /// Usage example
   /// ```swift
@@ -278,7 +278,7 @@ public extension IOSSecuritySuite {
   /// let funcAddr = unsafeBitCast(funcDenyDebugger, to: UnsafeMutableRawPointer.self)
   ///
   /// if let originalDenyDebugger = denyMSHook(funcAddr) {
-  /// // Call orignal function with 1337 as Int argument
+  /// // Call original function with 1337 as Int argument
   ///   unsafeBitCast(originalDenyDebugger, to: FunctionType.self)(1337)
   /// } else {
   ///   denyDebugger()
@@ -292,7 +292,7 @@ public extension IOSSecuritySuite {
   ///
   /// Usage example
   /// ```swift
-  /// denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF") // Foudation's NSlog of Swift
+  /// denySymbolHook("$s10Foundation5NSLogyySS_s7CVarArg_pdtF") // Foundation's NSlog of Swift
   /// NSLog("Hello Symbol Hook")
   ///
   /// denySymbolHook("abort")

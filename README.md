@@ -14,7 +14,7 @@ Check out our practical & fully online course at: [https://courses.securing.pl/c
 
 What ISS detects:
 
-* Jailbreak (even the iOS 11+ with brand new indicators! 🔥)
+* Jailbreak 🧨
 * Attached debugger 👨🏻‍🚀
 * If an app was run in an emulator 👽
 * Common reverse engineering tools running on the device 🔭
@@ -283,7 +283,7 @@ Before using this and other platform security checkers, you have to understand t
 * Swift code is considered to be harder to manipulate dynamically than Objective-C. Since this library was written in pure Swift, the IOSSecuritySuite methods shouldn't be exposed to Objective-C runtime (which makes it more difficult to bypass ✅). You have to know that attacker is still able to MSHookFunction/MSFindSymbol Swift symbols and dynamically change Swift code execution flow.
 
 ## Contribution ❤️
-Yes, please! If you have a better idea or you just want to improve this project, please text me on [Twitter](https://twitter.com/_r3ggi) or [Linkedin](https://www.linkedin.com/in/wojciech-regula/). Pull requests are more than welcome!
+Yes, please! If you have a better idea or you just want to improve this project, please text me on [Twitter](https://twitter.com/_r3ggi) or [LinkedIn](https://www.linkedin.com/in/wojciech-regula/). Pull requests are more than welcome!
 
 ### Special thanks: 👏🏻
 
