@@ -111,17 +111,9 @@ private func readSleb128(ptr: inout UnsafeMutablePointer<UInt8>, end: UnsafeMuta
 internal class FishHookChecker {
   @inline(__always)
   static func denyFishHook(_ symbol: String) {
-    var symbolAddress: UnsafeMutableRawPointer?
-    
     for imgIndex in 0..<_dyld_image_count() {
       if let image = _dyld_get_image_header(imgIndex) {
-        if symbolAddress == nil {
-          _ = SymbolFound.lookSymbol(symbol, at: image, imageSlide: _dyld_get_image_vmaddr_slide(imgIndex), symbolAddress: &symbolAddress)
-        }
-        if let symbolPointer = symbolAddress {
-          var oldMethod: UnsafeMutableRawPointer?
-          FishHook.replaceSymbol(symbol, at: image, imageSlide: _dyld_get_image_vmaddr_slide(imgIndex), newMethod: symbolPointer, oldMethod: &oldMethod)
-        }
+        denyFishHook(symbol, at: image, imageSlide: _dyld_get_image_vmaddr_slide(imgIndex))
       }
     }
   }
