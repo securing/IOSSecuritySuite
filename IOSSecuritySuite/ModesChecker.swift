@@ -9,9 +9,9 @@
 import Foundation
 
 internal class ModesChecker {
-  
+
   static func amIInLockdownMode() -> Bool {
     return UserDefaults.standard.bool(forKey: "LDMGlobalEnabled")
   }
-  
+
 }

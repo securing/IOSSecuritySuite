@@ -10,7 +10,7 @@ import Foundation
 
 internal class FileChecker {
   typealias CheckResult = (passed: Bool, failMessage: String)
-  
+
   /**
    Used to store some information provided by statfs()
    */
@@ -20,7 +20,7 @@ internal class FileChecker {
     let isRoot: Bool
     let isReadOnly: Bool
   }
-  
+
   /**
    Used to determine if a file access check should be in Write or Read-Only mode.
    */
@@ -28,7 +28,7 @@ internal class FileChecker {
     case readable
     case writable
   }
-  
+
   /**
    Given a path, this method provides information about the associated volume.
    - Parameters:
@@ -43,7 +43,7 @@ internal class FileChecker {
       assertionFailure("Failed to create a cString with path=\(path) encoding=\(encoding)")
       return nil
     }
-    
+
     var statBuffer = statfs()
     /**
      Upon successful completion, the value 0 is returned; otherwise the
@@ -51,7 +51,7 @@ internal class FileChecker {
      the error.
      */
     let resultCode: Int32 = statfs(path, &statBuffer)
-    
+
     if resultCode == 0 {
       let mntFromName: String = withUnsafePointer(to: statBuffer.f_mntfromname) { ptr -> String in
         return String(cString: UnsafeRawPointer(ptr).assumingMemoryBound(to: CChar.self))
@@ -59,7 +59,7 @@ internal class FileChecker {
       let mntOnName: String = withUnsafePointer(to: statBuffer.f_mntonname) { ptr -> String in
         return String(cString: UnsafeRawPointer(ptr).assumingMemoryBound(to: CChar.self))
       }
-      
+
       return MountedVolumeInfo(fileSystemName: mntFromName,
                                directoryName: mntOnName,
                                isRoot: (Int32(statBuffer.f_flags) & MNT_ROOTFS) != 0,
@@ -68,7 +68,7 @@ internal class FileChecker {
       return nil
     }
   }
-  
+
   /**
    This method provides information about all mounted volumes.
    - Returns: Returns nil, if getfsstat() does not return any filesystem statistics.
@@ -76,12 +76,12 @@ internal class FileChecker {
   private static func getMountedVolumesViaGetfsstat() -> [MountedVolumeInfo]? {
     // If buf is NULL, getfsstat() returns just the number of mounted file systems.
     let count: Int32 = getfsstat(nil, 0, MNT_NOWAIT)
-    
+
     guard count >= 0 else {
       assertionFailure("getfsstat() failed to return the number of mounted file systems.")
       return nil
     }
-    
+
     var statBuffer: [statfs] = .init(repeating: .init(), count: Int(count))
     let size: Int = MemoryLayout<statfs>.size * statBuffer.count
     /**
@@ -90,14 +90,14 @@ internal class FileChecker {
      set to indicate the error.
      */
     let resultCode: Int32 = getfsstat(&statBuffer, Int32(size), MNT_NOWAIT)
-    
+
     if resultCode > -1 {
       if count != resultCode {
         assertionFailure("Unexpected a resultCode=\(resultCode), was expecting=\(count).")
       }
-      
+
       var result: [MountedVolumeInfo] = []
-      
+
       for entry: statfs in statBuffer {
         let mntFromName: String = withUnsafePointer(to: entry.f_mntfromname) { ptr -> String in
           return String(cString: UnsafeRawPointer(ptr).assumingMemoryBound(to: CChar.self))
@@ -105,18 +105,18 @@ internal class FileChecker {
         let mntOnName: String = withUnsafePointer(to: entry.f_mntonname) { ptr -> String in
           return String(cString: UnsafeRawPointer(ptr).assumingMemoryBound(to: CChar.self))
         }
-        
+
         let info = MountedVolumeInfo(fileSystemName: mntFromName,
                                      directoryName: mntOnName,
                                      isRoot: (Int32(entry.f_flags) & MNT_ROOTFS) != 0,
                                      isReadOnly: (Int32(entry.f_flags) & MNT_RDONLY) != 0)
         result.append(info)
       }
-      
+
       if count != result.count {
         assertionFailure("Unexpected filesystems count=\(result.count), was expecting=\(count).")
       }
-      
+
       return result
     } else {
       assertionFailure(
@@ -125,7 +125,7 @@ internal class FileChecker {
       return nil
     }
   }
-  
+
   /**
    Loops through the mounted volumes provided by Getfsstat() and searches for a match.
    - Parameters:
@@ -144,7 +144,7 @@ internal class FileChecker {
     }
     return nil
   }
-  
+
   /**
    Uses fopen() to check if an file exists and attempts to open it, in either Read-Only or Read-Write mode.
    - Parameters:
@@ -156,7 +156,7 @@ internal class FileChecker {
                                                       mode: FileMode) -> CheckResult? {
     // the 'a' or 'w' modes, create the file if it does not exist.
     let mode: String = FileMode.writable == mode ? "r+" : "r"
-    
+
     if let filePointer: UnsafeMutablePointer<FILE> = fopen(path, mode) {
       fclose(filePointer)
       return (false, "Suspicious file exists: \(path)")
@@ -164,7 +164,7 @@ internal class FileChecker {
       return nil
     }
   }
-  
+
   /**
    Uses stat() to check if a file exists.
    - returns: Returns nil, if stat() returns a non-zero result code.
@@ -172,14 +172,14 @@ internal class FileChecker {
   static func checkExistenceOfSuspiciousFilesViaStat(path: String) -> CheckResult? {
     var statbuf: stat = stat()
     let resultCode = stat((path as NSString).fileSystemRepresentation, &statbuf)
-    
+
     if resultCode == 0 {
       return (false, "Suspicious file exists: \(path)")
     } else {
       return nil
     }
   }
-  
+
   /**
    Uses access() to check whether the calling process can access the file path, in either Read-Only or Write mode.
    - Parameters:
@@ -195,14 +195,14 @@ internal class FileChecker {
       (path as NSString).fileSystemRepresentation,
       FileMode.writable == mode ? W_OK : R_OK
     )
-    
+
     if resultCode == 0 {
       return (false, "Suspicious file exists: \(path)")
     } else {
       return nil
     }
   }
-  
+
   /**
    Checks if statvfs() considers the given path to be Read-Only.
    - Returns: Returns nil, if statvfs() gives a non-zero result.
@@ -215,17 +215,17 @@ internal class FileChecker {
       assertionFailure("Failed to create a cString with path=\(path) encoding=\(encoding)")
       return nil
     }
-    
+
     var statBuffer = statvfs()
     let resultCode: Int32 = statvfs(path, &statBuffer)
-    
+
     if resultCode == 0 {
       return Int32(statBuffer.f_flag) & ST_RDONLY != 0
     } else {
       return nil
     }
   }
-  
+
   /**
    Checks if statvs() considers the volume associated with given path to be Read-Only.
    - Returns: Returns nil, if statfs() does not find the mounted volume.
@@ -236,7 +236,7 @@ internal class FileChecker {
   ) -> Bool? {
     return getMountedVolumeInfoViaStatfs(path: path, encoding: encoding)?.isReadOnly
   }
-  
+
   /**
    Checks if Getfsstat() considers the volume to be Read-Only.
    - Parameters:

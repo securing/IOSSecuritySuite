@@ -17,14 +17,14 @@ class RuntimeClass {
 
 internal class ViewController: UIViewController {
   @IBOutlet weak var result: UITextView!
-  
+
   override func viewDidAppear(_ animated: Bool) {
     var message = ""
-    
+
 #if arch(arm64)
     message += executeChecksForArm64()
 #endif
-    
+
     // Runtime Check
     let test = RuntimeClass.init()
     _ = test.runtimeModifiedFunction()
@@ -35,7 +35,7 @@ internal class ViewController: UIViewController {
       selector: #selector(RuntimeClass.runtimeModifiedFunction),
       isClassMethod: false
     )
-    
+
     message += """
         Jailbreak? \(IOSSecuritySuite.amIJailbroken())
         Jailbreak with fail msg? \(IOSSecuritySuite.amIJailbrokenWithFailMessage())
@@ -51,7 +51,7 @@ internal class ViewController: UIViewController {
         Am I runtime hooked? \(amIRuntimeHooked)
         Am I proxied? \(IOSSecuritySuite.amIProxied())
         """
-    
+
     result.text = message
   }
 }
@@ -60,19 +60,19 @@ internal class ViewController: UIViewController {
 extension ViewController {
   func executeChecksForArm64() -> String {
     // executeAntiHook()
-    
+
     // MSHook Check
     func msHookReturnFalse(takes: Int) -> Bool {
       return false /// add breakpoint at here to test `IOSSecuritySuite.hasBreakpointAt`
     }
-    
+
     typealias FunctionType = @convention(thin) (Int) -> (Bool)
     func getSwiftFunctionAddr(_ function: @escaping FunctionType) -> UnsafeMutableRawPointer {
       return unsafeBitCast(function, to: UnsafeMutableRawPointer.self)
     }
-    
+
     let funcAddr = getSwiftFunctionAddr(msHookReturnFalse)
-    
+
     return """
         Am I MSHooked? \(IOSSecuritySuite.amIMSHooked(funcAddr))
         Application executable file hash value? \(IOSSecuritySuite.getMachOFileHashValue() ?? "")
@@ -84,34 +84,34 @@ extension ViewController {
         Watchpoint? \(testWatchpoint())
         """
   }
-  
+
   func testWatchpoint() -> Bool {
-    
+
 //    Uncomment these \/ and set a watch point to check the feature
 //    var ptr = malloc(9)
 //    var count = 3
     return IOSSecuritySuite.hasWatchpoint()
   }
-  
+
   func executeAntiHook() {
     typealias MyPrint = @convention(thin) (Any..., String, String) -> Void
     func myPrint(_ items: Any..., separator: String = " ", terminator: String = "\n") {
       print("print has been hooked")
     }
-    
+
     let myprint: MyPrint = myPrint
     let myPrintPointer = unsafeBitCast(myprint, to: UnsafeMutableRawPointer.self)
     var oldMethod: UnsafeMutableRawPointer?
-    
+
     // simulating hook
     replaceSymbol(
       "$ss5print_9separator10terminatoryypd_S2StF",
       newMethod: myPrintPointer,
       oldMethod: &oldMethod
     )
-    
+
     print("print hasn't been hooked")
-    
+
     // antiHook
     IOSSecuritySuite.denySymbolHook("$ss5print_9separator10terminatoryypd_S2StF")
     print("print has been antiHooked")

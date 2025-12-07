@@ -77,7 +77,7 @@ internal class MSHookFunctionChecker {
     case adrp_x17(pageBase: UInt64)
     case add_x17(pageOffset: UInt64)
     case br_x17
-    
+
     @inline(__always)
     static fileprivate func translateInstruction(
       at functionAddr: UnsafeMutableRawPointer
@@ -138,7 +138,7 @@ internal class MSHookFunctionChecker {
       }
       return nil
     }
-    
+
     // pageBase
     @inline(__always)
     static private func getAdrpPageBase(_ functionAddr: UnsafeMutableRawPointer) -> UInt64 {
@@ -160,7 +160,7 @@ internal class MSHookFunctionChecker {
       return UInt64(Int64(pcBase) + singExtend(imm))
     }
   }
-  
+
   @inline(__always)
   static func amIMSHooked(_ functionAddr: UnsafeMutableRawPointer) -> Bool {
     guard let firstInstruction = MSHookInstruction.translateInstruction(at: functionAddr) else {
@@ -185,7 +185,7 @@ internal class MSHookFunctionChecker {
       return false
     }
   }
-  
+
   @inline(__always)
   static func denyMSHook(_ functionAddr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
     if !amIMSHooked(functionAddr) {
@@ -219,13 +219,13 @@ internal class MSHookFunctionChecker {
     var vmRegionSize: vm_size_t = 0
     var vmRegionInfoCount: mach_msg_type_number_t = mach_msg_type_number_t(VM_REGION_BASIC_INFO_64)
     var objectName: mach_port_t = 0
-    
+
     while true {
       if vmRegionAddress == 0 {
         // False address
         return nil
       }
-      
+
       // Get VM region of designated address
       if vm_region_64(
         mach_task_self_,
@@ -239,18 +239,18 @@ internal class MSHookFunctionChecker {
         // End of vm_regions or something wrong
         return nil
       }
-      
+
       let regionInfo = UnsafeMutableRawPointer(vmRegionInfo).assumingMemoryBound(
         to: vm_region_basic_info_64.self
       )
-      
+
       // vm region of code
       if regionInfo.pointee.protection != (VM_PROT_READ | VM_PROT_EXECUTE) {
         // Memory protection level of executable region is always READ + EXECUTE
         vmRegionAddress += vmRegionSize
         continue
       }
-      
+
       // ldr (Mobile Substrate)
       if case .ldr_x16 = firstInstruction {
         // Current vm region instruction address
@@ -259,7 +259,7 @@ internal class MSHookFunctionChecker {
         var vmRegionInstAddr = vmRegionAddress
         // Last address of current vm region
         let vmRegionEndAddress = vmRegionAddress + vmRegionSize
-        
+
         // Unlike substitute, When using substrate, branching address may resides anywhere in vm region.
         // So every region must be investigated to check whether it contains original function address.
         while vmRegionEndAddress >= vmRegionInstAddr {
@@ -269,12 +269,12 @@ internal class MSHookFunctionChecker {
           ) else {
             continue
           }
-          
+
           if UInt(bitPattern: instructionAddr.pointee) == 0 {
             vmRegionProcedureAddr = vmRegionInstAddr + 4
             continue
           }
-          
+
           if case .ldr_x16 = MSHookInstruction.translateInstruction(
             at: instructionAddr
           ), case .br_x16 = MSHookInstruction.translateInstruction(

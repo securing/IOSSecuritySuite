@@ -46,19 +46,19 @@ private func replaceSymbolAtImage(
   var dataCmd: UnsafeMutablePointer<segment_command_64>!
   var symtabCmd: UnsafeMutablePointer<symtab_command>!
   var dynamicSymtabCmd: UnsafeMutablePointer<dysymtab_command>!
-  
+
   guard var curCmdPointer = UnsafeMutableRawPointer(bitPattern: UInt(bitPattern: image)+UInt(MemoryLayout<mach_header_64>.size)) else { return }
-  
+
   for _ in 0..<image.pointee.ncmds {
     let curCmd = curCmdPointer.assumingMemoryBound(to: segment_command_64.self)
-    
+
     if curCmd.pointee.cmd == LC_SEGMENT_64 {
       let curCmdNameOffset = MemoryLayout.size(ofValue: curCmd.pointee.cmd) + MemoryLayout.size(ofValue: curCmd.pointee.cmdsize)
       let curCmdNamePointer = curCmdPointer.advanced(by: curCmdNameOffset).assumingMemoryBound(to: Int8.self)
       let curCmdName = String(cString: curCmdNamePointer)
-      if (curCmdName == SEG_LINKEDIT) {
+      if curCmdName == SEG_LINKEDIT {
         linkeditCmd = curCmd
-      } else if (curCmdName == SEG_DATA) {
+      } else if curCmdName == SEG_DATA {
         dataCmd = curCmd
       }
     } else if curCmd.pointee.cmd == LC_SYMTAB {
@@ -66,26 +66,26 @@ private func replaceSymbolAtImage(
     } else if curCmd.pointee.cmd == LC_DYSYMTAB {
       dynamicSymtabCmd = UnsafeMutablePointer<dysymtab_command>(OpaquePointer(curCmd))
     }
-    
+
     curCmdPointer += Int(curCmd.pointee.cmdsize)
   }
-  
+
   if linkeditCmd == nil || symtabCmd == nil || dynamicSymtabCmd == nil || dataCmd == nil {
     return
   }
-  
+
   let linkedBase = slide + Int(linkeditCmd.pointee.vmaddr) - Int(linkeditCmd.pointee.fileoff)
   let symtab = UnsafeMutablePointer<nlist_64>(bitPattern: linkedBase + Int(symtabCmd.pointee.symoff))
   let strtab =  UnsafeMutablePointer<UInt8>(bitPattern: linkedBase + Int(symtabCmd.pointee.stroff))
   let indirectsym = UnsafeMutablePointer<UInt32>(bitPattern: linkedBase + Int(dynamicSymtabCmd.pointee.indirectsymoff))
-  
+
   if symtab == nil || strtab == nil || indirectsym == nil {
     return
   }
-  
+
   for tmp in 0..<dataCmd.pointee.nsects {
     let curSection = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
-    
+
     // symbol_pointers sections
     if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
       replaceSymbolPointerAtSection(curSection, symtab: symtab!, strtab: strtab!, indirectsym: indirectsym!, slide: slide, symbolName: symbol, newMethod: newMethod, oldMethod: &oldMethod)
@@ -109,11 +109,11 @@ private func replaceSymbolPointerAtSection(
 ) {
   let indirectSymVmAddr = indirectsym.advanced(by: Int(section.pointee.reserved1))
   let sectionVmAddr = UnsafeMutablePointer<UnsafeMutableRawPointer>(bitPattern: slide+Int(section.pointee.addr))
-  
+
   if sectionVmAddr == nil {
     return
   }
-  
+
   for tmp in 0..<Int(section.pointee.size)/MemoryLayout<UnsafeMutableRawPointer>.size {
     let curIndirectSym = indirectSymVmAddr.advanced(by: tmp)
     if curIndirectSym.pointee == INDIRECT_SYMBOL_ABS || curIndirectSym.pointee == INDIRECT_SYMBOL_LOCAL {

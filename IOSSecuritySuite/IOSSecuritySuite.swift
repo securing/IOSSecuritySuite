@@ -5,7 +5,7 @@
 //  Created by wregula on 23/04/2019.
 //  Copyright © 2019 wregula. All rights reserved.
 //
-// swiftlint:disable inclusive_language
+// swiftlint:disable file_length
 
 import Foundation
 import MachO
@@ -24,7 +24,7 @@ public class IOSSecuritySuite {
   public static func amIJailbroken() -> Bool {
     return JailbreakChecker.amIJailbroken()
   }
-  
+
   /// This type method is used to determine the jailbreak status with a message which jailbreak indicator was detected
   ///
   /// Usage example
@@ -42,7 +42,7 @@ public class IOSSecuritySuite {
   public static func amIJailbrokenWithFailMessage() -> (jailbroken: Bool, failMessage: String) {
     return JailbreakChecker.amIJailbrokenWithFailMessage()
   }
-  
+
   /// This type method is used to determine the jailbreak status with a list of failed checks
   ///
   /// Usage example
@@ -59,7 +59,7 @@ public class IOSSecuritySuite {
                                                          failedChecks: [FailedCheckType]) {
     return JailbreakChecker.amIJailbrokenWithFailedChecks()
   }
-  
+
   /// This type method is used to determine if application is run in emulator
   ///
   /// Usage example
@@ -70,7 +70,7 @@ public class IOSSecuritySuite {
   public static func amIRunInEmulator() -> Bool {
     return EmulatorChecker.amIRunInEmulator()
   }
-  
+
   /// This type method is used to determine if application is being debugged
   ///
   /// Usage example
@@ -81,7 +81,7 @@ public class IOSSecuritySuite {
   public static func amIDebugged() -> Bool {
     return DebuggerChecker.amIDebugged()
   }
-  
+
   /// This type method is used to deny debugger and improve the application resiliency
   ///
   /// Usage example
@@ -91,7 +91,7 @@ public class IOSSecuritySuite {
   public static func denyDebugger() {
     return DebuggerChecker.denyDebugger()
   }
-  
+
   /// This method is used to determine if application was launched by something
   /// other than LaunchD (i.e. the app was launched by a debugger)
   ///
@@ -103,7 +103,7 @@ public class IOSSecuritySuite {
   public static func isParentPidUnexpected() -> Bool {
     return DebuggerChecker.isParentPidUnexpected()
   }
-  
+
   /// This type method is used to determine if application has been tampered with
   ///
   /// Usage example
@@ -123,7 +123,7 @@ public class IOSSecuritySuite {
   public static func amITampered(_ checks: [FileIntegrityCheck]) -> FileIntegrityCheckResult {
     return IntegrityChecker.amITampered(checks)
   }
-  
+
   /// This type method is used to determine if there are any popular reverse engineering tools installed on the device
   ///
   /// Usage example
@@ -134,7 +134,7 @@ public class IOSSecuritySuite {
   public static func amIReverseEngineered() -> Bool {
     return ReverseEngineeringToolsChecker.amIReverseEngineered()
   }
-  
+
   /// This type method is used to determine the reverse engineered status with a list of failed checks
   ///
   /// Usage example
@@ -151,7 +151,7 @@ public class IOSSecuritySuite {
                                                                 failedChecks: [FailedCheckType]) {
     return ReverseEngineeringToolsChecker.amIReverseEngineeredWithFailedChecks()
   }
-  
+
   /// This type method is used to determine if `objc call` has been RuntimeHooked by for example `Flex`
   ///
   /// Usage example
@@ -176,7 +176,7 @@ public class IOSSecuritySuite {
      renamed: "amIRuntimeHooked(dyldAllowList:detectionClass:selector:isClassMethod:)"
   )
   public static func amIRuntimeHooked(
-    dyldWhiteList: [String],
+    dyldWhiteList: [String],// swiftlint:disable:this inclusive_language
     detectionClass: AnyClass,
     selector: Selector,
     isClassMethod: Bool
@@ -188,7 +188,7 @@ public class IOSSecuritySuite {
       isClassMethod: isClassMethod
     )
   }
-  
+
   /// This type method is used to determine if `objc call` has been RuntimeHooked by for example `Flex`
   ///
   /// Usage example
@@ -221,7 +221,7 @@ public class IOSSecuritySuite {
       isClassMethod: isClassMethod
     )
   }
-  
+
   /// This type method is used to determine if  HTTP proxy was set in the iOS Settings.
   ///
   /// Usage example
@@ -232,7 +232,7 @@ public class IOSSecuritySuite {
   public static func amIProxied() -> Bool {
     return ProxyChecker.amIProxied()
   }
-  
+
   /// This type method is used to determine if the iDevice has lockdown mode turned on.
   ///
   /// Usage example
@@ -265,7 +265,7 @@ public extension IOSSecuritySuite {
   static func amIMSHooked(_ functionAddress: UnsafeMutableRawPointer) -> Bool {
     return MSHookFunctionChecker.amIMSHooked(functionAddress)
   }
-  
+
   /// This type method is used to get original `function_address` which has been hooked by  `MSHook`
   ///
   /// Usage example
@@ -287,7 +287,7 @@ public extension IOSSecuritySuite {
   static func denyMSHook(_ functionAddress: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
     return MSHookFunctionChecker.denyMSHook(functionAddress)
   }
-  
+
   /// This type method is used to rebind `symbol` which has been hooked by `fishhook`
   ///
   /// Usage example
@@ -301,7 +301,7 @@ public extension IOSSecuritySuite {
   static func denySymbolHook(_ symbol: String) {
     FishHookChecker.denyFishHook(symbol)
   }
-  
+
   /// This type method is used to rebind `symbol` which has been hooked  at one of image by `fishhook`
   ///
   /// Usage example
@@ -323,7 +323,7 @@ public extension IOSSecuritySuite {
   ) {
     FishHookChecker.denyFishHook(symbol, at: image, imageSlide: slide)
   }
-  
+
   /// This type method is used to get the SHA256 hash value of the executable file in a specified image
   ///
   /// - Attention: **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your *Build Settings*.
@@ -346,7 +346,7 @@ public extension IOSSecuritySuite {
   static func getMachOFileHashValue(_ target: IntegrityCheckerImageTarget = .default) -> String? {
     return IntegrityChecker.getMachOFileHashValue(target)
   }
-  
+
   /// This type method is used to find all loaded dylibs in the specified image
   ///
   /// - Attention: **Dylib only.** This means you should set Mach-O type as `Dynamic Library` in your /*Build Settings*.
@@ -363,7 +363,7 @@ public extension IOSSecuritySuite {
   static func findLoadedDylibs(_ target: IntegrityCheckerImageTarget = .default) -> [String]? {
     return IntegrityChecker.findLoadedDylibs(target)
   }
-  
+
   /// This type method is used to determine if there are any breakpoints at the function
   ///
   /// Usage example
@@ -382,7 +382,7 @@ public extension IOSSecuritySuite {
   static func hasBreakpointAt(_ functionAddr: UnsafeRawPointer, functionSize: vm_size_t?) -> Bool {
     return DebuggerChecker.hasBreakpointAt(functionAddr, functionSize: functionSize)
   }
-  
+
   /// This type method is used to detect if a watchpoint is being used.
   /// A watchpoint is a type of breakpoint that 'watches' an area of memory associated with a data item.
   ///
@@ -403,4 +403,3 @@ public extension IOSSecuritySuite {
   }
 }
 #endif
-// swiftlint:enable inclusive_language
