@@ -13,17 +13,17 @@ internal class ProxyChecker {
         guard let unmanagedSettings = CFNetworkCopySystemProxySettings() else {
             return false
         }
-        
+
         let settingsOptional = unmanagedSettings.takeRetainedValue() as? [String: Any]
-        
+
         guard  let settings = settingsOptional else {
             return false
         }
-        
-        if(considerVPNConnectionAsProxy) {
+
+        if considerVPNConnectionAsProxy {
             if let scoped = settings["__SCOPED__"] as? [String: Any] {
                 for interface in scoped.keys {
-                    
+
                     let names = [
                         "tap",
                         "tun",
@@ -31,17 +31,17 @@ internal class ProxyChecker {
                         "ipsec",
                         "utun"
                     ]
-                    
-                    for name in names {
-                        if(interface.contains(name)) {
-                            print("detected: \(interface)")
-                            return true
-                        }
+
+                    if names.contains(where: { name in
+                        interface.contains(name)
+                    }) {
+                        print("detected: \(interface)")
+                        return true
                     }
                 }
             }
         }
-        
+
         return (settings.keys.contains("HTTPProxy") || settings.keys.contains("HTTPSProxy"))
     }
 }
