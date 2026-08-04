@@ -126,7 +126,6 @@ internal class JailbreakChecker {
       "/var/jb/usr/bin", // Rootless binaries
       "/var/jb/Library/LaunchDaemons", // Rootless launch daemons
       "/var/jb/etc/rc.d", // Rootless startup scripts
-      "/cores", // Temporary jailbreak filesystem mount point (palera1n)
       "/var/Liy/.procursus_strapped", // Dopamine bootstrap marker
       "/var/Liy", // Dopamine data directory
       
