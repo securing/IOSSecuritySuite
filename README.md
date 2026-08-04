@@ -306,6 +306,7 @@ Yes, please! If you have a better idea or you just want to improve this project,
 * [LongXiangGuo](https://github.com/LongXiangGuo) for a PR adding the privacy manifest
 * [Coeur](https://github.com/Coeur) for ISS improvements and bug fixes
 * [Adobels](https://github.com/Adobels) for adjusting ISS to new Apple's requirements
+* [RohannnRX179](https://github.com/RohannnRX179) for updating ISS checks
 
 
 ## TODO
