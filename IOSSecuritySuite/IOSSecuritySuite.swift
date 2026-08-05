@@ -222,15 +222,15 @@ public class IOSSecuritySuite {
     )
   }
   
-  /// This type method is used to determine if  HTTP proxy was set in the iOS Settings.
+  /// This type method is used to determine if HTTP proxy or VPN was set in the iOS Settings.
   ///
   /// Usage example
   /// ```swift
-  /// let amIProxied: Bool = IOSSecuritySuite.amIProxied()
+  /// let amIProxied: Bool = IOSSecuritySuite.amIProxied(considerVPNConnectionAsProxy: true)
   /// ```
-  /// - Returns: Bool indicating if the device has a proxy setted (true) or not (false)
-  public static func amIProxied() -> Bool {
-    return ProxyChecker.amIProxied()
+  /// - Returns: Bool indicating if the device has a proxy set (true) or not (false)
+  public static func amIProxied(considerVPNConnectionAsProxy: Bool = false) -> Bool {
+    return ProxyChecker.amIProxied(considerVPNConnectionAsProxy: considerVPNConnectionAsProxy)
   }
   
   /// This type method is used to determine if the iDevice has lockdown mode turned on.
