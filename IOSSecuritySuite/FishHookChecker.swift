@@ -138,6 +138,7 @@ internal class SymbolFound {
     // target cmd
     var linkeditCmd: UnsafeMutablePointer<segment_command_64>!
     var dyldInfoCmd: UnsafeMutablePointer<dyld_info_command>!
+    var dyldChainedFixUpsCmd: UnsafeMutablePointer<linkedit_data_command>!
     var allLoadDylds = [String]()
     
     guard var curCmdPointer = UnsafeMutableRawPointer(bitPattern: UInt(bitPattern: image)+UInt(MemoryLayout<mach_header_64>.size)) else {
@@ -156,6 +157,8 @@ internal class SymbolFound {
         }
       case LC_DYLD_INFO_ONLY, UInt32(LC_DYLD_INFO):
         dyldInfoCmd = curCmdPointer.assumingMemoryBound(to: dyld_info_command.self)
+      case LC_DYLD_CHAINED_FIXUPS:
+        dyldChainedFixUpsCmd = curCmdPointer.assumingMemoryBound(to: linkedit_data_command.self)
       case UInt32(LC_LOAD_DYLIB), LC_LOAD_WEAK_DYLIB, LC_LOAD_UPWARD_DYLIB, LC_REEXPORT_DYLIB:
         let loadDyldCmd = curCmdPointer.assumingMemoryBound(to: dylib_command.self)
         let loadDyldNameOffset = Int(loadDyldCmd.pointee.dylib.name.offset)
@@ -169,33 +172,43 @@ internal class SymbolFound {
       curCmdPointer += Int(curCmd.pointee.cmdsize)
     }
     
-    if linkeditCmd == nil || dyldInfoCmd == nil { return false }
+    if linkeditCmd == nil || (dyldInfoCmd == nil && dyldChainedFixUpsCmd == nil) { return false }
     let linkeditBase = UInt64(slide + Int(linkeditCmd.pointee.vmaddr) - Int(linkeditCmd.pointee.fileoff))
     
-    // look by LazyBindInfo
-    let lazyBindSize = Int(dyldInfoCmd.pointee.lazy_bind_size)
-    if (lazyBindSize > 0) {
-      if let lazyBindInfoCmd = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldInfoCmd.pointee.lazy_bind_off))),
-         lookLazyBindSymbol(symbol, symbolAddr: &symbolAddress, lazyBindInfoCmd: lazyBindInfoCmd, lazyBindInfoSize: lazyBindSize, allLoadDylds: allLoadDylds) {
-        return true
+    let chainedFixUpsSize = Int(dyldChainedFixUpsCmd?.pointee.datasize ?? 0)
+    if let dyldChainedFixUpsCmd,
+       chainedFixUpsSize > 0,
+       let dataStart = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldChainedFixUpsCmd.pointee.dataoff))),
+       lookDyldChainedFixUps(symbol, symbolAddr: &symbolAddress, chainedFixUpsCmd: dataStart, chainedFixUpsSize: chainedFixUpsSize, imageSlide: slide, allLoadDylds: allLoadDylds) {
+      return true
+    }
+
+    if let dyldInfoCmd {
+      // look by LazyBindInfo
+      let lazyBindSize = Int(dyldInfoCmd.pointee.lazy_bind_size)
+      if (lazyBindSize > 0) {
+        if let lazyBindInfoCmd = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldInfoCmd.pointee.lazy_bind_off))),
+           lookLazyBindSymbol(symbol, symbolAddr: &symbolAddress, lazyBindInfoCmd: lazyBindInfoCmd, lazyBindInfoSize: lazyBindSize, imageSlide: slide, allLoadDylds: allLoadDylds) {
+          return true
+        }
+      }
+
+      // look by NonLazyBindInfo
+      let bindSize = Int(dyldInfoCmd.pointee.bind_size)
+      if (bindSize > 0) {
+        if let bindCmd = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldInfoCmd.pointee.bind_off))),
+           lookBindSymbol(symbol, symbolAddr: &symbolAddress, bindInfoCmd: bindCmd, bindInfoSize: bindSize, imageSlide: slide, allLoadDylds: allLoadDylds) {
+          return true
+        }
       }
     }
-    
-    // look by NonLazyBindInfo
-    let bindSize = Int(dyldInfoCmd.pointee.bind_size)
-    if (bindSize > 0) {
-      if let bindCmd = UnsafeMutablePointer<UInt8>(bitPattern: UInt(linkeditBase + UInt64(dyldInfoCmd.pointee.bind_off))),
-         lookBindSymbol(symbol, symbolAddr: &symbolAddress, bindInfoCmd: bindCmd, bindInfoSize: bindSize, allLoadDylds: allLoadDylds) {
-        return true
-      }
-    }
-    
+
     return false
   }
   
   // LazySymbolBindInfo
   @inline(__always)
-  private static func lookLazyBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, lazyBindInfoCmd: UnsafeMutablePointer<UInt8>, lazyBindInfoSize: Int, allLoadDylds: [String]) -> Bool {
+  private static func lookLazyBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, lazyBindInfoCmd: UnsafeMutablePointer<UInt8>, lazyBindInfoSize: Int, imageSlide slide: Int, allLoadDylds: [String]) -> Bool {
     var ptr = lazyBindInfoCmd
     let lazyBindingInfoEnd = lazyBindInfoCmd.advanced(by: Int(lazyBindInfoSize))
     var ordinal: Int = -1
@@ -257,7 +270,15 @@ internal class SymbolFound {
     assert(ordinal <= allLoadDylds.count)
     
     if (foundSymbol && ordinal >= 0 && allLoadDylds.count > 0), ordinal <= allLoadDylds.count, type != BindTypeThreadedRebase {
-      let imageName = allLoadDylds[ordinal-1]
+      let imageName: String
+      if ordinal == SELF_LIBRARY_ORDINAL {
+        guard let selfImageName = Self.imageName(for: slide) else {
+          fatalError()
+        }
+        imageName = selfImageName
+      } else {
+        imageName = allLoadDylds[ordinal-1]
+      }
       var tmpSymbolAddress: UnsafeMutableRawPointer?
       if lookExportedSymbol(symbol, exportImageName: imageName, symbolAddress: &tmpSymbolAddress), let symbolPointer = tmpSymbolAddress {
         symbolAddr = symbolPointer + addend
@@ -270,7 +291,7 @@ internal class SymbolFound {
   
   // NonLazySymbolBindInfo
   @inline(__always)
-  private static func lookBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, bindInfoCmd: UnsafeMutablePointer<UInt8>, bindInfoSize: Int, allLoadDylds: [String]) -> Bool {
+  private static func lookBindSymbol(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, bindInfoCmd: UnsafeMutablePointer<UInt8>, bindInfoSize: Int, imageSlide slide: Int, allLoadDylds: [String]) -> Bool {
     var ptr = bindInfoCmd
     let bindingInfoEnd = bindInfoCmd.advanced(by: Int(bindInfoSize))
     var ordinal: Int = -1
@@ -357,7 +378,15 @@ internal class SymbolFound {
     
     assert(ordinal <= allLoadDylds.count)
     if (foundSymbol && ordinal >= 0 && allLoadDylds.count > 0), ordinal <= allLoadDylds.count, type != BindTypeThreadedRebase {
-      let imageName = allLoadDylds[ordinal-1]
+      let imageName: String
+      if ordinal == SELF_LIBRARY_ORDINAL {
+        guard let selfImageName = Self.imageName(for: slide) else {
+          fatalError()
+        }
+        imageName = selfImageName
+      } else {
+        imageName = allLoadDylds[ordinal-1]
+      }
       var tmpSymbolAddress: UnsafeMutableRawPointer?
       if lookExportedSymbol(symbol, exportImageName: imageName, symbolAddress: &tmpSymbolAddress), let symbolPointer = tmpSymbolAddress {
         symbolAddr = symbolPointer + addend
@@ -367,7 +396,68 @@ internal class SymbolFound {
     
     return false
   }
-  
+
+  // DyldChainedFixUps
+  @inline(__always)
+  private static func lookDyldChainedFixUps(_ symbol: String, symbolAddr: inout UnsafeMutableRawPointer?, chainedFixUpsCmd: UnsafeMutablePointer<UInt8>, chainedFixUpsSize: Int, imageSlide slide: Int, allLoadDylds: [String]) -> Bool {
+    let header = UnsafeRawPointer(chainedFixUpsCmd)
+      .assumingMemoryBound(to: DyldChainedFixupsHeader.self)
+      .pointee
+    let importsOffset: Int = numericCast(header.imports_offset)
+    let importsCount: Int = numericCast(header.imports_count)
+
+    let importsStart = UnsafeRawPointer(chainedFixUpsCmd).advanced(by: importsOffset)
+
+    let imports: [any DyldChainedImportProtocol]
+    switch header.importsFormat {
+    case .general:
+      imports = UnsafeBufferPointer(
+        start: importsStart
+          .assumingMemoryBound(to: DyldChainedImportGeneral.self),
+        count: importsCount
+      ).map { $0 }
+    case .addend:
+      imports = UnsafeBufferPointer(
+        start: importsStart
+          .assumingMemoryBound(to: DyldChainedImportAddend.self),
+        count: importsCount
+      ).map { $0 }
+    case .addend64:
+      imports = UnsafeBufferPointer(
+        start: importsStart
+          .assumingMemoryBound(to: DyldChainedImportAddend64.self),
+        count: importsCount
+      ).map { $0 }
+    }
+
+    for `import` in imports {
+      let namePtr = UnsafeRawPointer(chainedFixUpsCmd)
+        .advanced(by: numericCast(header.symbols_offset))
+        .advanced(by: `import`.nameOffset)
+        .assumingMemoryBound(to: CChar.self)
+      let name = String(cString: namePtr + 1)
+      if name == symbol {
+        let ordinal = `import`.libraryOrdinal
+        assert(ordinal <= allLoadDylds.count)
+        if (ordinal >= 0 && allLoadDylds.count > 0), ordinal <= allLoadDylds.count {
+          var s: String?
+          for index in 0..<_dyld_image_count() {
+            if _dyld_get_image_vmaddr_slide(index) == slide {
+              s = String(cString: _dyld_get_image_name(index))
+            }
+          }
+          let imageName = ordinal == 0 ? s!: allLoadDylds[ordinal-1]
+          var tmpSymbolAddress: UnsafeMutableRawPointer?
+          if lookExportedSymbol(symbol, exportImageName: imageName, symbolAddress: &tmpSymbolAddress), let symbolPointer = tmpSymbolAddress {
+            symbolAddr = symbolPointer + `import`.symbolAddend
+            return true
+          }
+        }
+      }
+    }
+    return false
+  }
+
   // ExportSymbol
   @inline(__always)
   private static func lookExportedSymbol(_ symbol: String, exportImageName: String, symbolAddress: inout UnsafeMutableRawPointer?) -> Bool {
@@ -518,7 +608,7 @@ internal class SymbolFound {
         terminalSize = readUleb128(ptr: &ptr, end: end)
       }
       if terminalSize != 0 {
-        return currentSymbol == targetSymbol ? ptr : nil
+        return currentSymbol == "_" + targetSymbol ? ptr : nil
       }
       
       // children
@@ -544,7 +634,7 @@ internal class SymbolFound {
         // node
         if let nodeSymbol = String(cString: nodeLabel, encoding: .utf8) {
           let tmpCurrentSymbol = currentSymbol + nodeSymbol
-          if !targetSymbol.contains(tmpCurrentSymbol) {
+          if !("_" + targetSymbol).contains(tmpCurrentSymbol) {
             continue
           }
           if nodeOffset != 0 && (start + nodeOffset <= end) {
@@ -554,6 +644,15 @@ internal class SymbolFound {
             }
           }
         }
+      }
+    }
+    return nil
+  }
+
+  static private func imageName(for slide: Int) -> String? {
+    for index in 0..<_dyld_image_count() {
+      if _dyld_get_image_vmaddr_slide(index) == slide {
+        return String(cString: _dyld_get_image_name(index))
       }
     }
     return nil
@@ -626,7 +725,7 @@ private class FishHook {
     for segment in [dataCmd, dataConstCmd] {
       guard let segment else { continue }
       for tmp in 0..<segment.pointee.nsects {
-        let curSection = UnsafeMutableRawPointer(dataCmd).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
+        let curSection = UnsafeMutableRawPointer(segment).advanced(by: MemoryLayout<segment_command_64>.size + MemoryLayout<section_64>.size*Int(tmp)).assumingMemoryBound(to: section_64.self)
 
         // symbol_pointers sections
         if curSection.pointee.flags == S_LAZY_SYMBOL_POINTERS {
@@ -657,7 +756,7 @@ private class FishHook {
     
     for tmp in 0..<Int(section.pointee.size)/MemoryLayout<UnsafeMutableRawPointer>.size {
       let curIndirectSym = indirectSymVmAddr.advanced(by: tmp)
-      if curIndirectSym.pointee == INDIRECT_SYMBOL_ABS || curIndirectSym.pointee == INDIRECT_SYMBOL_LOCAL {
+      if curIndirectSym.pointee & UInt32(INDIRECT_SYMBOL_ABS) != 0 || curIndirectSym.pointee & ~UInt32(INDIRECT_SYMBOL_ABS) == INDIRECT_SYMBOL_LOCAL {
         continue
       }
       let curStrTabOff = symtab.advanced(by: Int(curIndirectSym.pointee)).pointee.n_un.n_strx
@@ -680,5 +779,95 @@ private class FishHook {
     }
   }
 }
+
+// https://github.com/apple-oss-distributions/xnu/blob/1031c584a5e37aff177559b9f69dbd3c8c3fd30a/EXTERNAL_HEADERS/mach-o/fixup-chains.h
+struct DyldChainedFixupsHeader {
+  let fixups_version: UInt32    // 0
+  let starts_offset: UInt32     // offset of dyld_chained_starts_in_image in chain_data
+  let imports_offset: UInt32    // offset of imports table in chain_data
+  let symbols_offset: UInt32    // offset of symbol strings in chain_data
+  let imports_count: UInt32     // number of imported symbol names
+  let imports_format: UInt32    // DYLD_CHAINED_IMPORT*
+  let symbols_format: UInt32    // 0 => uncompressed, 1 => zlib compressed
+}
+
+extension DyldChainedFixupsHeader {
+  var importsFormat: DyldChainedImportFormat {
+    .init(rawValue: imports_format)!
+  }
+}
+
+public enum DyldChainedImportFormat: UInt32 {
+  /// DYLD_CHAINED_IMPORT
+  case general = 1
+  /// DYLD_CHAINED_IMPORT_ADDEND
+  case addend
+  /// DYLD_CHAINED_IMPORT_ADDEND64
+  case addend64
+}
+
+protocol DyldChainedImportProtocol {
+  var libraryOrdinal: Int { get }
+  var isWeakImport: Bool { get }
+  var nameOffset: Int { get }
+  var symbolAddend: Int { get }
+}
+
+struct DyldChainedImportGeneral: DyldChainedImportProtocol {
+  let rawValue: UInt32
+
+  var libraryOrdinal: Int {
+    numericCast(rawValue & 0xFF)
+  }
+
+  var isWeakImport: Bool {
+    (rawValue & 0x100) != 0
+  }
+
+  var nameOffset: Int {
+    numericCast((rawValue >> 9) & 0x7FFFFF)
+  }
+
+  var symbolAddend: Int { 0 }
+}
+
+struct DyldChainedImportAddend: DyldChainedImportProtocol {
+  var addend: Int32
+  var rawValue: UInt32
+
+  var libraryOrdinal: Int {
+    numericCast(rawValue & 0xFF)
+  }
+
+  var isWeakImport: Bool {
+    (rawValue & 0x100) != 0
+  }
+
+  var nameOffset: Int {
+    numericCast((rawValue >> 9) & 0x7FFFFF)
+  }
+
+  var symbolAddend: Int { numericCast(addend) }
+}
+
+struct DyldChainedImportAddend64: DyldChainedImportProtocol {
+  var addend: UInt64
+  var rawValue: UInt64
+
+  var libraryOrdinal: Int {
+    numericCast(rawValue & 0xFFFF)
+  }
+
+  var isWeakImport: Bool {
+    (rawValue & 0x10000) != 0
+  }
+
+  var nameOffset: Int {
+    numericCast((rawValue >> 17) & 0xFFFFFFFF)
+  }
+
+  var symbolAddend: Int { numericCast(addend) }
+}
+
 #endif
 // swiftlint:enable all
